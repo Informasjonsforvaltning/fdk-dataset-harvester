@@ -2,7 +2,7 @@
 
 Docker image: [dcatno/harvester-api](https://hub.docker.com/r/dcatno/harvester-api/)
 Base image: [openjdk:8-jre](https://hub.docker.com/_/openjdk/)
-Source: [Dockerfile](https://github.com/Informasjonsforvaltning/fdk/blob/master/applications/harvester-api/src/main/docker/Dockerfile)
+Source: [Dockerfile](https://github.com/Informasjonsforvaltning/fdk-dataset-harvester/blob/develop/applications/harvester-api/src/main/docker/Dockerfile)
 
 ## Overview
 The harvester api runs harvests of DCAT-AP-NO 1.1 data at regular intervals.
@@ -15,14 +15,14 @@ The harvester api processes dcat data source (url) which contains a dcat catalog
 2) Validate the rdf model according to dcat-ap-en 1.1
 3) Enhance existing data
    - with information about publishers and creators via lookup to http://data.brreg.no/enhetsregisteret
-   - with theme information via lookup in reference-data 
-   - with code information via lookup in reference-data 
+   - with theme information via lookup in reference-data
+   - with code information via lookup in reference-data
 4) Store model as a graph in rdf-database
 5) Convert model to java, strip non-valid codes.
 6) Create identifiers for dataset and lookup table
 7) Create dataset harvest and catalog harvest records to log what is in the dcat index
 8) Populate dcat index with valid datasets
-9) Remove datasets that are no longer exported 
+9) Remove datasets that are no longer exported
 
 ## Standards
 * DCAT-AP-NO 1.1 https://doc.difi.no/dcat-ap-no/
@@ -63,15 +63,15 @@ The CrawlerJob has the following responsibilities:
 The harvester-api module exposes a rest api for managing harvests:
 * POST /api/admin/load
     * Load DCAT data file into Fuseki and Elasticsearch. Primarily used for testing.
-    * Parameters: 
+    * Parameters:
 	    * filename: File to be loaded
 	    * data: Base64 encoded DCAT data
-	
+
 * POST /api/admin/harvest
     * Start harvest of dataset from data source prescribed in parameter id
     * Parameters:
 	    * id: id of data source to be harvested
-	
+
 * POST /api/admin/harvest-all
     * Start harvest of all data sources
     * Parameters: None
