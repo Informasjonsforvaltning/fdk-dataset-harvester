@@ -1,4 +1,4 @@
-# Harvester api
+# FDK dataset harvester
 
 Docker image: [dcatno/harvester-api](https://hub.docker.com/r/dcatno/harvester-api/)
 Base image: [openjdk:8-jre](https://hub.docker.com/_/openjdk/)
