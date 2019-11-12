@@ -1,0 +1,12 @@
+{
+  "lookup": {
+    "properties": {
+      "datasetId": {
+        "type": "keyword"
+      },
+      "harvestUri": {
+        "type": "keyword"
+      }
+    }
+  }
+}

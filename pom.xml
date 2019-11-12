@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>no.fdk</groupId>
+    <artifactId>fdk</artifactId>
+    <version>1.0</version>
+    <packaging>pom</packaging>
+
+    <name>FDK Harvester API</name>
+    <description>FDK Harvester API is a service that runs harvests of DCAT-AP-NO 1.1 data at regular intervals.</description>
+    <organization>
+        <name>Brønnøysundregistrene</name>
+        <url>http://brreg.no</url>
+    </organization>
+
+    <modules>
+        <module>applications/harvester-api</module>
+    </modules>
+
+</project>
