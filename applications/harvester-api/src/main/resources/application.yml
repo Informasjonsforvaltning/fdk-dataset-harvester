@@ -52,7 +52,7 @@ fuseki:
   dcatServiceUri: http://localhost:3030/fuseki/dcat
   adminServiceUri: http://localhost:3030/fuseki/admin
 application:
-  referenceDataUrl: http://localhost:8113
+  referenceDataUrl: http://localhost:8112
   notificationMailSenderAddress: fdksystembjg@gmail.com
 
 elastic:
