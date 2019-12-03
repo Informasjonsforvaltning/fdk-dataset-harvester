@@ -25,6 +25,11 @@ fuseki:
 ---
 spring:
   profiles: prod
+  rabbitmq:
+    host: rabbitmq
+    port: 5672
+    username: ${RABBIT_USERNAME}
+    password: ${RABBIT_PASSWORD}
   mail:
     host: smtprelay.brreg.no
 application:
@@ -33,6 +38,13 @@ application:
 ---
 spring:
   profiles: develop, unit-integration
+
+  rabbitmq:
+    host: 127.0.0.1
+    port: 5672
+    username: admin
+    password: admin
+
   mail:
     host: smtp.gmail.com
     port: 587
