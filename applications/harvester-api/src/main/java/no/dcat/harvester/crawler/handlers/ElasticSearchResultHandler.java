@@ -926,7 +926,8 @@ public class ElasticSearchResultHandler implements CrawlerResultHandler {
                     }
                 }
             } catch (Throwable t) {
-                logger.warn("Unknown error collecting validation messages {}", t.getLocalizedMessage());
+                t.printStackTrace();
+                logger.warn("Unknown error collecting validation messages {}", t.toString());
             }
         }
         return messages;
