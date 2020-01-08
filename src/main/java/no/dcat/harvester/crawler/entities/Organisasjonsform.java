@@ -14,7 +14,7 @@ public class Organisasjonsform {
     public String getBeskrivelse() {return beskrivelse;}
 
 
-    public Resource createResource(final no.dcat.harvester.crawler.entities.Enhet enhet, final String identifier) {
+    public Resource createResource(final Enhet enhet, final String identifier) {
         final Model model = enhet.getModel();
         Resource orgformResource = model.createResource(enhet.getBaseURI() + identifier);
         Enhet.addProperty(orgformResource, EnhetsregisteretRDF.kode, getKode());

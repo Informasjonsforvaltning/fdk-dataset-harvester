@@ -24,7 +24,7 @@ public class Adresse {
     public String getPostnummer() {return postnummer;}
     public String getPoststed() {return poststed;}
 
-    public Resource createResource(final no.dcat.harvester.crawler.entities.Enhet enhet, final String identifier) {
+    public Resource createResource(final Enhet enhet, final String identifier) {
         final Model model = enhet.getModel();
         Resource adresseResource = model.createResource(enhet.getBaseURI() + identifier);
         Enhet.addProperty(adresseResource, EnhetsregisteretRDF.adresse, getAdresse());

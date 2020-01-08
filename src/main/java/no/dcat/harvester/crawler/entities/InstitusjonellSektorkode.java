@@ -13,7 +13,7 @@ public class InstitusjonellSektorkode {
     public String getKode() {return kode;}
     public String getBeskrivelse() {return beskrivelse;}
 
-    public Resource createResource(final no.dcat.harvester.crawler.entities.Enhet enhet, final String identifier) {
+    public Resource createResource(final Enhet enhet, final String identifier) {
         final Model model = enhet.getModel();
         Resource institusjonellSektorkodeResource = model.createResource(enhet.getBaseURI() + identifier);
         Enhet.addProperty(institusjonellSektorkodeResource, EnhetsregisteretRDF.kode, getKode());
