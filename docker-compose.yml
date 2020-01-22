@@ -1,0 +1,75 @@
+version: "3"
+
+services:
+
+  ### external modules
+  ####################################
+
+  elasticsearch5:
+    image: docker.elastic.co/elasticsearch/elasticsearch:5.6.9
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    depends_on:
+      - fuseki
+    environment:
+      - cluster.name=elasticsearch
+      - xpack.security.enabled=false
+      - xpack.monitoring.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+
+  fuseki:
+    image: eu.gcr.io/fdk-infra/fdk-fuseki-service:latest
+    expose:
+      - 8080
+    volumes:
+      - fuseki-data:/etc/fuseki/databases/
+    depends_on:
+      - reference-data
+    ports:
+      - "3030:8080"
+
+  fdk-dataset-harvester-gui:
+    image: eu.gcr.io/fdk-infra/fdk-dataset-harvester-gui:latest
+    ports:
+      - "8080:8080"
+    depends_on:
+      - fdk-dataset-harvester
+    environment:
+      - harvester_adminUsername=admin
+      - harvester_adminPassword=admin
+
+  fdk-dataset-harvester:
+    image: digdir/fdk-dataset-harvester:latest
+    build: .
+    ports:
+      - "8106:8080"
+    depends_on:
+      - fuseki
+      - elasticsearch5
+      - reference-data
+      - rabbitmq
+    environment:
+      - SPRING_PROFILES_ACTIVE=develop
+
+  reference-data:
+    image: eu.gcr.io/fdk-infra/reference-data:latest
+    ports:
+      - "8112:8080"
+    depends_on:
+      - rabbitmq
+
+  rabbitmq:
+    image: rabbitmq:3.8.2-management
+    environment:
+      - RABBITMQ_DEFAULT_USER=admin
+      - RABBITMQ_DEFAULT_PASS=admin
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+volumes:
+  fuseki-data:
+  elasticsearch-data:
