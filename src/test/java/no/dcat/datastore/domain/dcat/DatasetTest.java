@@ -4,7 +4,6 @@ import no.dcat.datastore.domain.DcatSource;
 import no.dcat.datastore.domain.dcat.builders.DatasetBuilder;
 import no.dcat.datastore.domain.dcat.vocabulary.DCAT;
 import no.dcat.shared.*;
-import no.fdk.test.testcategories.UnitTest;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.ResIterator;
@@ -12,10 +11,9 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.riot.RDFDataMgr;
 import org.apache.jena.vocabulary.RDF;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,17 +22,20 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 /**
  * Created by nodavsko on 01.11.2016.
  */
 
-@Category(UnitTest.class)
+@Tag("unit")
 public class DatasetTest {
 
     static private Logger logger = LoggerFactory.getLogger(DatasetTest.class);
 
-    private DcatSource dcatSource;
-    private Dataset data;
+    private static DcatSource dcatSource;
+    private static Dataset data;
 
     public static Map<String, Map<String, SkosCode>> initializeCodes() {
         Map<String, Map<String, SkosCode>> codes = new HashMap<>();
@@ -58,9 +59,9 @@ public class DatasetTest {
         return CodeMap;
     }
 
-    @Before
-    public void setup() {
-        URL url = this.getClass().getClassLoader().getResource("catalog.ttl");
+    @BeforeAll
+    public static void setup() {
+        URL url = DatasetTest.class.getClassLoader().getResource("catalog.ttl");
         logger.info("Open file: " + url.toString());
         dcatSource = new DcatSource("http//dcat.no/test", "Test", url.toString(), "admin_user", "123456789");
         org.apache.jena.query.Dataset dataset = RDFDataMgr.loadDataset(dcatSource.getUrl());
@@ -89,9 +90,9 @@ public class DatasetTest {
         logger.debug(actual.getUri());
         logger.debug(actual.getName());
 
-        Assert.assertEquals("Expects uri", expected.getUri(), actual.getUri());
-        Assert.assertEquals("Expects name", expected.getName(), actual.getName());
-        //Assert.assertEquals("Expects prefLabel", expected.getPrefLabel().get("no"), actual.getPrefLabel().get("no"));
+        assertEquals(expected.getUri(), actual.getUri(), "Expects uri");
+        assertEquals(expected.getName(), actual.getName(), "Expects name");
+        //assertEquals("Expects prefLabel", expected.getPrefLabel().get("no"), actual.getPrefLabel().get("no"));
     }
 
     @Test
@@ -106,27 +107,27 @@ public class DatasetTest {
         expected.setOrganizationUnit("AAS");
         expected.setHasURL("httpd://skatt.no/schema");
 
-        Assert.assertEquals("id expected", expected.getUri(), actual.getUri());
-        Assert.assertEquals("id expected", expected.getFullname(), actual.getFullname());
-        Assert.assertEquals("id expected", expected.getHasTelephone(), actual.getHasTelephone());
-        Assert.assertEquals("id expected", expected.getEmail(), actual.getEmail());
-        Assert.assertEquals("Org. name expected", expected.getOrganizationName(), actual.getOrganizationName());
-        Assert.assertEquals("Org. unit expected", expected.getOrganizationUnit(), actual.getOrganizationUnit());
-        Assert.assertEquals("Url expected", expected.getHasURL(), actual.getHasURL());
+        assertEquals(expected.getUri(), actual.getUri(), "id expected");
+        assertEquals(expected.getFullname(), actual.getFullname(), "id expected");
+        assertEquals(expected.getHasTelephone(), actual.getHasTelephone(), "id expected");
+        assertEquals(expected.getEmail(), actual.getEmail(), "id expected");
+        assertEquals(expected.getOrganizationName(), actual.getOrganizationName(), "Org. name expected");
+        assertEquals(expected.getOrganizationUnit(), actual.getOrganizationUnit(), "Org. unit expected");
+        assertEquals(expected.getHasURL(), actual.getHasURL(), "Url expected");
     }
 
     @Test
     public void datasetProperties() throws ParseException {
         Dataset expected = new Dataset();
-        expected.setIdentifier(Arrays.asList("10"));
-        expected.setSubject(Arrays.asList(new Subject("http://brreg.no/begrep/orgnr", null, null)));
+        expected.setIdentifier(Collections.singletonList("10"));
+        expected.setSubject(Collections.singletonList(new Subject("http://brreg.no/begrep/orgnr", null, null)));
 
         SkosCode accrualPeriodicity = new SkosCode("http://publications.europa.eu/resource/authority/frequency/CONT", "CONT", new HashMap<String, String>());
         accrualPeriodicity.getPrefLabel().put("no", "kontinuerlig");
         expected.setAccrualPeriodicity(accrualPeriodicity);
 
-        expected.setPage(Arrays.asList("https://www.brreg.no/lag-og-foreninger/registrering-i-frivillighetsregisteret/"));
-        expected.setAdmsIdentifier(Arrays.asList("http://data.brreg.no/identifikator/99"));
+        expected.setPage(Collections.singletonList("https://www.brreg.no/lag-og-foreninger/registrering-i-frivillighetsregisteret/"));
+        expected.setAdmsIdentifier(Collections.singletonList("http://data.brreg.no/identifikator/99"));
         expected.setType("Type");
 
         SkosCode accessRight = new SkosCode("http://publications.europa.eu/resource/authority/access-right/PUBLIC", "PUBLIC", new HashMap<String, String>());
@@ -135,7 +136,7 @@ public class DatasetTest {
 
         expected.setDescription(createMapOfStrings("Oversikt over lag og foreninger som er registrert i Frivillighetsregisteret.  Har som formål å bedre og forenkle samhandlingen mellom frivillige organisasjoner og offentlige myndigheter. Registeret skal sikre systematisk informasjon som kan styrke legitimiteten til og kunnskapen om den frivillige aktiviteten. Registeret er lagt til Brønnøysundregistrene og åpnet for registrering 2. desember 2008"));
         expected.setIssued(createDate("01-01-2009 00:00:00"));
-        expected.setLandingPage(Arrays.asList("https://w2.brreg.no/frivillighetsregisteret/"));
+        expected.setLandingPage(Collections.singletonList("https://w2.brreg.no/frivillighetsregisteret/"));
 
         SkosCode language = new SkosCode("http://publications.europa.eu/resource/authority/language/2", "2", new HashMap<String, String>());
         language.getPrefLabel().put("no", "norsk");
@@ -150,22 +151,22 @@ public class DatasetTest {
 
         expected.setSpatial(createListOfMaps("http://sws.geonames.org/3144096/", "Norge"));
 
-        Assert.assertEquals(expected.getIdentifier(), data.getIdentifier());
-        Assert.assertEquals(expected.getSubject(), data.getSubject());
-        Assert.assertEquals(expected.getAccrualPeriodicity().getUri(), data.getAccrualPeriodicity().getUri());
-        Assert.assertEquals(expected.getPage(), data.getPage());
-        Assert.assertEquals(expected.getAdmsIdentifier(), data.getAdmsIdentifier());
-        Assert.assertEquals(expected.getType(), data.getType());
-        Assert.assertEquals(expected.getAccessRights().getUri(), data.getAccessRights().getUri());
-        Assert.assertEquals(expected.getDescription().get("nb"), data.getDescription().get("nb"));
-        Assert.assertEquals(expected.getIssued(), data.getIssued());
-        Assert.assertEquals(expected.getLandingPage(), data.getLandingPage());
-        Assert.assertEquals(expected.getLanguage().get(0).getUri(), data.getLanguage().get(0).getUri());
-        Assert.assertThat(expected.getLanguage().size(), Matchers.is(2));
-        Assert.assertEquals(expected.getProvenance().getUri(), data.getProvenance().getUri());
-        Assert.assertEquals(expected.getSpatial().get(0).getUri(), data.getSpatial().get(0).getUri());
-        Assert.assertEquals(expected.getSpatial().get(0).getPrefLabel().get("no"), data.getSpatial().get(0).getPrefLabel().get("no"));
-        Assert.assertEquals(expected.getTitle(), data.getTitle());
+        assertEquals(expected.getIdentifier(), data.getIdentifier());
+        assertEquals(expected.getSubject(), data.getSubject());
+        assertEquals(expected.getAccrualPeriodicity().getUri(), data.getAccrualPeriodicity().getUri());
+        assertEquals(expected.getPage(), data.getPage());
+        assertEquals(expected.getAdmsIdentifier(), data.getAdmsIdentifier());
+        assertEquals(expected.getType(), data.getType());
+        assertEquals(expected.getAccessRights().getUri(), data.getAccessRights().getUri());
+        assertEquals(expected.getDescription().get("nb"), data.getDescription().get("nb"));
+        assertEquals(expected.getIssued(), data.getIssued());
+        assertEquals(expected.getLandingPage(), data.getLandingPage());
+        assertEquals(expected.getLanguage().get(0).getUri(), data.getLanguage().get(0).getUri());
+        assertThat(expected.getLanguage().size(), Matchers.is(2));
+        assertEquals(expected.getProvenance().getUri(), data.getProvenance().getUri());
+        assertEquals(expected.getSpatial().get(0).getUri(), data.getSpatial().get(0).getUri());
+        assertEquals(expected.getSpatial().get(0).getPrefLabel().get("no"), data.getSpatial().get(0).getPrefLabel().get("no"));
+        assertEquals(expected.getTitle(), data.getTitle());
     }
 
     private Date createDate(String dateInString) throws ParseException {
@@ -189,7 +190,7 @@ public class DatasetTest {
     }
 
     private Map<String, String> createMapOfStrings(String data) {
-        Map map = new HashMap<String, String>();
+        Map<String, String> map = new HashMap<String, String>();
         map.put("nb", data);
         return map;
     }

@@ -1,18 +1,17 @@
 package no.dcat.datastore;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
 import java.util.Arrays;
 import java.util.Optional;
 
 import no.dcat.datastore.domain.DcatSource;
-import no.fdk.test.testcategories.LoadTest;
 import org.apache.jena.rdf.model.ResourceFactory;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
-@Category(LoadTest.class)
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+@Tag("unit")
 public class HarvestTest {
 	
 	@Test
@@ -27,7 +26,7 @@ public class HarvestTest {
 
 		Optional<DcatSource.Harvest> harvest = dcatSource.getLastHarvest();
 
-		assertTrue("Expected harvest to be present", harvest.isPresent());
-		assertEquals("Expected \"h3\" to be the latest harvest", h3, harvest.get());
+		assertTrue(harvest.isPresent(), "Expected harvest to be present");
+		assertEquals(h3, harvest.get(), "Expected \"h3\" to be the latest harvest");
 	}
 }

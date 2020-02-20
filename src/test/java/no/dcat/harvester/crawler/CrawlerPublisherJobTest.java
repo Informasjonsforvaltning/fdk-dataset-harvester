@@ -2,9 +2,8 @@ package no.dcat.harvester.crawler;
 
 
 import no.dcat.datastore.domain.DcatSource;
-import no.fdk.test.testcategories.UnitTest;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +16,7 @@ import static org.mockito.Mockito.verify;
 /**
  * Class for testing CrawlerPublisherJob.
  */
-@Category(UnitTest.class)
+@Tag("unit")
 public class CrawlerPublisherJobTest {
     private static Logger logger = LoggerFactory.getLogger(CrawlerPublisherJobTest.class);
 

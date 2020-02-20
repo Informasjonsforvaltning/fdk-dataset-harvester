@@ -7,13 +7,11 @@ import no.dcat.datastore.domain.dcat.builders.DcatBuilder;
 import no.dcat.shared.Catalog;
 import no.dcat.shared.Dataset;
 import no.dcat.shared.Reference;
-import no.fdk.test.testcategories.UnitTest;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.hamcrest.Matchers;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.util.Arrays;
@@ -23,7 +21,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
-@Category(UnitTest.class)
+@Tag("unit")
 public class ReferenceTest {
 
     String referencesJson = "[  \n" +
@@ -51,9 +49,9 @@ public class ReferenceTest {
 
         Reference[] references = new GsonBuilder().create().fromJson(referencesJson, Reference[].class);
 
-        Assert.assertThat(references.length, Matchers.is(1));
+        assertThat(references.length, Matchers.is(1));
 
-        Assert.assertThat(references[0].getReferenceType().getPrefLabel().get("nb"), Matchers.is(""));
+        assertThat(references[0].getReferenceType().getPrefLabel().get("nb"), Matchers.is(""));
 
     }
 
@@ -62,9 +60,9 @@ public class ReferenceTest {
         ObjectMapper mapper = new ObjectMapper();
 
         Reference[] references = mapper.readValue(referencesJson, Reference[].class);
-        Assert.assertThat(references.length, Matchers.is(1));
+        assertThat(references.length, Matchers.is(1));
 
-        Assert.assertThat(references[0].getReferenceType().getPrefLabel().get("nb"), Matchers.is(""));
+        assertThat(references[0].getReferenceType().getPrefLabel().get("nb"), Matchers.is(""));
 
     }
 

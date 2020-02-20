@@ -1,11 +1,10 @@
 package no.dcat.harvester.validation;
 
-import no.fdk.test.testcategories.UnitTest;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.util.FileManager;
 import org.junit.Assert;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,7 +15,7 @@ import java.util.Arrays;
 /**
  * Created by nodavsko on 08.11.2016.
  */
-@Category(UnitTest.class)
+@Tag("unit")
 public class DcatValidationTest {
     private static Logger logger = LoggerFactory.getLogger(DcatValidationTest.class);
 

@@ -2,15 +2,14 @@ package no.dcat.harvester;
 
 import no.dcat.datastore.domain.DcatSource;
 import no.dcat.datastore.domain.dcat.vocabulary.DCATNO;
-import no.fdk.test.testcategories.UnitTest;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.rdf.model.Literal;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.riot.RDFDataMgr;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
@@ -19,7 +18,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * Created by bjg on 19.10.2017.
  */
-@Category(UnitTest.class)
+@Tag("unit")
 public class DatasetSortRankingCreatorTest {
 
     @Test

@@ -3,11 +3,9 @@ package no.dcat.harvester.crawler.handlers;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import no.dcat.datastore.domain.dcat.Publisher;
-import no.fdk.test.testcategories.UnitTest;
 import org.elasticsearch.action.index.IndexRequest;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,19 +16,12 @@ import static org.junit.Assert.assertThat;
 /**
  * Class for testing ElasticSearchResultPubHandler.
  */
-@Category(UnitTest.class)
+@Tag("unit")
 public class ElasticSearchResultPubHandlerTest {
     private static Logger logger = LoggerFactory.getLogger(ElasticSearchResultPubHandlerTest.class);
 
-
-    Gson gson;
-    ElasticSearchResultPubHandler handler;
-
-    @Before
-    public void setup() {
-        gson = new GsonBuilder().setPrettyPrinting().setDateFormat("yyyy-MM-dd'T'HH:mm:ssX").create();
-        handler = new ElasticSearchResultPubHandler(null, null);
-    }
+    private Gson gson = new GsonBuilder().setPrettyPrinting().setDateFormat("yyyy-MM-dd'T'HH:mm:ssX").create();
+    private ElasticSearchResultPubHandler handler = new ElasticSearchResultPubHandler(null, null);
 
     @Test
     public void addPublisherToIndexOK() {

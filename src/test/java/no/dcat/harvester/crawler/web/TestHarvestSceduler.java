@@ -1,8 +1,7 @@
 package no.dcat.harvester.crawler.web;
 
-import no.fdk.test.testcategories.UnitTest;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.TriggerContext;
@@ -20,7 +19,7 @@ import static org.junit.Assert.assertThat;
 /**
  * Created by dask on 28.02.2017.
  */
-@Category(UnitTest.class)
+@Tag("unit")
 public class TestHarvestSceduler {
     private static Logger logger = LoggerFactory.getLogger(TestHarvestSceduler.class);
 

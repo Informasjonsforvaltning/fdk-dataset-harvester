@@ -6,16 +6,13 @@ import no.dcat.datastore.domain.DcatSource;
 import no.dcat.datastore.domain.DifiMeta;
 import no.dcat.harvester.crawler.handlers.FusekiResultHandler;
 import no.dcat.harvester.validation.DcatValidation;
-import no.fdk.test.testcategories.UnitTest;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.util.FileManager;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.io.File;
@@ -28,18 +25,8 @@ import static org.springframework.test.util.AssertionErrors.assertTrue;
 /**
  * Created by havardottestad on 04/01/16.
  */
-@Category(UnitTest.class)
+@Tag("unit")
 public class CrawlerResultHandlerTest {
-
-    @Before
-    public void setUp() throws Exception {
-
-    }
-
-    @After
-    public void tearDown() throws Exception {
-
-    }
 
     @Test
     public void testValidation() throws Exception {
@@ -53,7 +40,7 @@ public class CrawlerResultHandlerTest {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            DcatValidation.validate(model, (error) -> System.out.println(error));
+            DcatValidation.validate(model, System.out::println);
         });
 
     }
@@ -109,7 +96,7 @@ public class CrawlerResultHandlerTest {
 
 
     @Test
-    @Ignore
+    @Disabled
     public void testValidationLoggingSyntaxError() throws IOException {
         DcatDataStore dcatDataStore = Mockito.mock(DcatDataStore.class);
         Mockito.doNothing().when(dcatDataStore).saveDataCatalogue(Mockito.any(), Mockito.any());

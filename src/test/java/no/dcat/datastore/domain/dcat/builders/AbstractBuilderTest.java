@@ -4,16 +4,15 @@ import no.dcat.datastore.domain.dcat.smoke.TestCompleteCatalog;
 import no.dcat.datastore.domain.dcat.vocabulary.DCAT;
 import no.dcat.datastore.domain.dcat.vocabulary.DCATNO;
 import no.dcat.shared.*;
-import no.fdk.test.testcategories.UnitTest;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.RDF;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
@@ -26,20 +25,18 @@ import java.util.Map;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
-
-@Category(UnitTest.class)
+@Tag("unit")
 public class AbstractBuilderTest {
     private static Logger logger = LoggerFactory.getLogger(AbstractBuilderTest.class);
 
     private static Model model;
     private static Resource datasetResource;
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() throws Throwable {
         Catalog catalog = TestCompleteCatalog.getCompleteCatalog();
 
-        DcatBuilder builder = new DcatBuilder();
-        String dcat = builder.transform(catalog, "TURTLE");
+        String dcat = DcatBuilder.transform(catalog, "TURTLE");
 
         model = ModelFactory.createDefaultModel();
         model.read(new ByteArrayInputStream(dcat.getBytes()), "", "TTL");

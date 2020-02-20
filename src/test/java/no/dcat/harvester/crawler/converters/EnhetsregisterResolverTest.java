@@ -1,25 +1,22 @@
 package no.dcat.harvester.crawler.converters;
 
-import no.fdk.test.testcategories.UnitTest;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.util.FileManager;
 import org.apache.jena.vocabulary.RDF;
 import org.apache.jena.vocabulary.SKOS;
 import org.hamcrest.Matchers;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-
-@Category(UnitTest.class)
+@Tag("unit")
 public class EnhetsregisterResolverTest {
+    private EnhetsregisterResolver enhetsregisterResolver = new EnhetsregisterResolver();
 
     @Test
-    public void testConvertBrregFileBlankNode() throws Exception {
-        EnhetsregisterResolver enhetsregisterResolver = new EnhetsregisterResolver();
-
+    public void testConvertBrregFileBlankNode() {
         Model model = FileManager.get().loadModel(EnhetsregisterResolverTest.class.getClassLoader().getResource("brreg/blankNodeTest.xml").getFile());
 
         enhetsregisterResolver.resolveModel(model);
@@ -29,9 +26,7 @@ public class EnhetsregisterResolverTest {
     }
 
     @Test
-    public void testMissingBrregFile() throws Exception {
-        EnhetsregisterResolver enhetsregisterResolver = new EnhetsregisterResolver();
-
+    public void testMissingBrregFile() {
         Model model = ModelFactory.createDefaultModel();
 
         enhetsregisterResolver.collectEnhetsregisterInfoFromResource(model, model.createResource("http://test"));
@@ -43,8 +38,6 @@ public class EnhetsregisterResolverTest {
 
     @Test
     public void testPreferredNameWithHitInCanonicalNames() {
-        EnhetsregisterResolver enhetsregisterResolver = new EnhetsregisterResolver();
-
         Model model = ModelFactory.createDefaultModel();
         Resource publisher = model.createResource("http://publisheruri");
 
@@ -59,8 +52,6 @@ public class EnhetsregisterResolverTest {
 
     @Test
     public void testPreferredNameWithNoHitInCanonicalNames() {
-        EnhetsregisterResolver enhetsregisterResolver = new EnhetsregisterResolver();
-
         Model model = ModelFactory.createDefaultModel();
         Resource publisher = model.createResource("http://publisheruri");
 
@@ -74,8 +65,6 @@ public class EnhetsregisterResolverTest {
 
     @Test
     public void testPreferredNameWithNoOriginalName() {
-        EnhetsregisterResolver enhetsregisterResolver = new EnhetsregisterResolver();
-
         Model model = ModelFactory.createDefaultModel();
         Resource publisher = model.createResource("http://publisheruri");
 
