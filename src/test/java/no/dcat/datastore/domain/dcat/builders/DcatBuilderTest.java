@@ -1,18 +1,13 @@
 package no.dcat.datastore.domain.dcat.builders;
 
 import no.dcat.datastore.domain.dcat.DcatConverterTest;
-import no.dcat.shared.Catalog;
 import no.dcat.shared.Dataset;
-import no.fdk.test.testcategories.UnitTest;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.RDFDataMgr;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.text.SimpleDateFormat;
-import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -20,9 +15,8 @@ import static org.junit.Assert.assertThat;
 /**
  * Created by bjg on 20.03.2019.
  */
-@Category(UnitTest.class)
+@Tag("unit")
 public class DcatBuilderTest {
-    static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
     private static Logger logger = LoggerFactory.getLogger(DcatConverterTest.class);
 
     public DcatReader setupReader(Model model) {

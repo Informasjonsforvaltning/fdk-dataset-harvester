@@ -8,16 +8,15 @@ import no.dcat.datastore.domain.dcat.vocabulary.DCAT;
 import no.dcat.datastore.domain.dcat.vocabulary.DCATCrawler;
 import no.dcat.shared.Distribution;
 import no.dcat.shared.*;
-import no.fdk.test.testcategories.UnitTest;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.ResIterator;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.vocabulary.DCTerms;
 import org.apache.jena.vocabulary.RDF;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,13 +29,13 @@ import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-@Category(UnitTest.class)
+@Tag("unit")
 public class DatasetConverterTest {
     static Catalog catalog;
     static Dataset expectedDataset, actualDataset;
     private static Logger logger = LoggerFactory.getLogger(DatasetConverterTest.class);
 
-    @BeforeClass
+    @BeforeAll
     public static void setup() throws Throwable {
         catalog = TestCompleteCatalog.getCompleteCatalog();
 
@@ -45,10 +44,8 @@ public class DatasetConverterTest {
 
         String datasetUri = expectedDataset.getUri();
 
-        DcatBuilder dcatBuilder = new DcatBuilder();
-
         // TRANSFOMR TO DCAT
-        String dcat = dcatBuilder.transform(catalog, "TURTLE");
+        String dcat = DcatBuilder.transform(catalog, "TURTLE");
 
         logger.debug("dcat: {} ", dcat);
 

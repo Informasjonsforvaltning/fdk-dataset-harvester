@@ -9,7 +9,6 @@ import no.dcat.datastore.domain.dcat.builders.DcatReader;
 import no.dcat.datastore.domain.harvest.DatasetHarvestRecord;
 import no.dcat.datastore.domain.harvest.DatasetLookup;
 import no.dcat.shared.*;
-import no.fdk.test.testcategories.UnitTest;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.util.FileManager;
 import org.elasticsearch.action.ActionFuture;
@@ -21,9 +20,8 @@ import org.elasticsearch.action.get.GetRequestBuilder;
 import org.elasticsearch.action.get.GetResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.Client;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +33,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-@Category(UnitTest.class)
+@Tag("unit")
 public class ElasticSearchResultHandlerTest {
     private static Logger logger = LoggerFactory.getLogger(ElasticSearchResultHandlerTest.class);
     String msgs = "[\n" +
@@ -505,8 +503,8 @@ public class ElasticSearchResultHandlerTest {
         "}\n" +
         "}\n" +
         "}";
-    private ElasticSearchResultHandler resultHandler;
-    private List<String> validationMessages;
+    private ElasticSearchResultHandler resultHandler = new ElasticSearchResultHandler();
+    private List<String> validationMessages = new Gson().fromJson(msgs, new TypeToken<List<String>>() { }.getType());
     private String datasetLookupJson = "{\"harvestUri\":\"https://kartkatalog.geonorge.no/Metadata/uuid/c23c14c6-63c4-40f4-bae4-2d40198a2f40\",\"datasetId\":\"06ae95f8-d712-4f52-9e2f-d8a6f3250bfa\"}";
 
     @Test
@@ -674,13 +672,6 @@ public class ElasticSearchResultHandlerTest {
 
         // second time should work
         spyHandler.updateSubjects(Arrays.asList(dataset1, dataset2), elasticsearch, gson);
-    }
-
-    @Before
-    public void setup() {
-        resultHandler = new ElasticSearchResultHandler();
-        validationMessages = new Gson().fromJson(msgs, new TypeToken<List<String>>() {
-        }.getType());
     }
 
     @Test

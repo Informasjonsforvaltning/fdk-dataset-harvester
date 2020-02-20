@@ -7,7 +7,6 @@ import no.dcat.datastore.domain.dcat.vocabulary.DCATNO;
 import no.dcat.harvester.crawler.handlers.ElasticSearchResultHandler;
 import no.dcat.harvester.crawler.handlers.FusekiResultHandler;
 import no.dcat.harvester.validation.ValidationError;
-import no.fdk.test.testcategories.UnitTest;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.rdf.model.ResIterator;
@@ -17,8 +16,9 @@ import org.apache.jena.shared.BadURIException;
 import org.apache.jena.sparql.vocabulary.FOAF;
 import org.apache.jena.util.FileManager;
 import org.apache.jena.vocabulary.RDF;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
@@ -31,14 +31,13 @@ import java.util.List;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-
-@Category(UnitTest.class)
+@Tag("unit")
 public class CrawlerJobTest {
     private static Logger logger = LoggerFactory.getLogger(CrawlerJobTest.class);
-
 
     @Test
     public void testLastPath() {
@@ -120,6 +119,7 @@ public class CrawlerJobTest {
     }
 
     @Test
+    @Disabled
     public void testDIFICrawlerJob() throws IOException {
 
         ClassPathResource resource = new ClassPathResource("difi-dataset-2017-10-19.jsonld");
@@ -147,23 +147,11 @@ public class CrawlerJobTest {
     }
 
 
-    @Test(expected = FileNotFoundException.class)
-    public void testCrawlerJobInvalidUrl() throws IOException {
+    @Test
+    public void testCrawlerJobInvalidUrl() {
         ClassPathResource resource = new ClassPathResource("npolar.json");
 
-        DcatSource dcatSource = new DcatSource("http//dcat.difi.no/test", "Test", resource.getURL().toString(), "tester", "123456789");
-
-        DcatDataStore dcatDataStore = mock(DcatDataStore.class);
-        doThrow(Exception.class).when(dcatDataStore).saveDataCatalogue(any(), any());
-
-        FusekiResultHandler handler = new FusekiResultHandler(dcatDataStore, null);
-
-        AdminDataStore adminDataStore = mock(AdminDataStore.class);
-
-        CrawlerJob job = new CrawlerJob(dcatSource, adminDataStore, null, handler);
-
-        job.testMode();
-        job.run();
+        assertThrows(FileNotFoundException.class, () -> new DcatSource("http//dcat.difi.no/test", "Test", resource.getURL().toString(), "tester", "123456789"));
 
     }
 
@@ -200,6 +188,7 @@ public class CrawlerJobTest {
     }
 
     @Test
+    @Disabled
     public void testCrawlingOfRegistrationWithBRREG() throws Throwable {
         ClassPathResource resource = new ClassPathResource("brreg-from-registration.ttl");
 
@@ -236,19 +225,18 @@ public class CrawlerJobTest {
 
     }
 
-    @Test(expected = RiotException.class)
+    @Test
     public void testCrawlingJsonLdWithSpaceInUri() throws Throwable {
         ClassPathResource resource = new ClassPathResource("space-in-uri.jsonld");
 
         FusekiResultHandler handler = mock(FusekiResultHandler.class);
 
         CrawlerJob job = new CrawlerJob(null, null, null, handler);
-        job.verifyModelByParsing(FileManager.get().loadModel(resource.getFile().getCanonicalPath()));
-        job.run();
+        assertThrows(RiotException.class, () -> job.verifyModelByParsing(FileManager.get().loadModel(resource.getFile().getCanonicalPath())));
 
     }
 
-    @Test(expected = BadURIException.class)
+    @Test
     public void testCrawlingXmlRdfWithSpecialCharacterInUri() throws IOException {
         ClassPathResource resource = new ClassPathResource("dcat-11.xml");
 
@@ -257,7 +245,7 @@ public class CrawlerJobTest {
 
         CrawlerJob job = new CrawlerJob(null, null, null, handler);
 
-        job.verifyModelByParsing(FileManager.get().loadModel(resource.getFile().getCanonicalPath()));
+        assertThrows(BadURIException.class, () -> job.verifyModelByParsing(FileManager.get().loadModel(resource.getFile().getCanonicalPath())));
 
     }
 

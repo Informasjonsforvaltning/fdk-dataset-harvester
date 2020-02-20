@@ -9,14 +9,13 @@ import no.dcat.shared.Catalog;
 import no.dcat.shared.Contact;
 import no.dcat.shared.Dataset;
 import no.dcat.shared.QualityAnnotation;
-import no.fdk.test.testcategories.UnitTest;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.sparql.vocabulary.FOAF;
 import org.apache.jena.vocabulary.DCTerms;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Tag;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
@@ -31,22 +30,18 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
 
-
-@Category(UnitTest.class)
+@Tag("unit")
 public class DcatBuilderRobustnessTest {
 
-    static Logger logger = LoggerFactory.getLogger(DcatBuilderRobustnessTest.class);
+    private static Logger logger = LoggerFactory.getLogger(DcatBuilderRobustnessTest.class);
 
-    DcatBuilder builder;
-    Catalog catalog;
+    private static DcatBuilder builder = new DcatBuilder();
+    private static Catalog catalog = TestCompleteCatalog.getCompleteCatalog();;
 
-    @Before
-    public void setUp() {
-        builder = new DcatBuilder();
-        catalog = TestCompleteCatalog.getCompleteCatalog();
+    @BeforeAll
+    public static void setUp() {
         builder.addCatalog(catalog);
     }
-
 
     @Test
     public void exceptionInAddDataset() throws Throwable {
