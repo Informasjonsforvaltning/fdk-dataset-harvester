@@ -59,18 +59,15 @@
         "properties": {
           "nb": {
             "type": "text",
-            "analyzer": "analyzer_keyword",
-            "search_analyzer": "analyzer_shingle"
+            "analyzer": "analyzer_keyword"
           },
           "nn": {
             "type": "text",
-            "analyzer": "analyzer_keyword",
-            "search_analyzer": "analyzer_shingle"
+            "analyzer": "analyzer_keyword"
           },
           "en": {
             "type": "text",
-            "analyzer": "analyzer_keyword",
-            "search_analyzer": "analyzer_shingle"
+            "analyzer": "analyzer_keyword"
           }
         }
       },
