@@ -59,39 +59,18 @@
         "properties": {
           "nb": {
             "type": "text",
-            "analyzer": "norwegian",
-            "fields": {
-              "raw": {
-                "type": "keyword"
-              }
-            }
+            "analyzer": "analyzer_keyword",
+            "search_analyzer": "analyzer_shingle"
           },
           "nn": {
             "type": "text",
-            "analyzer": "norwegian",
-            "fields": {
-              "raw": {
-                "type": "keyword"
-              }
-            }
-          },
-          "no": {
-            "type": "text",
-            "analyzer": "norwegian",
-            "fields": {
-              "raw": {
-                "type": "keyword"
-              }
-            }
+            "analyzer": "analyzer_keyword",
+            "search_analyzer": "analyzer_shingle"
           },
           "en": {
             "type": "text",
-            "analyzer": "english",
-            "fields": {
-              "raw": {
-                "type": "keyword"
-              }
-            }
+            "analyzer": "analyzer_keyword",
+            "search_analyzer": "analyzer_shingle"
           }
         }
       },
