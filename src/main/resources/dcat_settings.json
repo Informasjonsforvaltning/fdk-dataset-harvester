@@ -12,15 +12,6 @@
           "asciifolding",
           "lowercase"
         ]
-      },
-      "analyzer_shingle": {
-        "type": "custom",
-        "tokenizer": "standard",
-        "filter": [
-          "asciifolding",
-          "lowercase",
-          "shingle"
-        ]
       }
     },
     "tokenizer": {
