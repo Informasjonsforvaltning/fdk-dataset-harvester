@@ -21,6 +21,8 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 public class DistributionBuilder extends AbstractBuilder {
@@ -89,25 +91,33 @@ public class DistributionBuilder extends AbstractBuilder {
             List<SkosConcept> licenses = extractSkosConcept(distResource, DCTerms.license);
 
             if (licenses != null && licenses.size() > 0) {
-                SkosConcept firstLicense = licenses.get(0);
+                AtomicReference<SkosConcept> chosenLicense = new AtomicReference<>(licenses.get(0));
+                AtomicBoolean licenseIsOpen = new AtomicBoolean(false);
 
                 // can we add a prefLabel on a uri with an open license
-                if (codes != null && firstLicense.getPrefLabel() == null) {
+                if (codes != null) {
                     Map<String, SkosCode> licenseCodeMap = codes.get(Types.openlicenses.getType());
                     if (licenseCodeMap != null) {
-                        licenseCodeMap.forEach((key, code) -> {
-                            if(compareURLs(firstLicense.getUri(), code.getUri())) {
-                                firstLicense.setPrefLabel(code.getPrefLabel());
-                                dist.setOpenLicense(true);
-                            }
+                        licenses.forEach(license -> {
+                            licenseCodeMap.forEach((key, code) -> {
+                                if(compareURLs(license.getUri(), code.getUri())) {
+                                    if (license.getPrefLabel() == null) {
+                                        license.setPrefLabel(code.getPrefLabel());
+                                    }
+                                    // open licenses are prioritized
+                                    chosenLicense.set(license);
+                                    licenseIsOpen.set(true);
+                                }
+                            });
                         });
                     }
                 }
 
-                dist.setLicense(firstLicense);
+                dist.setLicense(chosenLicense.get());
+                dist.setOpenLicense(licenseIsOpen.get());
 
                 if (licenses.size() > 1) {
-                    logger.warn("There are more than one recommended license in input data. Only first will be kept");
+                    logger.warn("There are more than one recommended license in input data. Only one will be kept");
                 }
             };
 

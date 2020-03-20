@@ -32,7 +32,12 @@ spring:
 
 ---
 spring:
-  profiles: develop, unit-integration
+  profiles: develop
+  rabbitmq:
+    host: ${RABBIT_HOST:localhost}
+    port: ${RABBIT_PORT:5672}
+    username: ${RABBIT_USERNAME:admin}
+    password: ${RABBIT_PASSWORD:admin}
 
   mail:
     host: smtp.gmail.com
@@ -48,3 +53,12 @@ spring:
           writetimeout: 5000
           starttls:
             enable: true
+
+application:
+  referenceDataUrl: ${referenceDataUrl:http://localhost:8112}
+elastic:
+  clusterNodes: ${FDK_ES_CLUSTERNODES:localhost:9300}
+  clusterName: ${FDK_ES_CLUSTERNAME:elasticsearch}
+fuseki:
+  dcatServiceUri: ${dcatServiceUri:http://localhost:3030/fuseki/dcat}
+  adminServiceUri: ${adminServiceUri:http://localhost:3030/fuseki/admin}
