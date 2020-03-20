@@ -26,40 +26,13 @@ services:
       - 8080
     volumes:
       - fuseki-data:/etc/fuseki/databases/
-    depends_on:
-      - reference-data
     ports:
       - "3030:8080"
-
-  fdk-dataset-harvester-gui:
-    image: eu.gcr.io/fdk-infra/fdk-dataset-harvester-gui:latest
-    ports:
-      - "8080:8080"
-    depends_on:
-      - fdk-dataset-harvester
-    environment:
-      - harvester_adminUsername=admin
-      - harvester_adminPassword=admin
-
-  fdk-dataset-harvester:
-    image: digdir/fdk-dataset-harvester:latest
-    build: .
-    ports:
-      - "8106:8080"
-    depends_on:
-      - fuseki
-      - elasticsearch5
-      - reference-data
-      - rabbitmq
-    environment:
-      - SPRING_PROFILES_ACTIVE=develop
 
   reference-data:
     image: eu.gcr.io/fdk-infra/reference-data:latest
     ports:
       - "8112:8080"
-    depends_on:
-      - rabbitmq
 
   rabbitmq:
     image: rabbitmq:3.8.2-management
