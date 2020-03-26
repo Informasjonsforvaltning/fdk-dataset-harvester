@@ -3,3 +3,5 @@ logging:
   level.no: ${LOG_LEVEL:DEBUG}
   level.org.springframework: WARN
   level.org.springframework.web: WARN
+server:
+  port: 8080
