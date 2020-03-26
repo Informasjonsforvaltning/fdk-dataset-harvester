@@ -1,0 +1,69 @@
+{
+  "@graph" : [ {
+    "@id" : "_:b0",
+    "@type" : "http://www.w3.org/2006/vcard/ns#Organization",
+    "hasOrganizationName" : {
+      "@language" : "nb",
+      "@value" : "Testdirektoratet"
+    },
+    "hasURL" : "https://testdirektoratet.no"
+  }, {
+    "@id" : "https://datasets.fellesdatakatalog.digdir.no/datasets/ea51178e-f843-3025-98c5-7d02ce887f90",
+    "@type" : "http://www.w3.org/ns/dcat#record",
+    "identifier" : "ea51178e-f843-3025-98c5-7d02ce887f90",
+    "issued" : "2020-03-12T11:52:16.122Z",
+    "modified" : "2020-03-12T11:52:16.122Z",
+    "primaryTopic" : "https://testdirektoratet.no/model/dataset/0"
+  }, {
+    "@id" : "https://testdirektoratet.no/model/dataset/0",
+    "@type" : "http://www.w3.org/ns/dcat#Dataset",
+    "description" : {
+      "@language" : "nb",
+      "@value" : "Description of dataset 0"
+    },
+    "title" : {
+      "@language" : "nb",
+      "@value" : "Dataset 0"
+    },
+    "contactPoint" : "_:b0",
+    "endpointDescription" : "https://testdirektoratet.no/openapi/dataset/0.yaml"
+  } ],
+  "@context" : {
+    "hasURL" : {
+      "@id" : "http://www.w3.org/2006/vcard/ns#hasURL",
+      "@type" : "@id"
+    },
+    "hasOrganizationName" : {
+      "@id" : "http://www.w3.org/2006/vcard/ns#hasOrganizationName"
+    },
+    "endpointDescription" : {
+      "@id" : "http://www.w3.org/ns/dcat#endpointDescription",
+      "@type" : "@id"
+    },
+    "contactPoint" : {
+      "@id" : "http://www.w3.org/ns/dcat#contactPoint",
+      "@type" : "@id"
+    },
+    "title" : {
+      "@id" : "http://purl.org/dc/terms/title"
+    },
+    "description" : {
+      "@id" : "http://purl.org/dc/terms/description"
+    },
+    "primaryTopic" : {
+      "@id" : "http://xmlns.com/foaf/0.1/primaryTopic",
+      "@type" : "@id"
+    },
+    "modified" : {
+      "@id" : "http://purl.org/dc/terms/modified",
+      "@type" : "http://www.w3.org/2001/XMLSchema#dateTime"
+    },
+    "issued" : {
+      "@id" : "http://purl.org/dc/terms/issued",
+      "@type" : "http://www.w3.org/2001/XMLSchema#dateTime"
+    },
+    "identifier" : {
+      "@id" : "http://purl.org/dc/terms/identifier"
+    }
+  }
+}
