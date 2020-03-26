@@ -1,0 +1,155 @@
+openapi: 3.0.2
+info:
+  title: FDK dataset harvester
+  description: Tilgjengeliggjør datasettbeskrivelser fra en datasetkatalog ihht DCAT-AP-NO v2.0
+  version: '1.0'
+  contact:
+    name: Digitaliseringsdirektoratet
+    url: 'https://fellesdatakatalog.digdir.no'
+    email: fellesdatakatalog@digdir.no
+  license:
+    name: License of API
+    url: 'http://data.norge.no/nlod/no/2.0'
+tags:
+  - name: dcat-ap-no-catalogs
+    description: DCAT-AP-NO catalogs
+  - name: dcat-ap-no-datasets
+    description: DCAT-AP-NO datasets
+servers:
+  - url: 'https://datasets.fellesdatakatalog.digdir.no/'
+    description: Produksjonsmiljø
+  - url: 'https://datasets.staging.fellesdatakatalog.digdir.no/'
+    description: Testmiljø
+  - url: 'https://datasets.demo.fellesdatakatalog.digdir.no/'
+    description: Demomiljø
+paths:
+  /catalogs:
+    get:
+      tags:
+        - dcat-ap-no-catalogs
+      description: Returnerer samlinger av kataloger
+      operationId: getCatalogs
+      responses:
+        '200':
+          description: OK
+          content:
+            text/turtle:
+              schema:
+                type: string
+            text/n3:
+              schema:
+                type: string
+            application/rdf+json:
+              schema:
+                type: string
+            application/ld+json:
+              schema:
+                type: string
+            application/rdf+xml:
+              schema:
+                type: string
+            application/n-triples:
+              schema:
+                type: string
+  /catalogs/{id}:
+    get:
+      tags:
+        - dcat-ap-no-catalogs
+      description: Returnerer en katalog
+      operationId: getCatalogById
+      parameters:
+        - name: id
+          in: path
+          description: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            text/turtle:
+              schema:
+                type: string
+            text/n3:
+              schema:
+                type: string
+            application/rdf+json:
+              schema:
+                type: string
+            application/ld+json:
+              schema:
+                type: string
+            application/rdf+xml:
+              schema:
+                type: string
+            application/n-triples:
+              schema:
+                type: string
+        '404':
+          description: Dataset catalog with requested id does not exist
+  /datasets:
+    get:
+      tags:
+        - dcat-ap-no-datasets
+      description: Returnerer samlinger av datasett
+      operationId: getDatasets
+      responses:
+        '200':
+          description: OK
+          content:
+            text/turtle:
+              schema:
+                type: string
+            text/n3:
+              schema:
+                type: string
+            application/rdf+json:
+              schema:
+                type: string
+            application/ld+json:
+              schema:
+                type: string
+            application/rdf+xml:
+              schema:
+                type: string
+            application/n-triples:
+              schema:
+                type: string
+  /datasets/{id}:
+    get:
+      tags:
+        - dcat-ap-no-datasets
+      description: Returnerer et datasett
+      operationId: getDatasetById
+      parameters:
+        - name: id
+          in: path
+          description: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            text/turtle:
+              schema:
+                type: string
+            text/n3:
+              schema:
+                type: string
+            application/rdf+json:
+              schema:
+                type: string
+            application/ld+json:
+              schema:
+                type: string
+            application/rdf+xml:
+              schema:
+                type: string
+            application/n-triples:
+              schema:
+                type: string
+        '404':
+          description: Dataset with requested id does not exist
