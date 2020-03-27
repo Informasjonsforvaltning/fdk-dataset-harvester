@@ -23,7 +23,7 @@ class DataSetsContract : ApiTestContainer() {
         assumeTrue(HttpStatus.OK.value() == response["status"])
 
         val expected = responseReader.parseFile("dataset_0.ttl", "TURTLE")
-        val responseModel = responseReader.parseResponse(response["body"] as String, "RDF/JSON")
+        val responseModel = responseReader.parseResponse(response["body"] as String, "TURTLE")
 
         assertTrue(expected.isIsomorphicWith(responseModel))
     }
