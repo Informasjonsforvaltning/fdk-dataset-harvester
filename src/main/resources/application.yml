@@ -5,3 +5,17 @@ logging:
   level.org.springframework.web: WARN
 server:
   port: 8080
+fuseki:
+  datasetUri: ${FDK_FUSEKI_SERVICE_URI:http://fdk-fuseki-service:8080/fuseki}/dataset
+  catalogUri: ${FDK_FUSEKI_SERVICE_URI:http://fdk-fuseki-service:8080/fuseki}/dataset-catalog
+
+---
+spring:
+  profiles: develop
+fuseki:
+  datasetUri: http://localhost:3030/fuseki/dataset
+  catalogUri: http://localhost:3030/fuseki/dataset-catalog
+
+---
+spring:
+  profiles: contract-test

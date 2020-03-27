@@ -1,0 +1,10 @@
+version: "3"
+
+services:
+
+  fdk-fuseki-service:
+    image: eu.gcr.io/digdir-fdk-infra/fdk-fuseki-service:latest
+    volumes:
+      - /etc/fuseki/databases/
+    ports:
+      - "3030:8080"
