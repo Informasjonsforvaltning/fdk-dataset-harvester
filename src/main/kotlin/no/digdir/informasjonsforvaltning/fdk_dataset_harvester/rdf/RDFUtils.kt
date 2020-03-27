@@ -15,9 +15,32 @@ import java.io.ByteArrayOutputStream
 import java.io.StringReader
 import java.util.*
 
-fun Model.createRDFResponse(): String =
+enum class JenaType(val value: String){
+    TURTLE("TURTLE"),
+    RDF_XML("RDF/XML"),
+    RDF_JSON("RDF/JSON"),
+    JSON_LD("JSON-LD"),
+    NTRIPLES("N-TRIPLES"),
+    N3("N3"),
+    NOT_JENA("NOT-JENA")
+}
+
+fun jenaTypeFromAcceptHeader(accept: String?): JenaType? =
+    when (accept) {
+        "text/turtle" -> JenaType.TURTLE
+        "application/rdf+xml" -> JenaType.RDF_XML
+        "application/rdf+json" -> JenaType.RDF_JSON
+        "application/ld+json" -> JenaType.JSON_LD
+        "application/n-triples" -> JenaType.NTRIPLES
+        "text/n3" -> JenaType.N3
+        "*/*" -> null
+        null -> null
+        else -> JenaType.NOT_JENA
+    }
+
+fun Model.createRDFResponse(responseType: JenaType): String =
     ByteArrayOutputStream().use{ out ->
-        write(out, "TURTLE")
+        write(out, responseType.value)
         out.flush()
         out.toString("UTF-8")
     }

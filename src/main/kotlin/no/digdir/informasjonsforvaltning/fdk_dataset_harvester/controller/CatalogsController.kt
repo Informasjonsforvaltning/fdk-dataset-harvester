@@ -1,6 +1,8 @@
 package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.controller
 
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.generated.api.DcatApNoCatalogsApi
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.JenaType
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.jenaTypeFromAcceptHeader
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service.CatalogService
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -15,15 +17,22 @@ open class CatalogsController(private val catalogService: CatalogService) : Dcat
 
     override fun getCatalogById(httpServletRequest: HttpServletRequest, id: String): ResponseEntity<String> {
         LOGGER.info("get DataService catalog with id $id")
+        val returnType = jenaTypeFromAcceptHeader(httpServletRequest.getHeader("Accept"))
 
-        return catalogService.getDatasetCatalog(id)
-            ?.let { ResponseEntity(it, HttpStatus.OK) }
-            ?: ResponseEntity(HttpStatus.NOT_FOUND)
+        return if (returnType == JenaType.NOT_JENA) ResponseEntity(HttpStatus.NOT_ACCEPTABLE)
+        else {
+
+            catalogService.getDatasetCatalog(id, returnType ?: JenaType.TURTLE)
+                ?.let { ResponseEntity(it, HttpStatus.OK) }
+                ?: ResponseEntity(HttpStatus.NOT_FOUND)
+        }
     }
 
     override fun getCatalogs(httpServletRequest: HttpServletRequest): ResponseEntity<String> {
         LOGGER.info("get all DataService catalogs")
+        val returnType = jenaTypeFromAcceptHeader(httpServletRequest.getHeader("Accept"))
 
-        return ResponseEntity(catalogService.getAllDatasetCatalogs(), HttpStatus.OK)
+        return if (returnType == JenaType.NOT_JENA) ResponseEntity(HttpStatus.NOT_ACCEPTABLE)
+        else ResponseEntity(catalogService.getAllDatasetCatalogs(returnType ?: JenaType.TURTLE), HttpStatus.OK)
     }
 }

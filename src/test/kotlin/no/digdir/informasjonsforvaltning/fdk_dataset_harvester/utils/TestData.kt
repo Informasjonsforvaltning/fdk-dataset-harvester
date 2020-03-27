@@ -9,14 +9,12 @@ const val API_PORT = 8080
 const val LOCAL_SERVER_PORT = 5000
 
 const val FUSEKI_NETWORK_NAME = "fdk-fuseki-service"
-const val FUSEKI_TEST_URI = "http://$FUSEKI_NETWORK_NAME:$API_PORT"
 
 const val WIREMOCK_TEST_HOST = "host.testcontainers.internal"
 const val WIREMOCK_TEST_URI = "http://$WIREMOCK_TEST_HOST:$LOCAL_SERVER_PORT"
 
 val API_ENV_VALUES: Map<String, String> = mapOf(
     "SPRING_PROFILES_ACTIVE" to "contract-test",
-    "FUSEKI_TEST_URI" to FUSEKI_TEST_URI,
     "WIREMOCK_TEST_HOST" to WIREMOCK_TEST_HOST,
     "WIREMOCK_TEST_URI" to WIREMOCK_TEST_URI,
     "WIREMOCK_TEST_PORT" to LOCAL_SERVER_PORT.toString()

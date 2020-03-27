@@ -1,6 +1,8 @@
 package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.controller
 
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.generated.api.DcatApNoDatasetsApi
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.JenaType
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.jenaTypeFromAcceptHeader
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service.DatasetService
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -15,15 +17,21 @@ open class DatasetsController(private val datasetService: DatasetService) : Dcat
 
     override fun getDatasetById(httpServletRequest: HttpServletRequest, id: String): ResponseEntity<String> {
         LOGGER.info("get Dataset with id $id")
+        val returnType = jenaTypeFromAcceptHeader(httpServletRequest.getHeader("Accept"))
 
-        return datasetService.getDataService(id)
-            ?.let { ResponseEntity(it, HttpStatus.OK) }
-            ?: ResponseEntity(HttpStatus.NOT_FOUND)
+        return if (returnType == JenaType.NOT_JENA) ResponseEntity(HttpStatus.NOT_ACCEPTABLE)
+        else {
+            datasetService.getDataService(id, returnType ?: JenaType.TURTLE)
+                ?.let { ResponseEntity(it, HttpStatus.OK) }
+                ?: ResponseEntity(HttpStatus.NOT_FOUND)
+        }
     }
 
     override fun getDatasets(httpServletRequest: HttpServletRequest): ResponseEntity<String> {
         LOGGER.info("get all Datasets")
+        val returnType = jenaTypeFromAcceptHeader(httpServletRequest.getHeader("Accept"))
 
-        return ResponseEntity(datasetService.getAllDataServices(), HttpStatus.OK)
+        return if (returnType == JenaType.NOT_JENA) ResponseEntity(HttpStatus.NOT_ACCEPTABLE)
+        else ResponseEntity(datasetService.getAllDataServices(returnType ?: JenaType.TURTLE), HttpStatus.OK)
     }
 }
