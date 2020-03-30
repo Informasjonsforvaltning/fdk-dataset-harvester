@@ -16,6 +16,7 @@ import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.jenaTypeFromA
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.parseRDFResponse
 import org.apache.jena.rdf.model.Literal
 import org.apache.jena.rdf.model.Model
+import org.apache.jena.rdf.model.ModelFactory
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.sparql.vocabulary.FOAF
 import org.apache.jena.vocabulary.DCAT
@@ -44,7 +45,7 @@ class DatasetHarvester(
         } else {
             adapter.getDataServiceCatalog(source)
                 ?.let { parseRDFResponse(it, jenaWriterType) }
-                ?.addMetaData(harvestDate)
+                ?.filterModifiedAndAddMetaData(harvestDate)
                 ?.run {
                     catalogs.forEach {
                         val modelId = it.extractMetaDataIdentifier()
@@ -61,24 +62,38 @@ class DatasetHarvester(
         }
     }
 
-    private fun catalogModelWithMetaData(resource: Resource, harvestDate: Calendar): Model {
+    private fun catalogModelWithMetaData(resource: Resource, harvestDate: Calendar): HarvestedModel {
         val dbId = createIdFromUri(resource.uri)
         val dbModel = catalogFuseki.fetchByGraphName(dbId)
+        val harvested = resource.createModelOfTopLevelProperties()
 
         val dbMetaData: Resource? = dbModel?.extractMetaDataResource()
 
-        return resource.createModelOfTopLevelProperties()
-            .addCatalogMetaData(dbId, resource.uri, dbMetaData, harvestDate)
+        val isModified = !harvestedIsIsomorphicWithDatabaseModel(dbModel, harvested, dbMetaData?.createModelOfTopLevelProperties())
+
+        val updatedModel = if (!isModified && dbModel != null) {
+            LOGGER.debug("No changes detected in catalog model ${resource.uri}")
+            dbModel
+        } else harvested.addCatalogMetaData(dbId, resource.uri, dbMetaData, harvestDate)
+
+        return HarvestedModel(updatedModel, isModified)
     }
 
-    private fun datasetModelWithMetaData(resource: Resource, harvestDate: Calendar): Model {
+    private fun datasetModelWithMetaData(resource: Resource, harvestDate: Calendar): HarvestedModel {
         val dbId = createIdFromUri(resource.uri)
         val dbModel = datasetFuseki.fetchByGraphName(dbId)
+        val harvested = resource.createDatasetModel()
 
         val dbMetaData: Resource? = dbModel?.extractMetaDataResource()
 
-        return resource.createDatasetModel()
-            .addDataServiceMetaData(dbId, resource.uri, dbMetaData, harvestDate)
+        val isModified = !harvestedIsIsomorphicWithDatabaseModel(dbModel, harvested, dbMetaData?.createModelOfTopLevelProperties())
+
+        val updatedModel = if (!isModified && dbModel != null) {
+            LOGGER.debug("No changes detected in data service model ${resource.uri}")
+            dbModel
+        } else harvested.addDatasetMetaData(dbId, resource.uri, dbMetaData, harvestDate)
+
+        return HarvestedModel(updatedModel, isModified)
     }
 
     private fun Model.addCatalogMetaData(dbId: String, uri: String, dbMetaData: Resource?, harvestDate: Calendar): Model {
@@ -91,7 +106,7 @@ class DatasetHarvester(
         return this
     }
 
-    private fun Model.addDataServiceMetaData(dbId: String, uri: String, dbMetaData: Resource?, harvestDate: Calendar): Model {
+    private fun Model.addDatasetMetaData(dbId: String, uri: String, dbMetaData: Resource?, harvestDate: Calendar): Model {
         createResource("${applicationProperties.datasetUri}/$dbId")
             .addProperty(RDF.type, DCAT.record)
             .addProperty(DCTerms.identifier, dbId)
@@ -102,9 +117,9 @@ class DatasetHarvester(
         return this
     }
 
-    private fun Model.addMetaData(harvestDate: Calendar): Models {
-        val catalogModels = mutableListOf<Model>()
-        val datasetModels = mutableListOf<Model>()
+    private fun Model.filterModifiedAndAddMetaData(harvestDate: Calendar): ModifiedModels {
+        val catalogModels = mutableListOf<HarvestedModel>()
+        val datasetModels = mutableListOf<HarvestedModel>()
 
         listResourcesWithProperty(RDF.type, DCAT.Catalog)
             .toList()
@@ -118,11 +133,25 @@ class DatasetHarvester(
                 datasetModels.add(datasetModelWithMetaData(it, harvestDate))
             }
 
-        return Models(catalogModels, datasetModels)
+        return ModifiedModels(
+            catalogModels
+                .toList()
+                .filter { it.isModified }
+                .map { it.model },
+            datasetModels
+                .toList()
+                .filter { it.isModified }
+                .map { it.model }
+        )
     }
 }
 
-private data class Models(
+private data class HarvestedModel(
+    val model: Model,
+    val isModified: Boolean
+)
+
+private data class ModifiedModels(
     val catalogs: List<Model>,
     val dataServices: List<Model>
 )
@@ -131,6 +160,13 @@ private fun Model.extractMetaDataResource(): Resource? =
     listResourcesWithProperty(RDF.type, DCAT.record)
         .toList()
         .let { if (it.isNotEmpty()) it.first() else null }
+
+private fun harvestedIsIsomorphicWithDatabaseModel(fullModelFromDB: Model?, harvestedModel: Model, metaDataModelFromDB: Model?): Boolean =
+    fullModelFromDB?.isIsomorphicWith(
+        harvestedModel.union(
+            metaDataModelFromDB ?: ModelFactory.createDefaultModel()
+        )
+    ) ?: false
 
 private fun Model.issuedDate(dbResource: Resource?, harvestDate: Calendar): Literal =
     dbResource?.listProperties(DCTerms.issued)
