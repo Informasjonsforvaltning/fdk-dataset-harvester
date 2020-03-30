@@ -8,6 +8,10 @@ server:
 fuseki:
   datasetUri: ${FDK_FUSEKI_SERVICE_URI:http://fdk-fuseki-service:8080/fuseki}/dataset
   catalogUri: ${FDK_FUSEKI_SERVICE_URI:http://fdk-fuseki-service:8080/fuseki}/dataset-catalog
+application:
+  datasetUri: ${FDK_DATASERVICE_HARVESTER_URI:https://dataservices.staging.fellesdatakatalog.digdir.no}/dataservices
+  catalogUri: ${FDK_DATASERVICE_HARVESTER_URI:https://dataservices.staging.fellesdatakatalog.digdir.no}/catalogs
+  harvestAdminRootUrl: ${HARVEST_ADMIN_ROOT_URL:http://fdk-harvest-admin:8080/api}
 
 ---
 spring:
@@ -15,7 +19,11 @@ spring:
 fuseki:
   datasetUri: http://localhost:3030/fuseki/dataset
   catalogUri: http://localhost:3030/fuseki/dataset-catalog
+application:
+  harvestAdminRootUrl: https://admin-api.staging.fellesdatakatalog.digdir.no/api
 
 ---
 spring:
   profiles: contract-test
+application:
+  harvestAdminRootUrl: ${WIREMOCK_TEST_URI}/api
