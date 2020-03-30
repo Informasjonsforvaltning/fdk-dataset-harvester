@@ -1,13 +1,13 @@
 {
   "@graph" : [ {
-    "@id" : "https://datasets.fellesdatakatalog.digdir.no/catalogs/e422e2a7-287f-349f-876a-dc3541676f21",
+    "@id" : "https://datasets.fellesdatakatalog.digdir.no/catalogs/6e4237cc-98d6-3e7c-a892-8ac1f0ffb37f",
     "@type" : "http://www.w3.org/ns/dcat#record",
-    "identifier" : "e422e2a7-287f-349f-876a-dc3541676f21",
+    "identifier" : "6e4237cc-98d6-3e7c-a892-8ac1f0ffb37f",
     "issued" : "2020-03-12T11:52:16.122Z",
     "modified" : "2020-03-12T11:52:16.122Z",
-    "primaryTopic" : "https://testdirektoratet.no/model/dataset-catalogs/0"
+    "primaryTopic" : "https://testdirektoratet.no/model/dataset-catalog/0"
   }, {
-    "@id" : "https://testdirektoratet.no/model/dataset-catalogs/0",
+    "@id" : "https://testdirektoratet.no/model/dataset-catalog/0",
     "@type" : "http://www.w3.org/ns/dcat#Catalog",
     "publisher" : "https://organization-catalogue.fellesdatakatalog.brreg.no/organizations/123456789",
     "title" : {
