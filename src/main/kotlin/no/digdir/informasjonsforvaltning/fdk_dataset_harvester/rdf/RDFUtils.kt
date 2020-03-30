@@ -22,7 +22,7 @@ enum class JenaType(val value: String){
     JSON_LD("JSON-LD"),
     NTRIPLES("N-TRIPLES"),
     N3("N3"),
-    NOT_JENA("NOT-JENA")
+    NOT_ACCEPTABLE("NOT ACCEPTABLE")
 }
 
 fun jenaTypeFromAcceptHeader(accept: String?): JenaType? =
@@ -35,7 +35,7 @@ fun jenaTypeFromAcceptHeader(accept: String?): JenaType? =
         "text/n3" -> JenaType.N3
         "*/*" -> null
         null -> null
-        else -> JenaType.NOT_JENA
+        else -> JenaType.NOT_ACCEPTABLE
     }
 
 fun Model.createRDFResponse(responseType: JenaType): String =

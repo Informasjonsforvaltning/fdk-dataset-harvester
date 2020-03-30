@@ -19,7 +19,7 @@ open class DatasetsController(private val datasetService: DatasetService) : Dcat
         LOGGER.info("get Dataset with id $id")
         val returnType = jenaTypeFromAcceptHeader(httpServletRequest.getHeader("Accept"))
 
-        return if (returnType == JenaType.NOT_JENA) ResponseEntity(HttpStatus.NOT_ACCEPTABLE)
+        return if (returnType == JenaType.NOT_ACCEPTABLE) ResponseEntity(HttpStatus.NOT_ACCEPTABLE)
         else {
             datasetService.getDataService(id, returnType ?: JenaType.TURTLE)
                 ?.let { ResponseEntity(it, HttpStatus.OK) }
@@ -31,7 +31,7 @@ open class DatasetsController(private val datasetService: DatasetService) : Dcat
         LOGGER.info("get all Datasets")
         val returnType = jenaTypeFromAcceptHeader(httpServletRequest.getHeader("Accept"))
 
-        return if (returnType == JenaType.NOT_JENA) ResponseEntity(HttpStatus.NOT_ACCEPTABLE)
+        return if (returnType == JenaType.NOT_ACCEPTABLE) ResponseEntity(HttpStatus.NOT_ACCEPTABLE)
         else ResponseEntity(datasetService.getAllDataServices(returnType ?: JenaType.TURTLE), HttpStatus.OK)
     }
 }
