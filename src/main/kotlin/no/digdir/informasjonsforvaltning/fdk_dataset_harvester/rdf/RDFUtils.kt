@@ -51,6 +51,44 @@ fun Model.createRDFResponse(responseType: JenaType): String =
         out.toString("UTF-8")
     }
 
+fun Resource.createModelOfTopLevelProperties(): Model {
+    val model = ModelFactory.createDefaultModel()
+    model.add(listProperties())
+
+    return model
+}
+
+fun Resource.createDatasetModel(): Model {
+    val model = ModelFactory.createDefaultModel()
+    model.add(listProperties())
+    extractProperty(DCAT.contactPoint)
+        ?.run { model.add(this.resource.listProperties()) }
+
+    return model
+}
+
+private fun Resource.extractProperty(property: Property) : Statement? =
+    if (this.hasProperty(property)) this.getProperty(property)
+    else null
+
+fun Model.extractMetaDataIdentifier(): String =
+    listResourcesWithProperty(RDF.type, DCAT.record)
+        .toList()
+        .first()
+        .getProperty(DCTerms.identifier).string
+
 fun createIdFromUri(uri: String): String =
     UUID.nameUUIDFromBytes(uri.toByteArray())
         .toString()
+
+fun Model.extractCatalogModelURI(): String =
+    listResourcesWithProperty(RDF.type, DCAT.Catalog)
+        .toList()
+        .first()
+        .uri
+
+fun Model.extractDatasetModelURI(): String =
+    listResourcesWithProperty(RDF.type, DCAT.Dataset)
+        .toList()
+        .first()
+        .uri
