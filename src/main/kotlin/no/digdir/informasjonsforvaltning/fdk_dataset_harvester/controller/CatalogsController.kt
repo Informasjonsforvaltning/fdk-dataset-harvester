@@ -19,9 +19,8 @@ open class CatalogsController(private val catalogService: CatalogService) : Dcat
         LOGGER.info("get DataService catalog with id $id")
         val returnType = jenaTypeFromAcceptHeader(httpServletRequest.getHeader("Accept"))
 
-        return if (returnType == JenaType.NOT_JENA) ResponseEntity(HttpStatus.NOT_ACCEPTABLE)
+        return if (returnType == JenaType.NOT_ACCEPTABLE) ResponseEntity(HttpStatus.NOT_ACCEPTABLE)
         else {
-
             catalogService.getDatasetCatalog(id, returnType ?: JenaType.TURTLE)
                 ?.let { ResponseEntity(it, HttpStatus.OK) }
                 ?: ResponseEntity(HttpStatus.NOT_FOUND)
@@ -32,7 +31,7 @@ open class CatalogsController(private val catalogService: CatalogService) : Dcat
         LOGGER.info("get all DataService catalogs")
         val returnType = jenaTypeFromAcceptHeader(httpServletRequest.getHeader("Accept"))
 
-        return if (returnType == JenaType.NOT_JENA) ResponseEntity(HttpStatus.NOT_ACCEPTABLE)
+        return if (returnType == JenaType.NOT_ACCEPTABLE) ResponseEntity(HttpStatus.NOT_ACCEPTABLE)
         else ResponseEntity(catalogService.getAllDatasetCatalogs(returnType ?: JenaType.TURTLE), HttpStatus.OK)
     }
 }
