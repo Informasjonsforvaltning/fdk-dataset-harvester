@@ -38,6 +38,12 @@ fun jenaTypeFromAcceptHeader(accept: String?): JenaType? =
         else -> JenaType.NOT_ACCEPTABLE
     }
 
+fun parseRDFResponse(responseBody: String, rdfLanguage: JenaType): Model {
+    val responseModel = ModelFactory.createDefaultModel()
+    responseModel.read(StringReader(responseBody), "", rdfLanguage.value)
+    return responseModel
+}
+
 fun Model.createRDFResponse(responseType: JenaType): String =
     ByteArrayOutputStream().use{ out ->
         write(out, responseType.value)
