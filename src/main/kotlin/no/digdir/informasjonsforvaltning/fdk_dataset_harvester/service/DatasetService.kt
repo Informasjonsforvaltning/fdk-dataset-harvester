@@ -18,5 +18,4 @@ class DatasetService(private val datasetFuseki: DatasetFuseki) {
             .fetchByGraphName(id)
             ?.createRDFResponse(returnType)
 
-
 }
