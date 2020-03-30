@@ -8,9 +8,9 @@
     },
     "hasURL" : "https://testdirektoratet.no"
   }, {
-    "@id" : "https://datasets.fellesdatakatalog.digdir.no/datasets/4d69ecde-f1e8-3f28-8565-360746e8b5ef",
+    "@id" : "https://datasets.fellesdatakatalog.digdir.no/datasets/4667277a-9d27-32c1-aed5-612fa601f393",
     "@type" : "http://www.w3.org/ns/dcat#record",
-    "identifier" : "4d69ecde-f1e8-3f28-8565-360746e8b5ef",
+    "identifier" : "4667277a-9d27-32c1-aed5-612fa601f393",
     "issued" : "2020-03-12T11:52:16.122Z",
     "modified" : "2020-03-12T11:52:16.122Z",
     "primaryTopic" : "https://testdirektoratet.no/model/dataset/1"

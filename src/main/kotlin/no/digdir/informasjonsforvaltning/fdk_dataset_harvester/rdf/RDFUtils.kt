@@ -44,3 +44,7 @@ fun Model.createRDFResponse(responseType: JenaType): String =
         out.flush()
         out.toString("UTF-8")
     }
+
+fun createIdFromUri(uri: String): String =
+    UUID.nameUUIDFromBytes(uri.toByteArray())
+        .toString()

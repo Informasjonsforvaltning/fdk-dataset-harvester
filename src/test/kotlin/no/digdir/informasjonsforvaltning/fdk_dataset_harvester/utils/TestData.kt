@@ -20,10 +20,10 @@ val API_ENV_VALUES: Map<String, String> = mapOf(
     "WIREMOCK_TEST_PORT" to LOCAL_SERVER_PORT.toString()
 )
 
-const val DATASET_ID_0 = "ea51178e-f843-3025-98c5-7d02ce887f90"
-const val DATASET_ID_1 = "4d69ecde-f1e8-3f28-8565-360746e8b5ef"
-const val CATALOG_ID_0 = "e422e2a7-287f-349f-876a-dc3541676f21"
-const val CATALOG_ID_1 = "65555cdb-6809-3cc4-bff1-aaa6d9426311"
+const val DATASET_ID_0 = "a1c680ca-62d7-34d5-aa4c-d39b5db033ae"
+const val DATASET_ID_1 = "4667277a-9d27-32c1-aed5-612fa601f393"
+const val CATALOG_ID_0 = "6e4237cc-98d6-3e7c-a892-8ac1f0ffb37f"
+const val CATALOG_ID_1 = "6f0a37af-a9c1-38bc-b343-bd025b43b5e8"
 
 fun getApiAddress(endpoint: String): String {
     return "http://${TEST_API.containerIpAddress}:${TEST_API.getMappedPort(API_PORT)}$endpoint"

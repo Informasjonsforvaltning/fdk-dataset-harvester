@@ -14,28 +14,28 @@
                                   ] ;
         dcat:endpointDescription  <https://testdirektoratet.no/openapi/dataset/0.yaml> .
 
-<https://datasets.fellesdatakatalog.digdir.no/catalogs/e422e2a7-287f-349f-876a-dc3541676f21>
+<https://datasets.fellesdatakatalog.digdir.no/catalogs/6e4237cc-98d6-3e7c-a892-8ac1f0ffb37f>
         a                  dcat:record ;
-        dct:identifier     "e422e2a7-287f-349f-876a-dc3541676f21" ;
+        dct:identifier     "6e4237cc-98d6-3e7c-a892-8ac1f0ffb37f" ;
         dct:issued         "2020-03-12T11:52:16.122Z"^^xsd:dateTime ;
         dct:modified       "2020-03-12T11:52:16.122Z"^^xsd:dateTime ;
-        foaf:primaryTopic  <https://testdirektoratet.no/model/dataset-catalogs/0> .
+        foaf:primaryTopic  <https://testdirektoratet.no/model/dataset-catalog/0> .
 
-<https://datasets.fellesdatakatalog.digdir.no/datasets/4d69ecde-f1e8-3f28-8565-360746e8b5ef>
+<https://datasets.fellesdatakatalog.digdir.no/datasets/4667277a-9d27-32c1-aed5-612fa601f393>
         a                  dcat:record ;
-        dct:identifier     "4d69ecde-f1e8-3f28-8565-360746e8b5ef" ;
+        dct:identifier     "4667277a-9d27-32c1-aed5-612fa601f393" ;
         dct:issued         "2020-03-12T11:52:16.122Z"^^xsd:dateTime ;
         dct:modified       "2020-03-12T11:52:16.122Z"^^xsd:dateTime ;
         foaf:primaryTopic  <https://testdirektoratet.no/model/dataset/1> .
 
-<https://datasets.fellesdatakatalog.digdir.no/catalogs/65555cdb-6809-3cc4-bff1-aaa6d9426311>
+<https://datasets.fellesdatakatalog.digdir.no/catalogs/6f0a37af-a9c1-38bc-b343-bd025b43b5e8>
         a                  dcat:record ;
-        dct:identifier     "65555cdb-6809-3cc4-bff1-aaa6d9426311" ;
+        dct:identifier     "6f0a37af-a9c1-38bc-b343-bd025b43b5e8" ;
         dct:issued         "2020-03-12T11:52:16.122Z"^^xsd:dateTime ;
         dct:modified       "2020-03-12T11:52:16.122Z"^^xsd:dateTime ;
-        foaf:primaryTopic  <https://testdirektoratet.no/model/dataset-catalogs/1> .
+        foaf:primaryTopic  <https://testdirektoratet.no/model/dataset-catalog/1> .
 
-<https://testdirektoratet.no/model/dataset-catalogs/1>
+<https://testdirektoratet.no/model/dataset-catalog/1>
         a              dcat:Catalog ;
         dct:publisher  <https://organization-catalogue.fellesdatakatalog.brreg.no/organizations/123456789> ;
         dct:title      "Datasettkatalog 1 for Testdirektoratet"@nb ;
@@ -51,15 +51,15 @@
                                   ] ;
         dcat:endpointDescription  <https://testdirektoratet.no/openapi/dataset/1.yaml> .
 
-<https://testdirektoratet.no/model/dataset-catalogs/0>
+<https://testdirektoratet.no/model/dataset-catalog/0>
         a              dcat:Catalog ;
         dct:publisher  <https://organization-catalogue.fellesdatakatalog.brreg.no/organizations/123456789> ;
         dct:title      "Datasettkatalog for Testdirektoratet"@nb ;
         dcat:dataset   <https://testdirektoratet.no/model/dataset/0> .
 
-<https://datasets.fellesdatakatalog.digdir.no/datasets/ea51178e-f843-3025-98c5-7d02ce887f90>
+<https://datasets.fellesdatakatalog.digdir.no/datasets/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
         a                  dcat:record ;
-        dct:identifier     "ea51178e-f843-3025-98c5-7d02ce887f90" ;
+        dct:identifier     "a1c680ca-62d7-34d5-aa4c-d39b5db033ae" ;
         dct:issued         "2020-03-12T11:52:16.122Z"^^xsd:dateTime ;
         dct:modified       "2020-03-12T11:52:16.122Z"^^xsd:dateTime ;
         foaf:primaryTopic  <https://testdirektoratet.no/model/dataset/0> .
