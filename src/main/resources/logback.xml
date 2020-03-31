@@ -4,6 +4,10 @@
     <!-- use Spring default values -->
     <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
 
+    <logger name="org.testcontainers" level="INFO"/>
+    <logger name="com.github.dockerjava" level="WARN"/>
+    <logger name="org.eclipse.jetty" level="INFO"/>
+
     <appender name="compact" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>${CONSOLE_LOG_PATTERN}</pattern>

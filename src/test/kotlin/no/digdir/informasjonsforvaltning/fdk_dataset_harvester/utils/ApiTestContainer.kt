@@ -1,7 +1,6 @@
 package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils
 
 import org.slf4j.LoggerFactory
-import org.springframework.http.HttpStatus
 import org.testcontainers.Testcontainers
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.Network
