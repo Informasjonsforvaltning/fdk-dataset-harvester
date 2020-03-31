@@ -1,6 +1,10 @@
 {
   "@graph" : [ {
     "@id" : "_:b0",
+    "@type" : "http://purl.org/dc/terms/PeriodOfTime",
+    "startDate" : "2019-04-02T00:00:00"
+  }, {
+    "@id" : "_:b1",
     "@type" : "http://www.w3.org/2006/vcard/ns#Organization",
     "hasOrganizationName" : {
       "@language" : "nb",
@@ -17,53 +21,111 @@
   }, {
     "@id" : "https://testdirektoratet.no/model/dataset/0",
     "@type" : "http://www.w3.org/ns/dcat#Dataset",
+    "accessRights" : "http://publications.europa.eu/resource/authority/access-right/PUBLIC",
     "description" : {
       "@language" : "nb",
       "@value" : "Description of dataset 0"
     },
+    "identifier" : "adb4cf00-31c8-460c-9563-55f204cf8221",
+    "issued" : "2019-03-22T13:11:16.546902",
+    "language" : "http://publications.europa.eu/resource/authority/language/NOR",
+    "temporal" : "_:b0",
     "title" : {
       "@language" : "nb",
       "@value" : "Dataset 0"
     },
-    "contactPoint" : "_:b0",
-    "endpointDescription" : "https://testdirektoratet.no/openapi/dataset/0.yaml"
+    "contactPoint" : "_:b1",
+    "distribution" : "https://testdirektoratet.no/model/distribution/0",
+    "endpointDescription" : "https://testdirektoratet.no/openapi/dataset/0.yaml",
+    "keyword" : [ "fest", "test" ],
+    "theme" : [ "http://publications.europa.eu/resource/authority/data-theme/TECH", "http://publications.europa.eu/resource/authority/data-theme/GOVE" ],
+    "page" : "https://testdirektoratet.no"
+  }, {
+    "@id" : "https://testdirektoratet.no/model/distribution/0",
+    "@type" : "http://www.w3.org/ns/dcat#Distribution",
+    "format" : "CSV JSON JSONP YAML XML",
+    "license" : "https://data.norge.no/nlod/no",
+    "title" : "Test distribution",
+    "accessURL" : "http://testdirektoratet.no/data/test/fest"
   } ],
   "@context" : {
-    "hasURL" : {
-      "@id" : "http://www.w3.org/2006/vcard/ns#hasURL",
-      "@type" : "@id"
-    },
-    "hasOrganizationName" : {
-      "@id" : "http://www.w3.org/2006/vcard/ns#hasOrganizationName"
+    "startDate" : {
+      "@id" : "http://www.w3.org/ns/dcat#startDate",
+      "@type" : "http://www.w3.org/2001/XMLSchema#dateTime"
     },
     "endpointDescription" : {
       "@id" : "http://www.w3.org/ns/dcat#endpointDescription",
       "@type" : "@id"
     },
-    "contactPoint" : {
-      "@id" : "http://www.w3.org/ns/dcat#contactPoint",
+    "distribution" : {
+      "@id" : "http://www.w3.org/ns/dcat#distribution",
+      "@type" : "@id"
+    },
+    "page" : {
+      "@id" : "http://xmlns.com/foaf/0.1/page",
+      "@type" : "@id"
+    },
+    "description" : {
+      "@id" : "http://purl.org/dc/terms/description"
+    },
+    "issued" : {
+      "@id" : "http://purl.org/dc/terms/issued",
+      "@type" : "http://www.w3.org/2001/XMLSchema#dateTime"
+    },
+    "keyword" : {
+      "@id" : "http://www.w3.org/ns/dcat#keyword"
+    },
+    "theme" : {
+      "@id" : "http://www.w3.org/ns/dcat#theme",
       "@type" : "@id"
     },
     "title" : {
       "@id" : "http://purl.org/dc/terms/title"
     },
-    "description" : {
-      "@id" : "http://purl.org/dc/terms/description"
+    "temporal" : {
+      "@id" : "http://purl.org/dc/terms/temporal",
+      "@type" : "@id"
     },
-    "primaryTopic" : {
-      "@id" : "http://xmlns.com/foaf/0.1/primaryTopic",
+    "language" : {
+      "@id" : "http://purl.org/dc/terms/language",
+      "@type" : "@id"
+    },
+    "accessRights" : {
+      "@id" : "http://purl.org/dc/terms/accessRights",
+      "@type" : "@id"
+    },
+    "identifier" : {
+      "@id" : "http://purl.org/dc/terms/identifier"
+    },
+    "contactPoint" : {
+      "@id" : "http://www.w3.org/ns/dcat#contactPoint",
+      "@type" : "@id"
+    },
+    "format" : {
+      "@id" : "http://purl.org/dc/terms/format"
+    },
+    "license" : {
+      "@id" : "http://purl.org/dc/terms/license",
+      "@type" : "@id"
+    },
+    "accessURL" : {
+      "@id" : "http://www.w3.org/ns/dcat#accessURL",
       "@type" : "@id"
     },
     "modified" : {
       "@id" : "http://purl.org/dc/terms/modified",
       "@type" : "http://www.w3.org/2001/XMLSchema#dateTime"
     },
-    "issued" : {
-      "@id" : "http://purl.org/dc/terms/issued",
-      "@type" : "http://www.w3.org/2001/XMLSchema#dateTime"
+    "primaryTopic" : {
+      "@id" : "http://xmlns.com/foaf/0.1/primaryTopic",
+      "@type" : "@id"
     },
-    "identifier" : {
-      "@id" : "http://purl.org/dc/terms/identifier"
+    "hasURL" : {
+      "@id" : "http://www.w3.org/2006/vcard/ns#hasURL",
+      "@type" : "@id"
+    },
+    "hasOrganizationName" : {
+      "@id" : "http://www.w3.org/2006/vcard/ns#hasOrganizationName"
     }
   }
 }

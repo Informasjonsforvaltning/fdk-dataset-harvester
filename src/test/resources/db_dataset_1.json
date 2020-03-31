@@ -1,6 +1,10 @@
 {
   "@graph" : [ {
     "@id" : "_:b0",
+    "@type" : "http://purl.org/dc/terms/PeriodOfTime",
+    "startDate" : "2019-04-02T00:00:00"
+  }, {
+    "@id" : "_:b1",
     "@type" : "http://www.w3.org/2006/vcard/ns#Organization",
     "hasOrganizationName" : {
       "@language" : "nb",
@@ -21,17 +25,52 @@
       "@language" : "nb",
       "@value" : "Description of dataset 1"
     },
+    "temporal" : "_:b0",
     "title" : {
       "@language" : "nb",
       "@value" : "Dataset 1"
     },
-    "contactPoint" : "_:b0",
+    "contactPoint" : "_:b1",
+    "distribution" : [ "https://testdirektoratet.no/model/distribution/2", "https://testdirektoratet.no/model/distribution/1" ],
     "endpointDescription" : "https://testdirektoratet.no/openapi/dataset/1.yaml"
+  }, {
+    "@id" : "https://testdirektoratet.no/model/distribution/1",
+    "@type" : "http://www.w3.org/ns/dcat#Distribution",
+    "description" : "API distribution 1, JSON.",
+    "format" : "JSON",
+    "license" : "https://data.norge.no/nlod/no",
+    "title" : "Distribution1",
+    "accessURL" : "http://api.testdata.no/"
+  }, {
+    "@id" : "https://testdirektoratet.no/model/distribution/2",
+    "@type" : "http://www.w3.org/ns/dcat#Distribution",
+    "description" : "API distribution 2, XML.",
+    "format" : "XML",
+    "license" : "https://data.norge.no/nlod/no",
+    "title" : "Distribution2",
+    "accessURL" : "http://api.testdata.no/"
   } ],
   "@context" : {
-    "primaryTopic" : {
-      "@id" : "http://xmlns.com/foaf/0.1/primaryTopic",
+    "description" : {
+      "@id" : "http://purl.org/dc/terms/description"
+    },
+    "format" : {
+      "@id" : "http://purl.org/dc/terms/format"
+    },
+    "license" : {
+      "@id" : "http://purl.org/dc/terms/license",
       "@type" : "@id"
+    },
+    "title" : {
+      "@id" : "http://purl.org/dc/terms/title"
+    },
+    "accessURL" : {
+      "@id" : "http://www.w3.org/ns/dcat#accessURL",
+      "@type" : "@id"
+    },
+    "startDate" : {
+      "@id" : "http://www.w3.org/ns/dcat#startDate",
+      "@type" : "http://www.w3.org/2001/XMLSchema#dateTime"
     },
     "modified" : {
       "@id" : "http://purl.org/dc/terms/modified",
@@ -41,8 +80,28 @@
       "@id" : "http://purl.org/dc/terms/issued",
       "@type" : "http://www.w3.org/2001/XMLSchema#dateTime"
     },
+    "primaryTopic" : {
+      "@id" : "http://xmlns.com/foaf/0.1/primaryTopic",
+      "@type" : "@id"
+    },
     "identifier" : {
       "@id" : "http://purl.org/dc/terms/identifier"
+    },
+    "endpointDescription" : {
+      "@id" : "http://www.w3.org/ns/dcat#endpointDescription",
+      "@type" : "@id"
+    },
+    "distribution" : {
+      "@id" : "http://www.w3.org/ns/dcat#distribution",
+      "@type" : "@id"
+    },
+    "temporal" : {
+      "@id" : "http://purl.org/dc/terms/temporal",
+      "@type" : "@id"
+    },
+    "contactPoint" : {
+      "@id" : "http://www.w3.org/ns/dcat#contactPoint",
+      "@type" : "@id"
     },
     "hasURL" : {
       "@id" : "http://www.w3.org/2006/vcard/ns#hasURL",
@@ -50,20 +109,6 @@
     },
     "hasOrganizationName" : {
       "@id" : "http://www.w3.org/2006/vcard/ns#hasOrganizationName"
-    },
-    "endpointDescription" : {
-      "@id" : "http://www.w3.org/ns/dcat#endpointDescription",
-      "@type" : "@id"
-    },
-    "contactPoint" : {
-      "@id" : "http://www.w3.org/ns/dcat#contactPoint",
-      "@type" : "@id"
-    },
-    "title" : {
-      "@id" : "http://purl.org/dc/terms/title"
-    },
-    "description" : {
-      "@id" : "http://purl.org/dc/terms/description"
     }
   }
 }
