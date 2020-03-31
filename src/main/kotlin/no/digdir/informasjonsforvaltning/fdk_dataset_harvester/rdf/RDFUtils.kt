@@ -51,6 +51,16 @@ fun Model.createRDFResponse(responseType: JenaType): String =
         out.toString("UTF-8")
     }
 
+fun Model.addDefaultPrefixes(): Model {
+    setNsPrefix("dct", DCTerms.NS)
+    setNsPrefix("dcat", DCAT.NS)
+    setNsPrefix("foaf", FOAF.getURI())
+    setNsPrefix("vcard", VCARD4.NS)
+    setNsPrefix("xsd", XSD.NS)
+
+    return this
+}
+
 fun Resource.createModelOfTopLevelProperties(): Model {
     val model = ModelFactory.createDefaultModel()
     model.add(listProperties())

@@ -3,6 +3,7 @@ package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.fuseki.CatalogFuseki
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.fuseki.DatasetFuseki
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.JenaType
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.addDefaultPrefixes
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.createIdFromUri
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.createRDFResponse
 import org.apache.jena.rdf.model.Model
@@ -24,12 +25,14 @@ class CatalogService(private val catalogFuseki: CatalogFuseki, private val datas
         catalogFuseki
             .fetchCompleteModel()
             .addDatasetModels()
+            .addDefaultPrefixes()
             .createRDFResponse(returnType)
 
     fun getDatasetCatalog(id: String, returnType: JenaType): String? =
         catalogFuseki
             .fetchByGraphName(id)
             ?.addDatasetModels()
+            ?.addDefaultPrefixes()
             ?.createRDFResponse(returnType)
 
     private fun Model.addDatasetModels(): Model {
