@@ -62,19 +62,40 @@ fun Model.addDefaultPrefixes(): Model {
 }
 
 fun Resource.createModelOfTopLevelProperties(): Model {
-    val model = ModelFactory.createDefaultModel()
-    model.add(listProperties())
+    val newModel = ModelFactory.createDefaultModel()
+    newModel.add(listProperties())
 
-    return model
+    return newModel
 }
 
 fun Resource.createDatasetModel(): Model {
-    val model = ModelFactory.createDefaultModel()
-    model.add(listProperties())
-    extractProperty(DCAT.contactPoint)
-        ?.run { model.add(this.resource.listProperties()) }
+    val newModel = ModelFactory.createDefaultModel()
+    newModel.add(listProperties())
 
-    return model
+    extractProperty(DCAT.contactPoint)
+        ?.run { newModel.add(this.resource.listProperties()) }
+
+    extractProperty(DCTerms.temporal)
+        ?.run { newModel.add(this.resource.listProperties()) }
+
+    val distributionModels = mutableListOf<Model>()
+
+    listProperties(DCAT.distribution).toList()
+        .forEach {statement ->
+            statement.resource.uri
+                .let {uri -> model.getResource(uri) }
+                .createModelOfTopLevelProperties()
+                .run { distributionModels.add(this) }
+        }
+
+    return newModel.union(distributionModels.unionModelOfList())
+}
+
+private fun List<Model>.unionModelOfList(): Model {
+    var unionModel = ModelFactory.createDefaultModel()
+    forEach { unionModel = unionModel.union(it) }
+
+    return unionModel
 }
 
 private fun Resource.extractProperty(property: Property) : Statement? =

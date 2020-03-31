@@ -5,6 +5,8 @@ import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.CATALOG_ID_
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.DATASET_ID_0
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.DATASET_ID_1
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.TestResponseReader
+import org.apache.jena.vocabulary.DCAT
+import org.apache.jena.vocabulary.RDF
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -31,6 +33,19 @@ class RDFUtils {
         val expected = responseReader.parseFile("all_catalogs.ttl", "TURTLE")
 
         Assertions.assertTrue(parsedRDFModel.isIsomorphicWith(expected))
+    }
+
+    @Test
+    fun createDatasetModel() {
+        val harvestedModel = responseReader.parseFile("harvest_response.ttl", "TURTLE")
+        val expected = responseReader.parseFile("harvested_dataset.ttl", "TURTLE")
+
+        val datasetResource = harvestedModel.listResourcesWithProperty(RDF.type, DCAT.Dataset)
+            .toList().first()
+
+        val datasetModel = datasetResource.createDatasetModel()
+
+        Assertions.assertTrue(datasetModel.isIsomorphicWith(expected))
     }
 
 }
