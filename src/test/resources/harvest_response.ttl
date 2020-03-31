@@ -12,8 +12,8 @@
                                   ] ;
         dcat:endpointDescription  <https://testdirektoratet.no/openapi/dataset/0.yaml> .
 
-<https://testdirektoratet.no/model/dataset-catalogs/0>
+<https://testdirektoratet.no/model/dataset-catalog/0>
         a              dcat:Catalog ;
         dct:publisher  <https://organization-catalogue.fellesdatakatalog.brreg.no/organizations/123456789> ;
-        dct:title      "Dataservicekatalog for Testdirektoratet"@nb ;
+        dct:title      "Datasettkatalog for Testdirektoratet"@nb ;
         dcat:dataset   <https://testdirektoratet.no/model/dataset/0> .
