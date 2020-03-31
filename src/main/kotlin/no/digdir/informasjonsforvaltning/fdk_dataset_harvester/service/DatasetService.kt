@@ -9,13 +9,13 @@ import org.springframework.stereotype.Service
 @Service
 class DatasetService(private val datasetFuseki: DatasetFuseki) {
 
-    fun getAllDataServices(returnType: JenaType): String =
+    fun getAllDatasets(returnType: JenaType): String =
         datasetFuseki
             .fetchCompleteModel()
             .addDefaultPrefixes()
             .createRDFResponse(returnType)
 
-    fun getDataService(id: String, returnType: JenaType): String? =
+    fun getDataset(id: String, returnType: JenaType): String? =
         datasetFuseki
             .fetchByGraphName(id)
             ?.addDefaultPrefixes()

@@ -31,7 +31,7 @@ class HarvesterTest {
 
     @Test
     fun harvestDataSource() {
-        whenever(adapter.getDataServiceCatalog(TEST_HARVEST_SOURCE))
+        whenever(adapter.getDatasetCatalog(TEST_HARVEST_SOURCE))
             .thenReturn(javaClass.classLoader.getResourceAsStream("harvest_response.ttl")!!.reader().readText())
 
         whenever(valuesMock.catalogUri)
@@ -42,7 +42,7 @@ class HarvesterTest {
         val expectedCatalog = responseReader.parseFile("db_catalog_0.json", "JSONLD")
         val expectedDataset = responseReader.parseFile("db_dataset_0.json", "JSONLD")
 
-        harvester.harvestDataServiceCatalog(TEST_HARVEST_SOURCE, TEST_HARVEST_DATE)
+        harvester.harvestDatasetCatalog(TEST_HARVEST_SOURCE, TEST_HARVEST_DATE)
 
         argumentCaptor<Model>().apply {
             verify(catalogFuseki, times(1)).saveWithGraphName(any(), capture())

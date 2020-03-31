@@ -21,7 +21,7 @@ class DatasetServiceTest {
     private val responseReader = TestResponseReader()
 
     @Nested
-    internal inner class AllDataServices {
+    internal inner class AllDatasets {
 
         @Test
         fun answerWithEmptyListWhenNoModelsSavedInFuseki() {
@@ -30,7 +30,7 @@ class DatasetServiceTest {
 
             val expected = responseReader.parseResponse("", "TURTLE")
 
-            val response = datasetService.getAllDataServices(JenaType.TURTLE)
+            val response = datasetService.getAllDatasets(JenaType.TURTLE)
 
             assertTrue(expected.isIsomorphicWith(responseReader.parseResponse(response, "TURTLE")))
         }
@@ -44,21 +44,21 @@ class DatasetServiceTest {
             whenever(datasetFuseki.fetchCompleteModel())
                 .thenReturn(dbModel)
 
-            val response = datasetService.getAllDataServices(JenaType.TURTLE)
+            val response = datasetService.getAllDatasets(JenaType.TURTLE)
 
             assertTrue(dbModel.isIsomorphicWith(responseReader.parseResponse(response, "TURTLE")))
         }
     }
 
     @Nested
-    internal inner class DataServiceById {
+    internal inner class DatasetById {
 
         @Test
         fun responseIsNullWhenNotFoundInFuseki() {
             whenever(datasetFuseki.fetchByGraphName("123"))
                 .thenReturn(null)
 
-            val response = datasetService.getDataService("123", JenaType.TURTLE)
+            val response = datasetService.getDataset("123", JenaType.TURTLE)
 
             assertNull(response)
         }
@@ -69,7 +69,7 @@ class DatasetServiceTest {
             whenever(datasetFuseki.fetchByGraphName(DATASET_ID_0))
                 .thenReturn(dbModel)
 
-            val response = datasetService.getDataService(DATASET_ID_0, JenaType.TURTLE)
+            val response = datasetService.getDataset(DATASET_ID_0, JenaType.TURTLE)
 
             assertTrue(dbModel.isIsomorphicWith(responseReader.parseResponse(response!!, "TURTLE")))
         }

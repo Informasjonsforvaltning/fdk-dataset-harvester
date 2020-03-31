@@ -28,7 +28,7 @@ abstract class ApiTestContainer {
                 .withExposedPorts(API_PORT)
                 .waitingFor(HttpWaitStrategy()
                     .forPort(API_PORT)
-                    .forPath("/fuseki/dataservice")
+                    .forPath("/fuseki/dataset")
                     .forStatusCode(200)
                     .withStartupTimeout(Duration.ofMinutes(1)))
                 .withNetwork(apiNetwork)

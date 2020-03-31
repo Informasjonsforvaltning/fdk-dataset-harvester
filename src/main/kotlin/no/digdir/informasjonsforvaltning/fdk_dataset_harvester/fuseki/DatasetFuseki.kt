@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service
 @Service
 class DatasetFuseki(private val fusekiProperties: FusekiProperties) {
 
-    private fun dataServiceConnection(): RDFConnection =
+    private fun datasetConnection(): RDFConnection =
         RDFConnectionFuseki.create()
             .destination(this.fusekiProperties.datasetUri)
             .queryEndpoint("${this.fusekiProperties.datasetUri}/query")
@@ -18,13 +18,13 @@ class DatasetFuseki(private val fusekiProperties: FusekiProperties) {
             .build()
 
     fun fetchCompleteModel(): Model =
-        dataServiceConnection().use {
+        datasetConnection().use {
             it.begin(ReadWrite.READ)
             return it.fetchDataset().unionModel
         }
 
     fun fetchByGraphName(graphName: String): Model? =
-        dataServiceConnection().use {
+        datasetConnection ().use {
             it.begin(ReadWrite.READ)
             return try {
                 it.fetch(graphName)
@@ -34,7 +34,7 @@ class DatasetFuseki(private val fusekiProperties: FusekiProperties) {
         }
 
     fun saveWithGraphName(graphName: String, model: Model) =
-        dataServiceConnection().use {
+        datasetConnection().use {
             it.begin(ReadWrite.WRITE)
             it.put(graphName, model)
         }

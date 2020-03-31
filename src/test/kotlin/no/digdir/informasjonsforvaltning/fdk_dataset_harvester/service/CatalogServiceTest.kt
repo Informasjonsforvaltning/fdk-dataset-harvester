@@ -27,7 +27,7 @@ class CatalogServiceTest {
     private val responseReader = TestResponseReader()
 
     @Nested
-    internal inner class CountDataServiceCatalogs {
+    internal inner class CountDatasetCatalogs {
 
         @Test
         fun handlesCountOfEmptyDB() {
