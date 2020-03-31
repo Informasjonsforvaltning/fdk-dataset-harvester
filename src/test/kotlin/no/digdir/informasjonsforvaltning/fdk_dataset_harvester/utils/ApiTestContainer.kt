@@ -39,8 +39,8 @@ abstract class ApiTestContainer {
                 .dependsOn(fusekiContainer)
                 .waitingFor(HttpWaitStrategy()
                     .forPort(API_PORT)
-                    .forPath("/ready")
-                    .forStatusCode(HttpStatus.OK.value())
+                    .forPath("/count")
+                    .forResponsePredicate { response -> response?.let { it.toLong() > 0 } ?: false }
                     .withStartupTimeout(Duration.ofMinutes(1)))
                 .withNetwork(apiNetwork)
                 .withEnv(API_ENV_VALUES)
