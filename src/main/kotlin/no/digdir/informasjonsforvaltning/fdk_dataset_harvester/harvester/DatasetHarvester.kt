@@ -36,14 +36,14 @@ class DatasetHarvester(
     private val applicationProperties: ApplicationProperties
 ) {
 
-    fun harvestDataServiceCatalog(source: HarvestDataSource, harvestDate: Calendar) {
+    fun harvestDatasetCatalog(source: HarvestDataSource, harvestDate: Calendar) {
         LOGGER.debug("Starting harvest of ${source.url}")
         val jenaWriterType = jenaTypeFromAcceptHeader(source.acceptHeaderValue)
 
         if (jenaWriterType == null || jenaWriterType == JenaType.NOT_ACCEPTABLE) {
             LOGGER.error("Not able to harvest from ${source.url}, header ${source.acceptHeaderValue} is not acceptable ")
         } else {
-            adapter.getDataServiceCatalog(source)
+            adapter.getDatasetCatalog(source)
                 ?.let { parseRDFResponse(it, jenaWriterType) }
                 ?.filterModifiedAndAddMetaData(harvestDate)
                 ?.run {
@@ -53,7 +53,7 @@ class DatasetHarvester(
                         LOGGER.debug("Updated catalog model ${it.extractCatalogModelURI()}, id: $modelId")
                     }
 
-                    dataServices.forEach {
+                    datasets.forEach {
                         val modelId = it.extractMetaDataIdentifier()
                         datasetFuseki.saveWithGraphName(modelId, it)
                         LOGGER.debug("Updated data service model ${it.extractDatasetModelURI()}, id: $modelId")
@@ -153,7 +153,7 @@ private data class HarvestedModel(
 
 private data class ModifiedModels(
     val catalogs: List<Model>,
-    val dataServices: List<Model>
+    val datasets: List<Model>
 )
 
 private fun Model.extractMetaDataResource(): Resource? =

@@ -16,7 +16,7 @@ private val LOGGER = LoggerFactory.getLogger(CatalogsController::class.java)
 open class CatalogsController(private val catalogService: CatalogService) : DcatApNoCatalogsApi {
 
     override fun getCatalogById(httpServletRequest: HttpServletRequest, id: String): ResponseEntity<String> {
-        LOGGER.info("get DataService catalog with id $id")
+        LOGGER.info("get dataset catalog with id $id")
         val returnType = jenaTypeFromAcceptHeader(httpServletRequest.getHeader("Accept"))
 
         return if (returnType == JenaType.NOT_ACCEPTABLE) ResponseEntity(HttpStatus.NOT_ACCEPTABLE)
@@ -28,7 +28,7 @@ open class CatalogsController(private val catalogService: CatalogService) : Dcat
     }
 
     override fun getCatalogs(httpServletRequest: HttpServletRequest): ResponseEntity<String> {
-        LOGGER.info("get all DataService catalogs")
+        LOGGER.info("get all dataset catalogs")
         val returnType = jenaTypeFromAcceptHeader(httpServletRequest.getHeader("Accept"))
 
         return if (returnType == JenaType.NOT_ACCEPTABLE) ResponseEntity(HttpStatus.NOT_ACCEPTABLE)

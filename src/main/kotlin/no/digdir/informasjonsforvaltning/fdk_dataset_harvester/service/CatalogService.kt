@@ -46,8 +46,8 @@ class CatalogService(private val catalogFuseki: CatalogFuseki, private val datas
             .forEach { catalog ->
                 catalog.listProperties(DCAT.dataset)
                     .toList()
-                    .forEach { dataService ->
-                        datasetIdList.add(createIdFromUri(dataService.resource.uri))
+                    .forEach { dataset ->
+                        datasetIdList.add(createIdFromUri(dataset.resource.uri))
                     } }
 
         datasetIdList

@@ -13,7 +13,7 @@ private val LOGGER = LoggerFactory.getLogger(DatasetAdapter::class.java)
 @Service
 class DatasetAdapter {
 
-    fun getDataServiceCatalog(source: HarvestDataSource): String? =
+    fun getDatasetCatalog(source: HarvestDataSource): String? =
         try {
             val connection = URL(source.url).openConnection() as HttpURLConnection
             connection.setRequestProperty("Accept", source.acceptHeaderValue)

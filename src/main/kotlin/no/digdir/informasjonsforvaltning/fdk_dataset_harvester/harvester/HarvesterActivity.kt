@@ -30,7 +30,7 @@ class HarvesterActivity(
                 .filter { it.dataType == DATASET_TYPE }
                 .forEach {
                     if (it.url != null) {
-                        launch { harvester.harvestDataServiceCatalog(it, Calendar.getInstance()) }
+                        launch { harvester.harvestDatasetCatalog(it, Calendar.getInstance()) }
                     }
                 }
         }

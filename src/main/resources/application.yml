@@ -9,8 +9,8 @@ fuseki:
   datasetUri: ${FDK_FUSEKI_SERVICE_URI:http://fdk-fuseki-service:8080/fuseki}/dataset
   catalogUri: ${FDK_FUSEKI_SERVICE_URI:http://fdk-fuseki-service:8080/fuseki}/dataset-catalog
 application:
-  datasetUri: ${FDK_DATASERVICE_HARVESTER_URI:https://dataservices.staging.fellesdatakatalog.digdir.no}/dataservices
-  catalogUri: ${FDK_DATASERVICE_HARVESTER_URI:https://dataservices.staging.fellesdatakatalog.digdir.no}/catalogs
+  datasetUri: ${FDK_DATASET_HARVESTER_URI:https://datasets.staging.fellesdatakatalog.digdir.no}/datasets
+  catalogUri: ${FDK_DATASET_HARVESTER_URI:https://datasets.staging.fellesdatakatalog.digdir.no}/catalogs
   harvestAdminRootUrl: ${HARVEST_ADMIN_ROOT_URL:http://fdk-harvest-admin:8080/api}
 
 ---
