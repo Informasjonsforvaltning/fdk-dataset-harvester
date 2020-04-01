@@ -37,15 +37,21 @@ class RDFUtils {
 
     @Test
     fun createDatasetModel() {
-        val harvestedModel = responseReader.parseFile("harvest_response.ttl", "TURTLE")
-        val expected = responseReader.parseFile("harvested_dataset.ttl", "TURTLE")
+        val harvestedModel0 = responseReader.parseFile("harvest_response.ttl", "TURTLE")
+        val expected0 = responseReader.parseFile("harvested_dataset.ttl", "TURTLE")
+        val harvestedModel1 = responseReader.parseFile("harvest_response_1.ttl", "TURTLE")
+        val expected1 = responseReader.parseFile("harvested_dataset_1.ttl", "TURTLE")
 
-        val datasetResource = harvestedModel.listResourcesWithProperty(RDF.type, DCAT.Dataset)
-            .toList().first()
+        val datasetModel0 = harvestedModel0
+            .listResourcesWithProperty(RDF.type, DCAT.Dataset)
+            .toList().first().createDatasetModel()
 
-        val datasetModel = datasetResource.createDatasetModel()
+        val datasetModel1 = harvestedModel1
+            .listResourcesWithProperty(RDF.type, DCAT.Dataset)
+            .toList().first().createDatasetModel()
 
-        Assertions.assertTrue(datasetModel.isIsomorphicWith(expected))
+        Assertions.assertTrue(datasetModel0.isIsomorphicWith(expected0))
+        Assertions.assertTrue(datasetModel1.isIsomorphicWith(expected1))
     }
 
 }
