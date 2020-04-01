@@ -72,23 +72,27 @@ fun Resource.createDatasetModel(): Model {
     val newModel = ModelFactory.createDefaultModel()
     newModel.add(listProperties())
 
+    val uriResourceModels = mutableListOf<Model>()
+
     extractProperty(DCAT.contactPoint)
-        ?.run { newModel.add(this.resource.listProperties()) }
-
-    extractProperty(DCTerms.temporal)
-        ?.run { newModel.add(this.resource.listProperties()) }
-
-    val distributionModels = mutableListOf<Model>()
-
-    listProperties(DCAT.distribution).toList()
-        .forEach {statement ->
-            statement.resource.uri
-                .let {uri -> model.getResource(uri) }
-                .createModelOfTopLevelProperties()
-                .run { distributionModels.add(this) }
+        ?.run {
+            if(this.resource.isURIResource) uriResourceModels.add(this.resource.createURIResourceModel())
+            else newModel.add(this.resource.listProperties())
         }
 
-    return newModel.union(distributionModels.unionModelOfList())
+    extractProperty(DCTerms.temporal)
+        ?.run {
+            if(this.resource.isURIResource) uriResourceModels.add(this.resource.createURIResourceModel())
+            else newModel.add(this.resource.listProperties())
+        }
+
+    listProperties(DCAT.distribution).toList()
+        .forEach {
+            if(it.resource.isURIResource) uriResourceModels.add(it.resource.createURIResourceModel())
+            else newModel.add(it.resource.listProperties())
+        }
+
+    return newModel.union(uriResourceModels.unionModelOfList())
 }
 
 private fun List<Model>.unionModelOfList(): Model {
@@ -101,6 +105,9 @@ private fun List<Model>.unionModelOfList(): Model {
 private fun Resource.extractProperty(property: Property) : Statement? =
     if (this.hasProperty(property)) this.getProperty(property)
     else null
+
+private fun Resource.createURIResourceModel(): Model =
+    model.getResource(uri).createModelOfTopLevelProperties()
 
 fun Model.extractMetaDataIdentifier(): String =
     listResourcesWithProperty(RDF.type, DCAT.record)
