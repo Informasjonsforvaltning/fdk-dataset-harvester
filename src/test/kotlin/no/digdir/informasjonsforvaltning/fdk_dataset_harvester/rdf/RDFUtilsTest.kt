@@ -5,23 +5,27 @@ import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.CATALOG_ID_
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.DATASET_ID_0
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.DATASET_ID_1
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.TestResponseReader
+import org.apache.jena.rdf.model.Model
+import org.apache.jena.rdf.model.ModelFactory
 import org.apache.jena.vocabulary.DCAT
 import org.apache.jena.vocabulary.RDF
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
+import java.io.ByteArrayOutputStream
+import java.net.URL
 import kotlin.test.assertEquals
 
 @Tag("unit")
-class RDFUtils {
+class RDFUtilsTest {
     private val responseReader = TestResponseReader()
 
     @Test
     fun createId() {
         assertEquals(DATASET_ID_0, createIdFromUri("https://testdirektoratet.no/model/dataset/0"))
         assertEquals(DATASET_ID_1, createIdFromUri("https://testdirektoratet.no/model/dataset/1"))
-        assertEquals(CATALOG_ID_0, createIdFromUri("https://testdirektoratet.no/model/dataset-catalogs/0"))
-        assertEquals(CATALOG_ID_1, createIdFromUri("https://testdirektoratet.no/model/dataset-catalogs/1"))
+        assertEquals(CATALOG_ID_0, createIdFromUri("https://testdirektoratet.no/model/dataset-catalog/0"))
+        assertEquals(CATALOG_ID_1, createIdFromUri("https://testdirektoratet.no/model/dataset-catalog/1"))
     }
 
     @Test
@@ -53,5 +57,4 @@ class RDFUtils {
         Assertions.assertTrue(datasetModel0.isIsomorphicWith(expected0))
         Assertions.assertTrue(datasetModel1.isIsomorphicWith(expected1))
     }
-
 }
