@@ -99,6 +99,12 @@ fun Resource.createDatasetModel(): Model {
             else newModel.add(it.resource.listProperties())
         }
 
+    listProperties(DCAT.theme).toList()
+        .forEach {
+            if(it.resource.isURIResource) uriResourceModels.add(it.resource.createURIResourceModel())
+            else newModel.add(it.resource.listProperties())
+        }
+
     return newModel.union(uriResourceModels.unionModelOfList())
 }
 
