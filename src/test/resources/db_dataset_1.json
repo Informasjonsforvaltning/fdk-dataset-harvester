@@ -33,22 +33,6 @@
     "contactPoint" : "_:b1",
     "distribution" : [ "https://testdirektoratet.no/model/distribution/2", "https://testdirektoratet.no/model/distribution/1" ],
     "endpointDescription" : "https://testdirektoratet.no/openapi/dataset/1.yaml"
-  }, {
-    "@id" : "https://testdirektoratet.no/model/distribution/1",
-    "@type" : "http://www.w3.org/ns/dcat#Distribution",
-    "description" : "API distribution 1, JSON.",
-    "format" : "JSON",
-    "license" : "https://data.norge.no/nlod/no",
-    "title" : "Distribution1",
-    "accessURL" : "http://api.testdata.no/"
-  }, {
-    "@id" : "https://testdirektoratet.no/model/distribution/2",
-    "@type" : "http://www.w3.org/ns/dcat#Distribution",
-    "description" : "API distribution 2, XML.",
-    "format" : "XML",
-    "license" : "https://data.norge.no/nlod/no",
-    "title" : "Distribution2",
-    "accessURL" : "http://api.testdata.no/"
   } ],
   "@context" : {
     "description" : {

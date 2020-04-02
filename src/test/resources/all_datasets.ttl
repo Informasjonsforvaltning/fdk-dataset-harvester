@@ -25,13 +25,6 @@
                                   <http://publications.europa.eu/resource/authority/data-theme/TECH> ;
         foaf:page                 <https://testdirektoratet.no> .
 
-<https://testdirektoratet.no/model/distribution/0>
-        a                   dcat:Distribution ;
-        dct:format          "CSV JSON JSONP YAML XML" ;
-        dct:license         <https://data.norge.no/nlod/no> ;
-        dct:title           "Test distribution" ;
-        dcat:accessURL      <http://testdirektoratet.no/data/test/fest> .
-
 <https://datasets.fellesdatakatalog.digdir.no/datasets/4667277a-9d27-32c1-aed5-612fa601f393>
         a                  dcat:record ;
         dct:identifier     "4667277a-9d27-32c1-aed5-612fa601f393" ;
@@ -51,20 +44,6 @@
                                     dcat:startDate           "2019-04-02T00:00:00"^^xsd:dateTime ] ;
         dcat:distribution         <https://testdirektoratet.no/model/distribution/1>, <https://testdirektoratet.no/model/distribution/2> ;
         dcat:endpointDescription  <https://testdirektoratet.no/openapi/dataset/1.yaml> .
-
-<https://testdirektoratet.no/model/distribution/1> a dcat:Distribution ;
-        dct:description    "API distribution 1, JSON." ;
-        dct:format         "JSON" ;
-        dct:license        <https://data.norge.no/nlod/no> ;
-        dct:title          "Distribution1" ;
-        dcat:accessURL     <http://api.testdata.no/> .
-
-<https://testdirektoratet.no/model/distribution/2> a dcat:Distribution ;
-        dct:description    "API distribution 2, XML." ;
-        dct:format         "XML" ;
-        dct:license        <https://data.norge.no/nlod/no> ;
-        dct:title          "Distribution2" ;
-        dcat:accessURL     <http://api.testdata.no/> .
 
 <https://datasets.fellesdatakatalog.digdir.no/datasets/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
         a                  dcat:record ;

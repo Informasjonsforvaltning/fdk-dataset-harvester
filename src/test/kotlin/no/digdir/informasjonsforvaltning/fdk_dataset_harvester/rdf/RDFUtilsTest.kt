@@ -5,15 +5,11 @@ import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.CATALOG_ID_
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.DATASET_ID_0
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.DATASET_ID_1
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.TestResponseReader
-import org.apache.jena.rdf.model.Model
-import org.apache.jena.rdf.model.ModelFactory
 import org.apache.jena.vocabulary.DCAT
 import org.apache.jena.vocabulary.RDF
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
-import java.io.ByteArrayOutputStream
-import java.net.URL
 import kotlin.test.assertEquals
 
 @Tag("unit")
@@ -41,10 +37,10 @@ class RDFUtilsTest {
 
     @Test
     fun createDatasetModel() {
-        val harvestedModel0 = responseReader.parseFile("harvest_response.ttl", "TURTLE")
-        val expected0 = responseReader.parseFile("harvested_dataset.ttl", "TURTLE")
+        val harvestedModel0 = responseReader.parseFile("harvest_response_0.ttl", "TURTLE")
+        val expected0 = responseReader.parseFile("parsed_dataset_0.ttl", "TURTLE")
         val harvestedModel1 = responseReader.parseFile("harvest_response_1.ttl", "TURTLE")
-        val expected1 = responseReader.parseFile("harvested_dataset_1.ttl", "TURTLE")
+        val expected1 = responseReader.parseFile("parsed_dataset_1.ttl", "TURTLE")
 
         val datasetModel0 = harvestedModel0
             .listResourcesWithProperty(RDF.type, DCAT.Dataset)

@@ -68,32 +68,21 @@ fun Resource.createModelOfTopLevelProperties(): Model {
     return newModel
 }
 
-fun Resource.createDatasetModel(): Model {
-    val newModel = listProperties().toModel()
-
-    val uriResourceModels = mutableListOf<Model>()
-
+fun Resource.createDatasetModel(): Model =
     listProperties()
-        .toList()
-        .filter { it.isResourceProperty() }
-        .filter { it.resource.getProperty(RDF.type)?.resource?.uri != DCAT.Dataset.uri }
-        .forEach {
-            if (it.resource.isURIResource) uriResourceModels.add(it.resource.createURIResourceModel())
-            else newModel.addResourceProperties(it.resource)
-        }
+        .toModel()
+        .addNonURIResources(this)
 
-    return newModel.union(uriResourceModels.unionModelOfList())
-}
-
-private fun Model.addResourceProperties(resource: Resource): Unit {
+private fun Model.addNonURIResources(resource: Resource): Model {
     add(resource.listProperties())
 
     resource.listProperties()
         .toList()
         .filter { it.isResourceProperty() }
-        .forEach {
-            if (!it.resource.isURIResource) addResourceProperties(it.resource)
-        }
+        .filter { !it.resource.isURIResource }
+        .forEach { addNonURIResources(it.resource) }
+
+    return this
 }
 
 private fun Statement.isResourceProperty(): Boolean =
