@@ -4,6 +4,7 @@ import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.ModelFactory
 import org.apache.jena.rdf.model.Property
 import org.apache.jena.rdf.model.Resource
+import org.apache.jena.rdf.model.ResourceRequiredException
 import org.apache.jena.rdf.model.Statement
 import org.apache.jena.sparql.vocabulary.FOAF
 import org.apache.jena.vocabulary.DCAT
@@ -74,16 +75,22 @@ fun Resource.createDatasetModel(): Model {
 
     val uriResourceModels = mutableListOf<Model>()
 
-    extractProperty(DCAT.contactPoint)
+    extractPropertyResource(DCAT.contactPoint)
         ?.run {
-            if(this.resource.isURIResource) uriResourceModels.add(this.resource.createURIResourceModel())
-            else newModel.add(this.resource.listProperties())
+            if (this.isURIResource) uriResourceModels.add(this.createURIResourceModel())
+            else newModel.add(this.listProperties())
         }
 
-    extractProperty(DCTerms.temporal)
+    extractPropertyResource(DCTerms.temporal)
         ?.run {
-            if(this.resource.isURIResource) uriResourceModels.add(this.resource.createURIResourceModel())
-            else newModel.add(this.resource.listProperties())
+            if(this.isURIResource) uriResourceModels.add(this.createURIResourceModel())
+            else newModel.add(this.listProperties())
+        }
+
+    extractPropertyResource(DCTerms.spatial)
+        ?.run {
+            if(this.isURIResource) uriResourceModels.add(this.createURIResourceModel())
+            else newModel.add(this.listProperties())
         }
 
     listProperties(DCAT.distribution).toList()
@@ -101,6 +108,13 @@ private fun List<Model>.unionModelOfList(): Model {
 
     return unionModel
 }
+
+private fun Resource.extractPropertyResource(property: Property) : Resource? =
+    try {
+        extractProperty(property)?.resource
+    } catch (ex: ResourceRequiredException) {
+        null
+    }
 
 private fun Resource.extractProperty(property: Property) : Statement? =
     if (this.hasProperty(property)) this.getProperty(property)
