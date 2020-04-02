@@ -9,6 +9,7 @@ import org.apache.jena.sparql.vocabulary.FOAF
 import org.apache.jena.vocabulary.DCAT
 import org.apache.jena.vocabulary.DCTerms
 import org.apache.jena.vocabulary.RDF
+import org.apache.jena.vocabulary.SKOS
 import org.apache.jena.vocabulary.VCARD4
 import org.apache.jena.vocabulary.XSD
 import java.io.ByteArrayOutputStream
@@ -57,18 +58,16 @@ fun Model.addDefaultPrefixes(): Model {
     setNsPrefix("foaf", FOAF.getURI())
     setNsPrefix("vcard", VCARD4.NS)
     setNsPrefix("xsd", XSD.NS)
+    setNsPrefix("skos", SKOS.uri)
+    setNsPrefix("adms", "http://www.w3.org/ns/adms#")
+    setNsPrefix("dcatno", "http://difi.no/dcatno#")
+    setNsPrefix("dqv", "http://www.w3.org/ns/dqvNS#")
+    setNsPrefix("prov", "http://www.w3.org/ns/prov#")
 
     return this
 }
 
-fun Resource.createModelOfTopLevelProperties(): Model {
-    val newModel = ModelFactory.createDefaultModel()
-    newModel.add(listProperties())
-
-    return newModel
-}
-
-fun Resource.createDatasetModel(): Model =
+fun Resource.createModel(): Model =
     listProperties()
         .toModel()
         .addNonURIResources(this)
@@ -91,16 +90,6 @@ private fun Statement.isResourceProperty(): Boolean =
     } catch (ex: ResourceRequiredException) {
         false
     }
-
-private fun List<Model>.unionModelOfList(): Model {
-    var unionModel = ModelFactory.createDefaultModel()
-    forEach { unionModel = unionModel.union(it) }
-
-    return unionModel
-}
-
-private fun Resource.createURIResourceModel(): Model =
-    model.getResource(uri).createModelOfTopLevelProperties()
 
 fun Model.extractMetaDataIdentifier(): String =
     listResourcesWithProperty(RDF.type, DCAT.record)
