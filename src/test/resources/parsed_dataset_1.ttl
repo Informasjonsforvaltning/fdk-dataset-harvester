@@ -29,12 +29,3 @@
         dcat:theme                <http://publications.europa.eu/resource/authority/data-theme/GOVE>,
                                   <http://publications.europa.eu/resource/authority/data-theme/TECH> ;
         foaf:page                 <https://testdirektoratet.no> .
-
-<https://testdirektoratet.no/model/contact/1>
-        a                          vcard:Organization ;
-        vcard:hasOrganizationName  "Testdirektoratet"@nb ;
-        vcard:hasURL               <https://testdirektoratet.no> .
-
-<https://testdirektoratet.no/model/periodoftime/1>
-        a                 dct:PeriodOfTime ;
-        dcat:startDate    "2019-04-02T00:00:00"^^xsd:dateTime .

@@ -40,13 +40,6 @@
     "keyword" : [ "fest", "test" ],
     "theme" : [ "http://publications.europa.eu/resource/authority/data-theme/TECH", "http://publications.europa.eu/resource/authority/data-theme/GOVE" ],
     "page" : "https://testdirektoratet.no"
-  }, {
-    "@id" : "https://testdirektoratet.no/model/distribution/0",
-    "@type" : "http://www.w3.org/ns/dcat#Distribution",
-    "format" : "CSV JSON JSONP YAML XML",
-    "license" : "https://data.norge.no/nlod/no",
-    "title" : "Test distribution",
-    "accessURL" : "http://testdirektoratet.no/data/test/fest"
   } ],
   "@context" : {
     "startDate" : {

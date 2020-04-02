@@ -25,13 +25,6 @@
                                   <http://publications.europa.eu/resource/authority/data-theme/TECH> ;
         foaf:page                 <https://testdirektoratet.no> .
 
-<https://testdirektoratet.no/model/distribution/0>
-        a                   dcat:Distribution ;
-        dct:format          "CSV JSON JSONP YAML XML" ;
-        dct:license         <https://data.norge.no/nlod/no> ;
-        dct:title           "Test distribution" ;
-        dcat:accessURL      <http://testdirektoratet.no/data/test/fest> .
-
 <https://datasets.fellesdatakatalog.digdir.no/catalogs/6e4237cc-98d6-3e7c-a892-8ac1f0ffb37f>
         a                  dcat:record ;
         dct:identifier     "6e4237cc-98d6-3e7c-a892-8ac1f0ffb37f" ;

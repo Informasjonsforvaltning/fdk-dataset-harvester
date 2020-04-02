@@ -24,10 +24,3 @@
         dcat:theme                <http://publications.europa.eu/resource/authority/data-theme/GOVE>,
                                   <http://publications.europa.eu/resource/authority/data-theme/TECH> ;
         foaf:page                 <https://testdirektoratet.no> .
-
-<https://testdirektoratet.no/model/distribution/0>
-        a                   dcat:Distribution ;
-        dct:format          "CSV JSON JSONP YAML XML" ;
-        dct:license         <https://data.norge.no/nlod/no> ;
-        dct:title           "Test distribution" ;
-        dcat:accessURL      <http://testdirektoratet.no/data/test/fest> .

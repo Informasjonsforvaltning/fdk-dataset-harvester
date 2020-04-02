@@ -32,7 +32,7 @@ class HarvesterTest {
     @Test
     fun harvestDataSource() {
         whenever(adapter.getDatasetCatalog(TEST_HARVEST_SOURCE))
-            .thenReturn(javaClass.classLoader.getResourceAsStream("harvest_response.ttl")!!.reader().readText())
+            .thenReturn(javaClass.classLoader.getResourceAsStream("harvest_response_0.ttl")!!.reader().readText())
 
         whenever(valuesMock.catalogUri)
             .thenReturn("https://datasets.fellesdatakatalog.digdir.no/catalogs")
