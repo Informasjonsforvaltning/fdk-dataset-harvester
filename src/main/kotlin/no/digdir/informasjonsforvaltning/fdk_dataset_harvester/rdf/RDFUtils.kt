@@ -2,7 +2,6 @@ package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf
 
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.ModelFactory
-import org.apache.jena.rdf.model.Property
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.rdf.model.ResourceRequiredException
 import org.apache.jena.rdf.model.Statement
@@ -70,43 +69,39 @@ fun Resource.createModelOfTopLevelProperties(): Model {
 }
 
 fun Resource.createDatasetModel(): Model {
-    val newModel = ModelFactory.createDefaultModel()
-    newModel.add(listProperties())
+    val newModel = listProperties().toModel()
 
     val uriResourceModels = mutableListOf<Model>()
 
-    extractPropertyResource(DCAT.contactPoint)
-        ?.run {
-            if (this.isURIResource) uriResourceModels.add(this.createURIResourceModel())
-            else newModel.add(this.listProperties())
-        }
-
-    extractPropertyResource(DCTerms.temporal)
-        ?.run {
-            if(this.isURIResource) uriResourceModels.add(this.createURIResourceModel())
-            else newModel.add(this.listProperties())
-        }
-
-    extractPropertyResource(DCTerms.spatial)
-        ?.run {
-            if(this.isURIResource) uriResourceModels.add(this.createURIResourceModel())
-            else newModel.add(this.listProperties())
-        }
-
-    listProperties(DCAT.distribution).toList()
+    listProperties()
+        .toList()
+        .filter { it.isResourceProperty() }
+        .filter { it.resource.getProperty(RDF.type)?.resource?.uri != DCAT.Dataset.uri }
         .forEach {
-            if(it.resource.isURIResource) uriResourceModels.add(it.resource.createURIResourceModel())
-            else newModel.add(it.resource.listProperties())
-        }
-
-    listProperties(DCAT.theme).toList()
-        .forEach {
-            if(it.resource.isURIResource) uriResourceModels.add(it.resource.createURIResourceModel())
-            else newModel.add(it.resource.listProperties())
+            if (it.resource.isURIResource) uriResourceModels.add(it.resource.createURIResourceModel())
+            else newModel.addResourceProperties(it.resource)
         }
 
     return newModel.union(uriResourceModels.unionModelOfList())
 }
+
+private fun Model.addResourceProperties(resource: Resource): Unit {
+    add(resource.listProperties())
+
+    resource.listProperties()
+        .toList()
+        .filter { it.isResourceProperty() }
+        .forEach {
+            if (!it.resource.isURIResource) addResourceProperties(it.resource)
+        }
+}
+
+private fun Statement.isResourceProperty(): Boolean =
+    try {
+        resource.isResource
+    } catch (ex: ResourceRequiredException) {
+        false
+    }
 
 private fun List<Model>.unionModelOfList(): Model {
     var unionModel = ModelFactory.createDefaultModel()
@@ -114,17 +109,6 @@ private fun List<Model>.unionModelOfList(): Model {
 
     return unionModel
 }
-
-private fun Resource.extractPropertyResource(property: Property) : Resource? =
-    try {
-        extractProperty(property)?.resource
-    } catch (ex: ResourceRequiredException) {
-        null
-    }
-
-private fun Resource.extractProperty(property: Property) : Statement? =
-    if (this.hasProperty(property)) this.getProperty(property)
-    else null
 
 private fun Resource.createURIResourceModel(): Model =
     model.getResource(uri).createModelOfTopLevelProperties()
