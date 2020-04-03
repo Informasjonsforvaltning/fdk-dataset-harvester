@@ -61,6 +61,8 @@ class CatalogServiceTest {
         fun answerWithEmptyListWhenNoModelsSavedInFuseki() {
             whenever(catalogFuseki.fetchCompleteModel())
                 .thenReturn(ModelFactory.createDefaultModel())
+            whenever(datasetFuseki.fetchCompleteModel())
+                .thenReturn(ModelFactory.createDefaultModel())
 
             val expected = responseReader.parseResponse("", "TURTLE")
 
@@ -78,34 +80,10 @@ class CatalogServiceTest {
 
             whenever(catalogFuseki.fetchCompleteModel())
                 .thenReturn(dbCatalog0.union(dbCatalog1))
-
-            whenever(datasetFuseki.fetchByGraphName(DATASET_ID_0))
-                .thenReturn(dbDataset0)
-            whenever(datasetFuseki.fetchByGraphName(DATASET_ID_1))
-                .thenReturn(dbDataset1)
+            whenever(datasetFuseki.fetchCompleteModel())
+                .thenReturn(dbDataset0.union(dbDataset1))
 
             val expected = dbCatalog0.union(dbCatalog1).union(dbDataset0).union(dbDataset1)
-
-            val response = catalogService.getAllDatasetCatalogs(JenaType.TURTLE)
-
-            assertTrue(expected.isIsomorphicWith(responseReader.parseResponse(response, "TURTLE")))
-        }
-
-        @Test
-        fun handlesMissingDataset() {
-            val dbCatalog0 = responseReader.parseFile("db_catalog_0.json", "JSONLD")
-            val dbCatalog1 = responseReader.parseFile("db_catalog_1.json", "JSONLD")
-            val dbDataset0 = responseReader.parseFile("db_dataset_0.json", "JSONLD")
-
-            whenever(catalogFuseki.fetchCompleteModel())
-                .thenReturn(dbCatalog0.union(dbCatalog1))
-
-            whenever(datasetFuseki.fetchByGraphName(DATASET_ID_0))
-                .thenReturn(dbDataset0)
-            whenever(datasetFuseki.fetchByGraphName(DATASET_ID_1))
-                .thenReturn(null)
-
-            val expected = dbCatalog0.union(dbCatalog1).union(dbDataset0)
 
             val response = catalogService.getAllDatasetCatalogs(JenaType.TURTLE)
 

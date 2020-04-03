@@ -24,18 +24,21 @@ class CatalogService(private val catalogFuseki: CatalogFuseki, private val datas
     fun getAllDatasetCatalogs(returnType: JenaType): String =
         catalogFuseki
             .fetchCompleteModel()
-            .addDatasetModels()
+            .addAllDatasets()
             .addDefaultPrefixes()
             .createRDFResponse(returnType)
 
     fun getDatasetCatalog(id: String, returnType: JenaType): String? =
         catalogFuseki
             .fetchByGraphName(id)
-            ?.addDatasetModels()
+            ?.addDatasets()
             ?.addDefaultPrefixes()
             ?.createRDFResponse(returnType)
 
-    private fun Model.addDatasetModels(): Model {
+    private fun Model.addAllDatasets(): Model =
+        union(datasetFuseki.fetchCompleteModel())
+
+    private fun Model.addDatasets(): Model {
 
         var unionModel = ModelFactory.createDefaultModel().union(this)
 
