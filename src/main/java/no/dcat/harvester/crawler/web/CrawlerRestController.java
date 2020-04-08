@@ -1,5 +1,7 @@
 package no.dcat.harvester.crawler.web;
 
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import no.dcat.harvester.crawler.Crawler;
 import no.dcat.harvester.crawler.CrawlerJob;
 import no.dcat.harvester.crawler.CrawlerJobFactory;
@@ -9,6 +11,8 @@ import no.dcat.datastore.Fuseki;
 import no.dcat.datastore.domain.DcatSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.AmqpException;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -37,6 +41,8 @@ import java.util.Optional;
 @EnableScheduling
 public class CrawlerRestController {
 
+    private final AmqpTemplate rabbitTemplate;
+
     /* Start harvesting at 1 o'clock every day */
     final static String scheduleSpesification = "0 0 1 * * *";
 
@@ -52,6 +58,10 @@ public class CrawlerRestController {
 
     @Autowired
     private CrawlerJobFactory crawlerJobFactory;
+
+    public CrawlerRestController(AmqpTemplate rabbitTemplate) {
+        this.rabbitTemplate = rabbitTemplate;
+    }
 
     @PostConstruct
     public void initialize() {
@@ -170,6 +180,7 @@ public class CrawlerRestController {
         if (dcatSource.isPresent()) {
             CrawlerJob job = crawlerJobFactory.createCrawlerJob(dcatSource.get());
             crawler.execute(job);
+            updateSearch();
         } else {
             logger.warn("No stored dcat source {}", dcatSource.toString());
         }
@@ -199,9 +210,23 @@ public class CrawlerRestController {
             CrawlerJob job = crawlerJobFactory.createCrawlerJob(dcatSource);
             try {
                 crawler.execute(job).get();
+                updateSearch();
             } catch (Exception e) {
                 logger.error("EXECUTION ERROR ", e);
             }
+        }
+    }
+
+    private void updateSearch() {
+        ObjectNode payload = JsonNodeFactory.instance.objectNode();
+
+        payload.put("updatesearch", "concepts");
+
+        try {
+            rabbitTemplate.convertAndSend(payload);
+            logger.info("Successfully sent harvest message for publisher {}", payload);
+        } catch (AmqpException e) {
+            logger.error("Failed to send harvest message for publisher {}", payload, e);
         }
     }
 

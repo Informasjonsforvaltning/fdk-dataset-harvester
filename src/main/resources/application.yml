@@ -27,6 +27,9 @@ spring:
     port: ${RABBIT_PORT:5672}
     username: ${RABBIT_USERNAME:admin}
     password: ${RABBIT_PASSWORD:admin}
+    template:
+      routing-key: 'harvester.UpdateSearchTrigger'
+      exchange: 'updates'
   mail:
     host: smtprelay.brreg.no
 
