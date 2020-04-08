@@ -220,7 +220,7 @@ public class CrawlerRestController {
     private void updateSearch() {
         ObjectNode payload = JsonNodeFactory.instance.objectNode();
 
-        payload.put("updatesearch", "concepts");
+        payload.put("updatesearch", "datasets");
 
         try {
             rabbitTemplate.convertAndSend(payload);
