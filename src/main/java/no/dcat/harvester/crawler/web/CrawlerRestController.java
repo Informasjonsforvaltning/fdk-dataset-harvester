@@ -223,7 +223,7 @@ public class CrawlerRestController {
         payload.put("updatesearch", "datasets");
 
         try {
-            rabbitTemplate.convertAndSend(payload);
+            rabbitTemplate.convertAndSend("harvester.UpdateSearchTrigger", payload);
             logger.info("Successfully sent harvest message for publisher {}", payload);
         } catch (AmqpException e) {
             logger.error("Failed to send harvest message for publisher {}", payload, e);
