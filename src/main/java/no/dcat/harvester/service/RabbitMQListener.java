@@ -33,6 +33,8 @@ public class RabbitMQListener {
     private Crawler crawler;
     @Autowired
     private CrawlerJobFactory crawlerJobFactory;
+    @Autowired
+    private UpdateSearchService updateSearchService;
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @PostConstruct
@@ -63,6 +65,7 @@ public class RabbitMQListener {
                 .forEach(dcatSource -> {
                     try {
                         crawler.execute(crawlerJobFactory.createCrawlerJob(dcatSource)).get();
+                        updateSearchService.updateSearch();
                     } catch (Exception e) {
                         logger.error("EXECUTION ERROR ", e);
                     }

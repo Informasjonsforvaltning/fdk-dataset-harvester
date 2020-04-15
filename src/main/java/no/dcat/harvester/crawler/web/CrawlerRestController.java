@@ -1,17 +1,15 @@
 package no.dcat.harvester.crawler.web;
 
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import no.dcat.harvester.crawler.Crawler;
-import no.dcat.harvester.crawler.CrawlerJob;
-import no.dcat.harvester.crawler.CrawlerJobFactory;
-import no.dcat.harvester.settings.FusekiSettings;
 import no.dcat.datastore.AdminDataStore;
 import no.dcat.datastore.Fuseki;
 import no.dcat.datastore.domain.DcatSource;
+import no.dcat.harvester.crawler.Crawler;
+import no.dcat.harvester.crawler.CrawlerJob;
+import no.dcat.harvester.crawler.CrawlerJobFactory;
+import no.dcat.harvester.service.UpdateSearchService;
+import no.dcat.harvester.settings.FusekiSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,22 +17,14 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
 import javax.xml.bind.DatatypeConverter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -50,6 +40,8 @@ public class CrawlerRestController {
     @Autowired
     private FusekiSettings fusekiSettings;
     private AdminDataStore adminDataStore;
+    @Autowired
+    private UpdateSearchService updateSearchService;
 
     private final Logger logger = LoggerFactory.getLogger(CrawlerRestController.class);
 
@@ -180,7 +172,7 @@ public class CrawlerRestController {
         if (dcatSource.isPresent()) {
             CrawlerJob job = crawlerJobFactory.createCrawlerJob(dcatSource.get());
             crawler.execute(job);
-            updateSearch();
+            updateSearchService.updateSearch();
         } else {
             logger.warn("No stored dcat source {}", dcatSource.toString());
         }
@@ -210,24 +202,11 @@ public class CrawlerRestController {
             CrawlerJob job = crawlerJobFactory.createCrawlerJob(dcatSource);
             try {
                 crawler.execute(job).get();
-                updateSearch();
             } catch (Exception e) {
                 logger.error("EXECUTION ERROR ", e);
             }
         }
-    }
-
-    private void updateSearch() {
-        ObjectNode payload = JsonNodeFactory.instance.objectNode();
-
-        payload.put("updatesearch", "datasets");
-
-        try {
-            rabbitTemplate.convertAndSend("harvester.UpdateSearchTrigger", payload);
-            logger.info("Successfully sent harvest message for publisher {}", payload);
-        } catch (AmqpException e) {
-            logger.error("Failed to send harvest message for publisher {}", payload, e);
-        }
+        updateSearchService.updateSearch();
     }
 
     List<DcatSource> getDcatSources() {
