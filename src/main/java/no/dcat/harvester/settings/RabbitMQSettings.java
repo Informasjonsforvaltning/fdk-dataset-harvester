@@ -3,6 +3,8 @@ package no.dcat.harvester.settings;
 import lombok.RequiredArgsConstructor;
 import no.dcat.harvester.service.RabbitMQListener;
 import org.springframework.amqp.core.*;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,6 +24,11 @@ public class RabbitMQSettings {
     }
 
     @Bean
+    public Queue sendQueue() {
+        return new Queue("harvester.UpdateSearchTrigger", false);
+    }
+
+    @Bean
     public Jackson2JsonMessageConverter converter() {
         return new Jackson2JsonMessageConverter();
     }
@@ -34,5 +41,17 @@ public class RabbitMQSettings {
     @Bean
     public Binding binding(TopicExchange topicExchange, Queue queue) {
         return BindingBuilder.bind(queue).to(topicExchange).with("dataset.*.HarvestTrigger");
+    }
+
+    @Bean
+    public Binding sendBinding(TopicExchange topicExchange, Queue sendQueue) {
+        return BindingBuilder.bind(sendQueue).to(topicExchange).with("harvester.UpdateSearchTrigger");
+    }
+
+    @Bean
+    public AmqpTemplate jsonRabbitTemplate(ConnectionFactory connectionFactory) {
+        final RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+        rabbitTemplate.setMessageConverter(converter());
+        return rabbitTemplate;
     }
 }
