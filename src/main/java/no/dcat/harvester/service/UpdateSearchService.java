@@ -21,7 +21,7 @@ public class UpdateSearchService {
         ObjectNode payload = JsonNodeFactory.instance.objectNode();
 
         AmqpTemplate rabbitTemplate = (AmqpTemplate)context.getBean("jsonRabbitTemplate");
-        payload.put("updatesearch", "concepts");
+        payload.put("updatesearch", "datasets");
 
         try {
             rabbitTemplate.convertAndSend("harvester.UpdateSearchTrigger", payload);
