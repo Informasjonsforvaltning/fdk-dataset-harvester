@@ -6,6 +6,7 @@ import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.dto.HarvestDataSo
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.fuseki.CatalogFuseki
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.fuseki.DatasetFuseki
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.JenaType
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.createDatasetModel
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.createIdFromUri
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.createModel
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.extractCatalogModelURI
@@ -55,7 +56,7 @@ class DatasetHarvester(
                     datasets.forEach {
                         val modelId = it.extractMetaDataIdentifier()
                         datasetFuseki.saveWithGraphName(modelId, it)
-                        LOGGER.debug("Updated data service model ${it.extractDatasetModelURI()}, id: $modelId")
+                        LOGGER.debug("Updated dataset model ${it.extractDatasetModelURI()}, id: $modelId")
                     }
                 }
         }
@@ -81,14 +82,14 @@ class DatasetHarvester(
     private fun datasetModelWithMetaData(resource: Resource, harvestDate: Calendar): HarvestedModel {
         val dbId = createIdFromUri(resource.uri)
         val dbModel = datasetFuseki.fetchByGraphName(dbId)
-        val harvested = resource.createModel()
+        val harvested = resource.createDatasetModel()
 
         val dbMetaData: Resource? = dbModel?.extractMetaDataResource()
 
         val isModified = !harvestedIsIsomorphicWithDatabaseModel(dbModel, harvested, dbMetaData?.listProperties()?.toModel())
 
         val updatedModel = if (!isModified && dbModel != null) {
-            LOGGER.debug("No changes detected in data service model ${resource.uri}")
+            LOGGER.debug("No changes detected in dataset model ${resource.uri}")
             dbModel
         } else harvested.addDatasetMetaData(dbId, resource.uri, dbMetaData, harvestDate)
 

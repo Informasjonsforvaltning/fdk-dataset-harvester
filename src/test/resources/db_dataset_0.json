@@ -40,14 +40,21 @@
     "keyword" : [ "fest", "test" ],
     "theme" : [ "http://publications.europa.eu/resource/authority/data-theme/TECH", "http://publications.europa.eu/resource/authority/data-theme/GOVE" ],
     "page" : "https://testdirektoratet.no"
+  }, {
+    "@id" : "https://testdirektoratet.no/model/distribution/0",
+    "@type" : "http://www.w3.org/ns/dcat#Distribution",
+    "format" : "CSV JSON JSONP YAML XML",
+    "license" : "https://data.norge.no/nlod/no",
+    "title" : "Test distribution",
+    "accessURL" : "http://testdirektoratet.no/data/test/fest"
   } ],
   "@context" : {
-    "startDate" : {
-      "@id" : "http://www.w3.org/ns/dcat#startDate",
-      "@type" : "http://www.w3.org/2001/XMLSchema#dateTime"
-    },
     "endpointDescription" : {
       "@id" : "http://www.w3.org/ns/dcat#endpointDescription",
+      "@type" : "@id"
+    },
+    "temporal" : {
+      "@id" : "http://purl.org/dc/terms/temporal",
       "@type" : "@id"
     },
     "distribution" : {
@@ -75,23 +82,30 @@
     "title" : {
       "@id" : "http://purl.org/dc/terms/title"
     },
-    "temporal" : {
-      "@id" : "http://purl.org/dc/terms/temporal",
-      "@type" : "@id"
-    },
-    "language" : {
-      "@id" : "http://purl.org/dc/terms/language",
+    "contactPoint" : {
+      "@id" : "http://www.w3.org/ns/dcat#contactPoint",
       "@type" : "@id"
     },
     "accessRights" : {
       "@id" : "http://purl.org/dc/terms/accessRights",
       "@type" : "@id"
     },
+    "language" : {
+      "@id" : "http://purl.org/dc/terms/language",
+      "@type" : "@id"
+    },
     "identifier" : {
       "@id" : "http://purl.org/dc/terms/identifier"
     },
-    "contactPoint" : {
-      "@id" : "http://www.w3.org/ns/dcat#contactPoint",
+    "startDate" : {
+      "@id" : "http://www.w3.org/ns/dcat#startDate",
+      "@type" : "http://www.w3.org/2001/XMLSchema#dateTime"
+    },
+    "hasOrganizationName" : {
+      "@id" : "http://www.w3.org/2006/vcard/ns#hasOrganizationName"
+    },
+    "hasURL" : {
+      "@id" : "http://www.w3.org/2006/vcard/ns#hasURL",
       "@type" : "@id"
     },
     "format" : {
@@ -112,13 +126,6 @@
     "primaryTopic" : {
       "@id" : "http://xmlns.com/foaf/0.1/primaryTopic",
       "@type" : "@id"
-    },
-    "hasURL" : {
-      "@id" : "http://www.w3.org/2006/vcard/ns#hasURL",
-      "@type" : "@id"
-    },
-    "hasOrganizationName" : {
-      "@id" : "http://www.w3.org/2006/vcard/ns#hasOrganizationName"
     }
   }
 }

@@ -10,6 +10,8 @@ import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.adapter.DatasetAd
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.configuration.ApplicationProperties
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.fuseki.CatalogFuseki
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.fuseki.DatasetFuseki
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.JenaType
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.createRDFResponse
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.TEST_HARVEST_DATE
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.TEST_HARVEST_SOURCE
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.TestResponseReader
