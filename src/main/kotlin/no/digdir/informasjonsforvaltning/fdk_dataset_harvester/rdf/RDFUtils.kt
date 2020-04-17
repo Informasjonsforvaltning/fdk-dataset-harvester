@@ -2,6 +2,7 @@ package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf
 
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.ModelFactory
+import org.apache.jena.rdf.model.Property
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.rdf.model.ResourceRequiredException
 import org.apache.jena.rdf.model.Statement
@@ -59,6 +60,7 @@ fun Model.addDefaultPrefixes(): Model {
     setNsPrefix("vcard", VCARD4.NS)
     setNsPrefix("xsd", XSD.NS)
     setNsPrefix("skos", SKOS.uri)
+    setNsPrefix("rdf", RDF.uri)
     setNsPrefix("adms", "http://www.w3.org/ns/adms#")
     setNsPrefix("dcatno", "http://difi.no/dcatno#")
     setNsPrefix("dqv", "http://www.w3.org/ns/dqvNS#")
@@ -67,19 +69,39 @@ fun Model.addDefaultPrefixes(): Model {
     return this
 }
 
+fun Resource.createDatasetModel(): Model =
+    listProperties()
+        .toModel()
+        .addNonURIPropertiesFromResource(this)
+        .addURIResourceProperties(this, DCTerms.publisher)
+        .addURIResourceProperties(this, DCAT.contactPoint)
+        .addURIResourceProperties(this, DCTerms.temporal)
+        .addURIResourceProperties(this, DCAT.distribution)
+
 fun Resource.createModel(): Model =
     listProperties()
         .toModel()
-        .addNonURIResources(this)
+        .addNonURIPropertiesFromResource(this)
 
-private fun Model.addNonURIResources(resource: Resource): Model {
+private fun Model.addNonURIPropertiesFromResource(resource: Resource): Model {
     add(resource.listProperties())
 
     resource.listProperties()
         .toList()
         .filter { it.isResourceProperty() }
         .filter { !it.resource.isURIResource }
-        .forEach { addNonURIResources(it.resource) }
+        .forEach { addNonURIPropertiesFromResource(it.resource) }
+
+    return this
+}
+
+private fun Model.addURIResourceProperties(resource: Resource, property: Property): Model {
+    resource.listProperties(property)
+        .forEach {
+            if(it.isResourceProperty() && it.resource.isURIResource) {
+                addNonURIPropertiesFromResource(it.resource)
+            }
+        }
 
     return this
 }

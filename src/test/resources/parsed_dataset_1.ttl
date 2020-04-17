@@ -1,7 +1,12 @@
 @prefix dct:   <http://purl.org/dc/terms/> .
+@prefix adms:  <http://www.w3.org/ns/adms#> .
+@prefix dcatno: <http://difi.no/dcatno#> .
 @prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix dqv:   <http://www.w3.org/ns/dqvNS#> .
+@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
 @prefix vcard: <http://www.w3.org/2006/vcard/ns#> .
 @prefix dcat:  <http://www.w3.org/ns/dcat#> .
+@prefix prov:  <http://www.w3.org/ns/prov#> .
 @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
 
 <https://testdirektoratet.no/model/dataset/1>
@@ -9,23 +14,33 @@
         dct:accessRights          <http://publications.europa.eu/resource/authority/access-right/PUBLIC> ;
         dct:description           "Description of dataset 0"@nb ;
         dct:identifier            "adb4cf00-31c8-460c-9563-55f204cf8221" ;
-        dct:title                 "Dataset 0"@nb ;
-        dcat:contactPoint         <https://testdirektoratet.no/model/contact/1> ;
-        dcat:endpointDescription  <https://testdirektoratet.no/openapi/dataset/1.yaml> ;
         dct:issued                "2019-03-22T13:11:16.546902"^^xsd:dateTime ;
         dct:language              <http://publications.europa.eu/resource/authority/language/NOR> ;
         dct:temporal              <https://testdirektoratet.no/model/periodoftime/1> ;
-        dcat:distribution         [ a                   dcat:Distribution ;
-                                    dct:format          "CSV JSON JSONP YAML XML" ;
-                                    dct:license         <https://data.norge.no/nlod/no> ;
-                                    dct:title           "Test distribution 1" ;
-                                    dcat:accessURL      <http://testdirektoratet.no/data/test/1> ] ,
-                                  [ a                   dcat:Distribution ;
-                                    dct:format          "CSV JSON JSONP YAML XML" ;
-                                    dct:license         <https://data.norge.no/nlod/no> ;
-                                    dct:title           "Test distribution 2" ;
-                                    dcat:accessURL      <http://testdirektoratet.no/data/test/2> ] ;
-        dcat:keyword              "test", "fest" ;
-        dcat:theme                <http://publications.europa.eu/resource/authority/data-theme/GOVE>,
-                                  <http://publications.europa.eu/resource/authority/data-theme/TECH> ;
+        dct:title                 "Dataset 0"@nb ;
+        dcat:contactPoint         <https://testdirektoratet.no/model/contact/1> ;
+        dcat:distribution         [ a               dcat:Distribution ;
+                                    dct:format      "CSV JSON JSONP YAML XML" ;
+                                    dct:license     <https://data.norge.no/nlod/no> ;
+                                    dct:title       "Test distribution 2" ;
+                                    dcat:accessURL  <http://testdirektoratet.no/data/test/2>
+                                  ] ;
+        dcat:distribution         [ a               dcat:Distribution ;
+                                    dct:format      "CSV JSON JSONP YAML XML" ;
+                                    dct:license     <https://data.norge.no/nlod/no> ;
+                                    dct:title       "Test distribution 1" ;
+                                    dcat:accessURL  <http://testdirektoratet.no/data/test/1>
+                                  ] ;
+        dcat:endpointDescription  <https://testdirektoratet.no/openapi/dataset/1.yaml> ;
+        dcat:keyword              "test" , "fest" ;
+        dcat:theme                <http://publications.europa.eu/resource/authority/data-theme/GOVE> , <http://publications.europa.eu/resource/authority/data-theme/TECH> ;
         foaf:page                 <https://testdirektoratet.no> .
+
+<https://testdirektoratet.no/model/periodoftime/1>
+        a               dct:PeriodOfTime ;
+        dcat:startDate  "2019-04-02T00:00:00"^^xsd:dateTime .
+
+<https://testdirektoratet.no/model/contact/1>
+        a                          vcard:Organization ;
+        vcard:hasOrganizationName  "Testdirektoratet"@nb ;
+        vcard:hasURL               <https://testdirektoratet.no> .

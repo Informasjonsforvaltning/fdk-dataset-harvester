@@ -33,7 +33,7 @@
 <https://testdirektoratet.no/model/dataset-catalog/1>
         a              dcat:Catalog ;
         dct:publisher  <https://organization-catalogue.fellesdatakatalog.brreg.no/organizations/123456789> ;
-        dct:title      "Datasettkatalog for Testdirektoratet"@nb ;
+        dct:title      "Datasettkatalog 1 for Testdirektoratet"@nb ;
         dcat:dataset   <https://testdirektoratet.no/model/dataset/1> .
 
 <https://testdirektoratet.no/model/contact/1>

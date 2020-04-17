@@ -17,19 +17,15 @@
     "dataset" : "https://testdirektoratet.no/model/dataset/1"
   } ],
   "@context" : {
-    "dataset" : {
-      "@id" : "http://www.w3.org/ns/dcat#dataset",
+    "publisher" : {
+      "@id" : "http://purl.org/dc/terms/publisher",
       "@type" : "@id"
     },
     "title" : {
       "@id" : "http://purl.org/dc/terms/title"
     },
-    "publisher" : {
-      "@id" : "http://purl.org/dc/terms/publisher",
-      "@type" : "@id"
-    },
-    "primaryTopic" : {
-      "@id" : "http://xmlns.com/foaf/0.1/primaryTopic",
+    "dataset" : {
+      "@id" : "http://www.w3.org/ns/dcat#dataset",
       "@type" : "@id"
     },
     "modified" : {
@@ -39,6 +35,10 @@
     "issued" : {
       "@id" : "http://purl.org/dc/terms/issued",
       "@type" : "http://www.w3.org/2001/XMLSchema#dateTime"
+    },
+    "primaryTopic" : {
+      "@id" : "http://xmlns.com/foaf/0.1/primaryTopic",
+      "@type" : "@id"
     },
     "identifier" : {
       "@id" : "http://purl.org/dc/terms/identifier"
