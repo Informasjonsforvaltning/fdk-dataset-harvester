@@ -3,6 +3,8 @@
 @prefix vcard: <http://www.w3.org/2006/vcard/ns#> .
 @prefix dcat:  <http://www.w3.org/ns/dcat#> .
 @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcatapi: <http://dcat.no/dcatapi/> .
 
 <https://testdirektoratet.no/model/dataset/0>
         a                         dcat:Dataset ;
@@ -36,4 +38,12 @@
         dct:format          "CSV JSON JSONP YAML XML" ;
         dct:license         <https://data.norge.no/nlod/no> ;
         dct:title           "Test distribution" ;
-        dcat:accessURL      <http://testdirektoratet.no/data/test/fest> .
+        dcat:accessURL      <http://testdirektoratet.no/data/test/fest> ;
+        dcatapi:accessService  <92b5e4f7-dbbd-482c-b242-990a3628d395> .
+
+<92b5e4f7-dbbd-482c-b242-990a3628d395>
+        a                            dcatapi:DataDistributionService ;
+        dcatapi:endpointDescription  [ a           foaf:Document , skos:Concept ;
+                                       dct:source  "84caab4b-b004-4a97-9b92-7bf335cf50d2"
+                                     ] ;
+        dct:description              "Search API"@nb .

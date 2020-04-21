@@ -91,7 +91,18 @@ const val DATASET_0 = """
         <http://purl.org/dc/terms/title>
                 "Test distribution" ;
         <http://www.w3.org/ns/dcat#accessURL>
-                <http://testdirektoratet.no/data/test/fest> .
+                <http://testdirektoratet.no/data/test/fest> ;
+        <http://dcat.no/dcatapi/accessService>
+                <http://example.com/92b5e4f7-dbbd-482c-b242-990a3628d395> .
+
+<http://example.com/92b5e4f7-dbbd-482c-b242-990a3628d395>
+        a       <http://dcat.no/dcatapi/DataDistributionService> ;
+        <http://dcat.no/dcatapi/endpointDescription>   
+                [ a             <http://xmlns.com/foaf/0.1/Document> , <http://www.w3.org/2004/02/skos/core#Concept> ;
+                  <http://purl.org/dc/terms/source>  "84caab4b-b004-4a97-9b92-7bf335cf50d2"
+                ] ;
+        <http://purl.org/dc/terms/description>
+                "Search API"@nb .
 
 <https://datasets.fellesdatakatalog.digdir.no/datasets/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
         a       <http://www.w3.org/ns/dcat#record> ;
