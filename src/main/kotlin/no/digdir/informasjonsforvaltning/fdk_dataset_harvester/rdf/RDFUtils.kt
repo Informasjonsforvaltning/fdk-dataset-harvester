@@ -17,6 +17,8 @@ import java.io.ByteArrayOutputStream
 import java.io.StringReader
 import java.util.*
 
+const val BACKUP_BASE_URI = "http://example.com/"
+
 enum class JenaType(val value: String){
     TURTLE("TURTLE"),
     RDF_XML("RDF/XML"),
@@ -42,12 +44,12 @@ fun jenaTypeFromAcceptHeader(accept: String?): JenaType? =
 
 fun parseRDFResponse(responseBody: String, rdfLanguage: JenaType): Model {
     val responseModel = ModelFactory.createDefaultModel()
-    responseModel.read(StringReader(responseBody), "", rdfLanguage.value)
+    responseModel.read(StringReader(responseBody), BACKUP_BASE_URI, rdfLanguage.value)
     return responseModel
 }
 
 fun Model.createRDFResponse(responseType: JenaType): String =
-    ByteArrayOutputStream().use{ out ->
+    ByteArrayOutputStream().use { out ->
         write(out, responseType.value)
         out.flush()
         out.toString("UTF-8")
@@ -65,6 +67,7 @@ fun Model.addDefaultPrefixes(): Model {
     setNsPrefix("dcatno", "http://difi.no/dcatno#")
     setNsPrefix("dqv", "http://www.w3.org/ns/dqvNS#")
     setNsPrefix("prov", "http://www.w3.org/ns/prov#")
+    setNsPrefix("dcatapi", DCATAPI.uri)
 
     return this
 }
@@ -77,6 +80,7 @@ fun Resource.createDatasetModel(): Model =
         .addURIResourceProperties(this, DCAT.contactPoint)
         .addURIResourceProperties(this, DCTerms.temporal)
         .addURIResourceProperties(this, DCAT.distribution)
+        .addURIResourceDistributionAccessService(this)
 
 fun Resource.createModel(): Model =
     listProperties()
@@ -97,10 +101,24 @@ private fun Model.addNonURIPropertiesFromResource(resource: Resource): Model {
 
 private fun Model.addURIResourceProperties(resource: Resource, property: Property): Model {
     resource.listProperties(property)
-        .forEach {
-            if(it.isResourceProperty() && it.resource.isURIResource) {
-                addNonURIPropertiesFromResource(it.resource)
-            }
+        .toList()
+        .filter { it.isResourceProperty() && it.resource.isURIResource }
+        .forEach { addNonURIPropertiesFromResource(it.resource) }
+
+    return this
+}
+
+private fun Model.addURIResourceDistributionAccessService(resource: Resource): Model {
+    resource.listProperties(DCAT.distribution)
+        .forEach { distribution ->
+            distribution.resource
+                .listProperties(DCATAPI.accessService)
+                .toList()
+                .filter { accessService ->
+                    accessService.isResourceProperty() && accessService.resource.isURIResource }
+                .forEach { accessService ->
+                    addNonURIPropertiesFromResource(accessService.resource)
+                }
         }
 
     return this

@@ -1,5 +1,6 @@
 package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils
 
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.BACKUP_BASE_URI
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.ModelFactory
 
@@ -16,13 +17,13 @@ class TestResponseReader {
 
     fun parseFile(filename: String, lang: String): Model {
         val expected = ModelFactory.createDefaultModel()
-        expected.read(resourceAsReader(filename), "", lang)
+        expected.read(resourceAsReader(filename), BACKUP_BASE_URI, lang)
         return expected
     }
 
     fun parseResponse(response: String, lang: String): Model {
         val responseModel = ModelFactory.createDefaultModel()
-        responseModel.read(StringReader(response), "", lang)
+        responseModel.read(StringReader(response), BACKUP_BASE_URI, lang)
         return responseModel
     }
 }
