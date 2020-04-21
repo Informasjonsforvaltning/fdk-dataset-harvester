@@ -12,6 +12,8 @@ import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.fuseki.CatalogFus
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.fuseki.DatasetFuseki
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.JenaType
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.createRDFResponse
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.CATALOG_0
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.DATASET_0
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.TEST_HARVEST_DATE
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.TEST_HARVEST_SOURCE
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.TestResponseReader
@@ -41,8 +43,8 @@ class HarvesterTest {
         whenever(valuesMock.datasetUri)
             .thenReturn("https://datasets.fellesdatakatalog.digdir.no/datasets")
 
-        val expectedCatalog = responseReader.parseFile("db_catalog_0.json", "JSONLD")
-        val expectedDataset = responseReader.parseFile("db_dataset_0.json", "JSONLD")
+        val expectedCatalog = responseReader.parseResponse(CATALOG_0, "TURTLE")
+        val expectedDataset = responseReader.parseResponse(DATASET_0, "TURTLE")
 
         harvester.harvestDatasetCatalog(TEST_HARVEST_SOURCE, TEST_HARVEST_DATE)
 
