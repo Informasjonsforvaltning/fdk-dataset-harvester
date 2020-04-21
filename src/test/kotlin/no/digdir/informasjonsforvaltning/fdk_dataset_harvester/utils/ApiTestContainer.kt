@@ -47,10 +47,10 @@ abstract class ApiTestContainer {
             fusekiContainer.start()
             TEST_API.start()
 
-            addTestDataToFuseki("src/test/resources/db_dataset_0.json", "dataset?graph=$DATASET_ID_0")
-            addTestDataToFuseki("src/test/resources/db_dataset_1.json", "dataset?graph=$DATASET_ID_1")
-            addTestDataToFuseki("src/test/resources/db_catalog_0.json", "dataset-catalog?graph=$CATALOG_ID_0")
-            addTestDataToFuseki("src/test/resources/db_catalog_1.json", "dataset-catalog?graph=$CATALOG_ID_1")
+            addTestDataToFuseki(DATASET_0, "dataset?graph=$DATASET_ID_0")
+            addTestDataToFuseki(DATASET_1, "dataset?graph=$DATASET_ID_1")
+            addTestDataToFuseki(CATALOG_0, "dataset-catalog?graph=$CATALOG_ID_0")
+            addTestDataToFuseki(CATALOG_1, "dataset-catalog?graph=$CATALOG_ID_1")
 
             try {
                 val result = TEST_API.execInContainer("wget", "-O", "-", "$WIREMOCK_TEST_HOST/ping")

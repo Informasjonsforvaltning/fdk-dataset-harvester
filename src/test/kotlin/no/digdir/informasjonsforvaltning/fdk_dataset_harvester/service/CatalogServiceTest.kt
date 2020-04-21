@@ -6,7 +6,11 @@ import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.fuseki.CatalogFus
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.fuseki.DatasetFuseki
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.JenaType
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.createRDFResponse
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.CATALOG_0
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.CATALOG_1
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.CATALOG_ID_0
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.DATASET_0
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.DATASET_1
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.DATASET_ID_0
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.DATASET_ID_1
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.TestResponseReader
@@ -41,8 +45,8 @@ class CatalogServiceTest {
 
         @Test
         fun correctCountFromUnionModel() {
-            val dbCatalog0 = responseReader.parseFile("db_catalog_0.json", "JSONLD")
-            val dbCatalog1 = responseReader.parseFile("db_catalog_1.json", "JSONLD")
+            val dbCatalog0 = responseReader.parseResponse(CATALOG_0, "TURTLE")
+            val dbCatalog1 = responseReader.parseResponse(CATALOG_1, "TURTLE")
 
             whenever(catalogFuseki.fetchCompleteModel())
                 .thenReturn(dbCatalog0.union(dbCatalog1))
@@ -73,10 +77,10 @@ class CatalogServiceTest {
 
         @Test
         fun responseIsIsomorphicWithUnionOfModelsFromFuseki() {
-            val dbCatalog0 = responseReader.parseFile("db_catalog_0.json", "JSONLD")
-            val dbCatalog1 = responseReader.parseFile("db_catalog_1.json", "JSONLD")
-            val dbDataset0 = responseReader.parseFile("db_dataset_0.json", "JSONLD")
-            val dbDataset1 = responseReader.parseFile("db_dataset_1.json", "JSONLD")
+            val dbCatalog0 = responseReader.parseResponse(CATALOG_0, "TURTLE")
+            val dbCatalog1 = responseReader.parseResponse(CATALOG_1, "TURTLE")
+            val dbDataset0 = responseReader.parseResponse(DATASET_0, "TURTLE")
+            val dbDataset1 = responseReader.parseResponse(DATASET_1, "TURTLE")
 
             whenever(catalogFuseki.fetchCompleteModel())
                 .thenReturn(dbCatalog0.union(dbCatalog1))
@@ -107,8 +111,8 @@ class CatalogServiceTest {
 
         @Test
         fun responseIsIsomorphicWithModelFromFuseki() {
-            val dbCatalog = responseReader.parseFile("db_catalog_0.json", "JSONLD")
-            val dbDataset = responseReader.parseFile("db_dataset_0.json", "JSONLD")
+            val dbCatalog = responseReader.parseResponse(CATALOG_0, "TURTLE")
+            val dbDataset = responseReader.parseResponse(DATASET_0, "TURTLE")
 
             whenever(catalogFuseki.fetchByGraphName(CATALOG_ID_0))
                 .thenReturn(dbCatalog)
@@ -123,7 +127,7 @@ class CatalogServiceTest {
 
         @Test
         fun handlesMissingDataset() {
-            val dbCatalog = responseReader.parseFile("db_catalog_0.json", "JSONLD")
+            val dbCatalog = responseReader.parseResponse(CATALOG_0, "TURTLE")
 
             whenever(catalogFuseki.fetchByGraphName(CATALOG_ID_0))
                 .thenReturn(dbCatalog)

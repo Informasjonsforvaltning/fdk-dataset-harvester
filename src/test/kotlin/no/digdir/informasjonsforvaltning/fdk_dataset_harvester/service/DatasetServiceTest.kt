@@ -4,6 +4,8 @@ import com.nhaarman.mockitokotlin2.mock
 import com.nhaarman.mockitokotlin2.whenever
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.fuseki.DatasetFuseki
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.JenaType
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.DATASET_0
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.DATASET_1
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.DATASET_ID_0
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.TestResponseReader
 import org.apache.jena.rdf.model.ModelFactory
@@ -37,8 +39,8 @@ class DatasetServiceTest {
 
         @Test
         fun responseIsIsomorphicWithModelFromFuseki() {
-            val db0 = responseReader.parseFile("db_dataset_0.json", "JSONLD")
-            val db1 = responseReader.parseFile("db_dataset_1.json", "JSONLD")
+            val db0 = responseReader.parseResponse(DATASET_0, "TURTLE")
+            val db1 = responseReader.parseResponse(DATASET_1, "TURTLE")
             val dbModel = db0.union(db1)
 
             whenever(datasetFuseki.fetchCompleteModel())
@@ -65,7 +67,7 @@ class DatasetServiceTest {
 
         @Test
         fun responseIsIsomorphicWithModelFromFuseki() {
-            val dbModel = responseReader.parseFile("db_dataset_0.json", "JSONLD")
+            val dbModel = responseReader.parseResponse(DATASET_0, "TURTLE")
             whenever(datasetFuseki.fetchByGraphName(DATASET_ID_0))
                 .thenReturn(dbModel)
 

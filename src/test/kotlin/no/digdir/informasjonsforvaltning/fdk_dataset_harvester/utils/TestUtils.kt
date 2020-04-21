@@ -1,5 +1,7 @@
 package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils
 
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.JenaType
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.createRDFResponse
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.ApiTestContainer.Companion.TEST_API
 import java.io.BufferedReader
 import java.net.URL
@@ -36,8 +38,9 @@ fun apiGet(endpoint: String, acceptHeader: String?): Map<String,Any> {
     }
 }
 
-fun addTestDataToFuseki(file: String, endpoint: String) {
-    val body: String = File(file).bufferedReader().readText()
+fun addTestDataToFuseki(turtleBody: String, endpoint: String) {
+    val rdfReader = TestResponseReader()
+    val body = rdfReader.parseResponse(turtleBody, "TURTLE").createRDFResponse(JenaType.JSON_LD)
     val header = "Content-Type:application/ld+json"
     val url = "http://fdk-fuseki-service:8080/fuseki/$endpoint"
     TEST_API.execInContainer("curl", "-i", "-H", header, "-X", "PUT", "--data", body, url)
