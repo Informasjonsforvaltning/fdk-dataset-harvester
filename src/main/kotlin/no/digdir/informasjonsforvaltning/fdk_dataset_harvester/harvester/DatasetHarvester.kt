@@ -44,7 +44,7 @@ class DatasetHarvester(
             LOGGER.error("Not able to harvest from ${source.url}, header ${source.acceptHeaderValue} is not acceptable ")
         } else {
             adapter.getDatasetCatalog(source)
-                ?.let { parseRDFResponse(it, jenaWriterType) }
+                ?.let { parseRDFResponse(it, jenaWriterType, source.url) }
                 ?.filterModifiedAndAddMetaData(harvestDate)
                 ?.run {
                     catalogs.forEach {

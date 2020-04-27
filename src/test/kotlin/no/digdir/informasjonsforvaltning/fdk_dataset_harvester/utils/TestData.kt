@@ -37,3 +37,10 @@ val TEST_HARVEST_SOURCE = HarvestDataSource(
     dataType = "dataset",
     dataSourceType = "DCAT-AP-NO"
 )
+
+val ERROR_HARVEST_SOURCE = HarvestDataSource(
+    url = "$WIREMOCK_TEST_URI/error-harvest",
+    acceptHeaderValue = "text/turtle",
+    dataType = "dataset",
+    dataSourceType = "DCAT-AP-NO"
+)
