@@ -1,5 +1,6 @@
 package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf
 
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.Application
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.ModelFactory
 import org.apache.jena.rdf.model.Property
@@ -13,10 +14,12 @@ import org.apache.jena.vocabulary.RDF
 import org.apache.jena.vocabulary.SKOS
 import org.apache.jena.vocabulary.VCARD4
 import org.apache.jena.vocabulary.XSD
+import org.slf4j.LoggerFactory
 import java.io.ByteArrayOutputStream
 import java.io.StringReader
 import java.util.*
 
+private val logger = LoggerFactory.getLogger(Application::class.java)
 const val BACKUP_BASE_URI = "http://example.com/"
 
 enum class JenaType(val value: String){
@@ -42,9 +45,16 @@ fun jenaTypeFromAcceptHeader(accept: String?): JenaType? =
         else -> JenaType.NOT_ACCEPTABLE
     }
 
-fun parseRDFResponse(responseBody: String, rdfLanguage: JenaType): Model {
+fun parseRDFResponse(responseBody: String, rdfLanguage: JenaType, rdfSource: String?): Model? {
     val responseModel = ModelFactory.createDefaultModel()
-    responseModel.read(StringReader(responseBody), BACKUP_BASE_URI, rdfLanguage.value)
+
+    try {
+        responseModel.read(StringReader(responseBody), BACKUP_BASE_URI, rdfLanguage.value)
+    } catch (ex: Exception) {
+        logger.error("Parse from $rdfSource has failed: ${ex.message}")
+        return null
+    }
+
     return responseModel
 }
 
