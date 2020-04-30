@@ -229,8 +229,8 @@ public class DatasetConverterTest {
         assertThat("format", actualDist.getFormat(), is(expectedDist.getFormat()));
         assertThat("accessURL", actualSortedAccessURL, is(expectedSortedAccessURL));
         assertThat("page", actualDist.getPage(), is(expectedDist.getPage()));
-        assertThat("accessService endpoint description", actualDist.getAccessService().getEndpointDescription(),
-            is(expectedDist.getAccessService().getEndpointDescription()));
+        assertThat("accessService endpoint description", actualDist.getAccessService().get(0).getEndpointDescription(),
+            is(expectedDist.getAccessService().get(0).getEndpointDescription()));
     }
 
     @Test

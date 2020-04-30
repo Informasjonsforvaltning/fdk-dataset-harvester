@@ -453,7 +453,7 @@ public class DcatBuilder {
 
                         addLiteral(disRes, DCTerms.type, distribution.getType());
 
-                        addDataDistributionService(distribution.getAccessService(), disRes);
+                        addDataDistributionServices(distribution.getAccessService(), disRes);
 
 
                         if (disRes.getProperty(DCTerms.title) != null ||
@@ -631,29 +631,31 @@ public class DcatBuilder {
         }
     }
 
-    public void addDataDistributionService(DataDistributionService distributionService, Resource resource) {
-        if (distributionService != null) {
-            try {
-                Resource distributionServiceRes = null;
-                if (distributionService.getUri() != null) {
-                    distributionServiceRes = model.createResource(distributionService.getUri());
-                } else {
-                    distributionServiceRes = model.createResource(UUID.randomUUID().toString());
+    public void addDataDistributionServices(List<DataDistributionService> distributionServices, Resource resource) {
+        if (distributionServices != null) {
+            distributionServices.forEach(distributionService -> {
+                try {
+                    Resource distributionServiceRes = null;
+                    if (distributionService.getUri() != null) {
+                        distributionServiceRes = model.createResource(distributionService.getUri());
+                    } else {
+                        distributionServiceRes = model.createResource(UUID.randomUUID().toString());
+                    }
+
+                    distributionServiceRes.addProperty(RDF.type, DCATapi.DataDistributionService);
+
+                    addLiteral(distributionServiceRes, DCTerms.identifier, distributionService.getId());
+                    addLiterals(distributionServiceRes, DCTerms.title, distributionService.getTitle());
+                    addLiterals(distributionServiceRes, DCTerms.description, distributionService.getDescription());
+                    addPublisher(distributionServiceRes, DCTerms.publisher, distributionService.getPublisher());
+                    addSkosConcepts(distributionServiceRes, DCATapi.endpointDescription, distributionService.getEndpointDescription(), FOAF.Document);
+
+                    resource.addProperty(DCATapi.accessService, distributionServiceRes);
+
+                } catch (Exception e) {
+                    logger.error("Unable to export dataDistributionService {}. Reason {}", distributionService.getTitle(), e.getLocalizedMessage(), e);
                 }
-
-                distributionServiceRes.addProperty(RDF.type, DCATapi.DataDistributionService);
-
-                addLiteral(distributionServiceRes, DCTerms.identifier, distributionService.getId());
-                addLiterals(distributionServiceRes, DCTerms.title, distributionService.getTitle());
-                addLiterals(distributionServiceRes, DCTerms.description, distributionService.getDescription());
-                addPublisher(distributionServiceRes, DCTerms.publisher, distributionService.getPublisher());
-                addSkosConcepts(distributionServiceRes, DCATapi.endpointDescription, distributionService.getEndpointDescription(), FOAF.Document);
-
-                resource.addProperty(DCATapi.accessService, distributionServiceRes);
-
-            } catch (Exception e) {
-                logger.error("Unable to export dataDistributionService {}. Reason {}", distributionService.getTitle(), e.getLocalizedMessage(), e);
-            }
+            });
         }
     }
 

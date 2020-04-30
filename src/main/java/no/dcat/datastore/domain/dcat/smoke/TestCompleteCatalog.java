@@ -154,7 +154,7 @@ public class TestCompleteCatalog {
         sampleApiDescription.setTitle(map("nb", "Eksempel-API"));
         sampleApiDescription.setDescription(map("nb", "Dette er eksempel på et API som er referert fra en distribusjon"));
         sampleApiDescription.setEndpointDescription(Arrays.asList(SkosConcept.getInstance("http://lenke/til/en/api-beskrivelse", "Oppføring i API-katalog", FOAF.Document.getURI())));
-        distribution.setAccessService(sampleApiDescription);
+        distribution.setAccessService(Collections.singletonList(sampleApiDescription));
 
         dataset.setDistribution(Collections.singletonList(distribution));
 
