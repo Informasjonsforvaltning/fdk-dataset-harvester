@@ -154,10 +154,10 @@ public class DcatConverterTest {
         List<Dataset> datasets = reader.getDatasets();
 
         String actualApiDescription = datasets.get(0).getDistribution().get(0)
-            .getAccessService().getDescription().get("nb");
+            .getAccessService().get(0).getDescription().get("nb");
 
         SkosConcept endpointDescription = datasets.get(0).getDistribution().get(0)
-            .getAccessService().getEndpointDescription().get(0);
+            .getAccessService().get(0).getEndpointDescription().get(0);
 
         assertThat(actualApiDescription, is("Åpne Data fra Enhetsregisteret - API Dokumentasjon"));
         assertThat(endpointDescription.getExtraType(), is("http://xmlns.com/foaf/0.1/Document"));

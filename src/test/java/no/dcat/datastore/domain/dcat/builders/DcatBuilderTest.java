@@ -57,7 +57,7 @@ public class DcatBuilderTest {
 
         DcatReader reader = setupReader(model);
         Dataset dataset = reader.getDatasets().get(0);
-        String endpointDescriptionUri = dataset.getDistribution().get(0).getAccessService().getUri();
+        String endpointDescriptionUri = dataset.getDistribution().get(0).getAccessService().get(0).getUri();
 
         DcatBuilder dcatBuilder = new DcatBuilder();
         String rdf = dcatBuilder.transform(dataset, "TURTLE");
