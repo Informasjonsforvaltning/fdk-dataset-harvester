@@ -23,3 +23,6 @@ Then in another terminal e.g.
 % curl http://localhost:8080/catalogs
 % curl http://localhost:8080/datasets
 ```
+
+## Datastore
+To inspect the Fuseki triple store, open your browser at http://localhost:3030/fuseki/
