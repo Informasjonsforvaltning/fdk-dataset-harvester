@@ -27,7 +27,7 @@ class RabbitMQListener(
     }
 
     @RabbitListener(queues = ["#{queue.name}"])
-    fun receiveDataServiceHarvestTrigger(@Payload body: JsonNode?, message: Message) {
+    fun receiveDatasetHarvestTrigger(@Payload body: JsonNode?, message: Message) {
         val routingKey = message.extractRoutingKey()
         logger.info("Received message from key: $routingKey")
 
