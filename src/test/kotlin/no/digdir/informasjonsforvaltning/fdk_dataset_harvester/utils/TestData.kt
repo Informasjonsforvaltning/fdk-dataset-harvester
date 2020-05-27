@@ -1,6 +1,7 @@
 package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils
 
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.dto.HarvestDataSource
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.createIdFromUri
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.ApiTestContainer.Companion.TEST_API
 import java.util.Calendar
 import java.util.TimeZone
@@ -32,7 +33,7 @@ fun getApiAddress(endpoint: String): String {
 val TEST_HARVEST_DATE: Calendar = Calendar.Builder().setTimeZone(TimeZone.getTimeZone("UTC")).setDate(2020, 2, 12).setTimeOfDay(11, 52, 16, 122).build()
 
 val TEST_HARVEST_SOURCE = HarvestDataSource(
-    url = "$WIREMOCK_TEST_URI/harvest",
+    url = "$WIREMOCK_TEST_URI/harvest0",
     acceptHeaderValue = "text/turtle",
     dataType = "dataset",
     dataSourceType = "DCAT-AP-NO"
@@ -44,3 +45,6 @@ val ERROR_HARVEST_SOURCE = HarvestDataSource(
     dataType = "dataset",
     dataSourceType = "DCAT-AP-NO"
 )
+
+val TEST_HARVEST_SOURCE_ID_0 = createIdFromUri("$WIREMOCK_TEST_URI/harvest0")
+val TEST_HARVEST_SOURCE_ID_1 = createIdFromUri("$WIREMOCK_TEST_URI/harvest1")

@@ -18,7 +18,7 @@ class DatasetsContract : ApiTestContainer() {
     private val responseReader = TestResponseReader()
 
     @Test
-    fun findSpecific() {
+    fun getDataset() {
         val response = apiGet("/datasets/$DATASET_ID_0", "application/rdf+json")
         assumeTrue(HttpStatus.OK.value() == response["status"])
 
@@ -34,14 +34,4 @@ class DatasetsContract : ApiTestContainer() {
         assertEquals(HttpStatus.NOT_FOUND.value(), response["status"])
     }
 
-    @Test
-    fun findAll() {
-        val response = apiGet("/datasets", "application/ld+json")
-        assumeTrue(HttpStatus.OK.value() == response["status"])
-
-        val expected = responseReader.parseFile("all_datasets.ttl", "TURTLE")
-        val responseModel = responseReader.parseResponse(response["body"] as String, "JSONLD")
-
-        assertTrue(expected.isIsomorphicWith(responseModel))
-    }
 }

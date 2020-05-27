@@ -26,12 +26,4 @@ open class DatasetsController(private val datasetService: DatasetService) : Dcat
                 ?: ResponseEntity(HttpStatus.NOT_FOUND)
         }
     }
-
-    override fun getDatasets(httpServletRequest: HttpServletRequest): ResponseEntity<String> {
-        LOGGER.info("get all Datasets")
-        val returnType = jenaTypeFromAcceptHeader(httpServletRequest.getHeader("Accept"))
-
-        return if (returnType == JenaType.NOT_ACCEPTABLE) ResponseEntity(HttpStatus.NOT_ACCEPTABLE)
-        else ResponseEntity(datasetService.getAllDatasets(returnType ?: JenaType.TURTLE), HttpStatus.OK)
-    }
 }

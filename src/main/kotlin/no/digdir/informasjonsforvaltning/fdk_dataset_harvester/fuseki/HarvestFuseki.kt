@@ -8,23 +8,23 @@ import org.apache.jena.rdfconnection.RDFConnectionFuseki
 import org.springframework.stereotype.Service
 
 @Service
-class CatalogFuseki(private val fusekiProperties: FusekiProperties) {
+class HarvestFuseki(private val fusekiProperties: FusekiProperties) {
 
-    private fun catalogConnection(): RDFConnection =
+    private fun datasetConnection(): RDFConnection =
         RDFConnectionFuseki.create()
-            .destination(this.fusekiProperties.catalogUri)
-            .queryEndpoint("${this.fusekiProperties.catalogUri}/query")
-            .updateEndpoint("${this.fusekiProperties.catalogUri}/update")
+            .destination(this.fusekiProperties.datasetUri)
+            .queryEndpoint("${this.fusekiProperties.datasetUri}/query")
+            .updateEndpoint("${this.fusekiProperties.datasetUri}/update")
             .build()
 
     fun fetchCompleteModel(): Model =
-        catalogConnection().use {
+        datasetConnection().use {
             it.begin(ReadWrite.READ)
             return it.fetchDataset().unionModel
         }
 
     fun fetchByGraphName(graphName: String): Model? =
-        catalogConnection().use {
+        datasetConnection ().use {
             it.begin(ReadWrite.READ)
             return try {
                 it.fetch(graphName)
@@ -33,8 +33,18 @@ class CatalogFuseki(private val fusekiProperties: FusekiProperties) {
             }
         }
 
+    fun queryDescribe(query: String): Model? =
+        datasetConnection().use {
+            it.begin(ReadWrite.READ)
+            return try {
+                it.queryDescribe(query)
+            } catch (ex: Exception) {
+                null
+            }
+        }
+
     fun saveWithGraphName(graphName: String, model: Model) =
-        catalogConnection().use {
+        datasetConnection().use {
             it.begin(ReadWrite.WRITE)
             it.put(graphName, model)
         }

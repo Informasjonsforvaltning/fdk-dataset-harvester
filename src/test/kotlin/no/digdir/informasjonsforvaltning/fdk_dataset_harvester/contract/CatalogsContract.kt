@@ -18,7 +18,7 @@ class CatalogsContract : ApiTestContainer() {
     private val responseReader = TestResponseReader()
 
     @Test
-    fun findSpecific() {
+    fun getCatalog() {
         val response = apiGet("/catalogs/$CATALOG_ID_0", "application/rdf+xml")
         assumeTrue(HttpStatus.OK.value() == response["status"])
 

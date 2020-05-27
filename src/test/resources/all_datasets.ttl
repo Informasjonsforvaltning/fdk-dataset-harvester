@@ -31,8 +31,8 @@
         dcat:theme                <http://publications.europa.eu/resource/authority/data-theme/TECH> , <http://publications.europa.eu/resource/authority/data-theme/GOVE> ;
         foaf:page                 <https://testdirektoratet.no> .
 
-<https://datasets.fellesdatakatalog.digdir.no/datasets/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
-        a                  dcat:record ;
+<http://host.testcontainers.internal:5000/datasets/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
+        a                  dcat:CatalogRecord ;
         dct:identifier     "a1c680ca-62d7-34d5-aa4c-d39b5db033ae" ;
         dct:issued         "2020-03-12T11:52:16.122Z"^^xsd:dateTime ;
         dct:modified       "2020-03-12T11:52:16.122Z"^^xsd:dateTime ;
@@ -62,8 +62,8 @@
         vcard:hasOrganizationName  "Testdirektoratet"@nb ;
         vcard:hasURL               <https://testdirektoratet.no> .
 
-<https://datasets.fellesdatakatalog.digdir.no/datasets/4667277a-9d27-32c1-aed5-612fa601f393>
-        a                  dcat:record ;
+<http://host.testcontainers.internal:5000/datasets/4667277a-9d27-32c1-aed5-612fa601f393>
+        a                  dcat:CatalogRecord ;
         dct:identifier     "4667277a-9d27-32c1-aed5-612fa601f393" ;
         dct:issued         "2020-03-12T11:52:16.122Z"^^xsd:dateTime ;
         dct:modified       "2020-03-12T11:52:16.122Z"^^xsd:dateTime ;

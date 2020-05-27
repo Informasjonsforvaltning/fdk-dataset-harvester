@@ -1,13 +1,13 @@
 package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.controller
 
-import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service.CatalogService
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service.DatasetService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
-class ApplicationStatusController(private val catalogService: CatalogService) {
+class ApplicationStatusController(private val datasetService: DatasetService) {
 
     @GetMapping("/ping")
     fun ping(): ResponseEntity<Void> {
@@ -17,7 +17,7 @@ class ApplicationStatusController(private val catalogService: CatalogService) {
     @GetMapping("/ready")
     fun ready(): ResponseEntity<Void> {
         try {
-            catalogService.countDatasetCatalogs()
+            datasetService.countMetaData()
             return ResponseEntity.ok().build()
         } catch (e: Exception) {
             e.printStackTrace()
@@ -28,7 +28,7 @@ class ApplicationStatusController(private val catalogService: CatalogService) {
     @GetMapping("/count")
     fun count(): ResponseEntity<Int> {
         try {
-            return ResponseEntity.ok(catalogService.countDatasetCatalogs())
+            return ResponseEntity.ok(datasetService.countMetaData())
         } catch (e: Exception) {
             e.printStackTrace()
         }

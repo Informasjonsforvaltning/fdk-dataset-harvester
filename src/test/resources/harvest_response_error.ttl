@@ -1,7 +1,9 @@
 @prefix dct:   <http://purl.org/dc/terms/> .
+@prefix dcat:  <http://www.w3.org/ns/dcat#> .
 
 <https://testdirektoratet.no/model/dataset/error>
         a                         dcat:Dataset ;
+        dcat:endpointDescription  <https://testdirektoratet.no/whitespace/in-iri/err or.yaml> ;
         dct:description           "Description of dataset"@nb ;
         dct:identifier            "adb4cf00-31c8-460c-9563-55f204cf8221" ;
         dct:title                 "Dataset"@nb ;

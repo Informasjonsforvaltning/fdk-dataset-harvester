@@ -88,34 +88,6 @@ paths:
                 type: string
         '404':
           description: Dataset catalog with requested id does not exist
-  /datasets:
-    get:
-      tags:
-        - dcat-ap-no-datasets
-      description: Returnerer samlinger av datasett
-      operationId: getDatasets
-      responses:
-        '200':
-          description: OK
-          content:
-            text/turtle:
-              schema:
-                type: string
-            text/n3:
-              schema:
-                type: string
-            application/rdf+json:
-              schema:
-                type: string
-            application/ld+json:
-              schema:
-                type: string
-            application/rdf+xml:
-              schema:
-                type: string
-            application/n-triples:
-              schema:
-                type: string
   /datasets/{id}:
     get:
       tags:
