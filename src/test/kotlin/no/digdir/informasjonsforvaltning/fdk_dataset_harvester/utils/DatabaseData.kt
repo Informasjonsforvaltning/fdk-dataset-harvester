@@ -1,6 +1,58 @@
 package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils
 
-const val CATALOG_0 = """
+val META_CATALOG_0 = """
+<http://host.testcontainers.internal:5000/catalogs/6e4237cc-98d6-3e7c-a892-8ac1f0ffb37f>
+        a       <http://www.w3.org/ns/dcat#CatalogRecord> ;
+        <http://purl.org/dc/terms/identifier>
+                "6e4237cc-98d6-3e7c-a892-8ac1f0ffb37f" ;
+        <http://purl.org/dc/terms/issued>
+                "2020-03-12T11:52:16.122Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+        <http://purl.org/dc/terms/modified>
+                "2020-03-12T11:52:16.122Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+        <http://xmlns.com/foaf/0.1/primaryTopic>
+                <https://testdirektoratet.no/model/dataset-catalog/0> .
+""".trimIndent()
+
+val META_CATALOG_1 = """
+<http://host.testcontainers.internal:5000/catalogs/6f0a37af-a9c1-38bc-b343-bd025b43b5e8>
+        a       <http://www.w3.org/ns/dcat#CatalogRecord> ;
+        <http://purl.org/dc/terms/identifier>
+                "6f0a37af-a9c1-38bc-b343-bd025b43b5e8" ;
+        <http://purl.org/dc/terms/issued>
+                "2020-03-12T11:52:16.122Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+        <http://purl.org/dc/terms/modified>
+                "2020-03-12T11:52:16.122Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+        <http://xmlns.com/foaf/0.1/primaryTopic>
+                <https://testdirektoratet.no/model/dataset-catalog/1> .
+""".trim()
+
+val META_DATASET_0 ="""
+<http://host.testcontainers.internal:5000/datasets/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
+        a       <http://www.w3.org/ns/dcat#CatalogRecord> ;
+        <http://purl.org/dc/terms/identifier>
+                "a1c680ca-62d7-34d5-aa4c-d39b5db033ae" ;
+        <http://purl.org/dc/terms/issued>
+                "2020-03-12T11:52:16.122Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+        <http://purl.org/dc/terms/modified>
+                "2020-03-12T11:52:16.122Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+        <http://xmlns.com/foaf/0.1/primaryTopic>
+                <https://testdirektoratet.no/model/dataset/0> .
+""".trim()
+
+val META_DATASET_1 ="""
+<http://host.testcontainers.internal:5000/datasets/4667277a-9d27-32c1-aed5-612fa601f393>
+        a       <http://www.w3.org/ns/dcat#CatalogRecord> ;
+        <http://purl.org/dc/terms/identifier>
+                "4667277a-9d27-32c1-aed5-612fa601f393" ;
+        <http://purl.org/dc/terms/issued>
+                "2020-03-12T11:52:16.122Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+        <http://purl.org/dc/terms/modified>
+                "2020-03-12T11:52:16.122Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+        <http://xmlns.com/foaf/0.1/primaryTopic>
+                <https://testdirektoratet.no/model/dataset/1> .
+""".trim()
+
+val HARVEST_0 = """
 <https://testdirektoratet.no/model/dataset-catalog/0>
         a       <http://www.w3.org/ns/dcat#Catalog> ;
         <http://purl.org/dc/terms/publisher>
@@ -10,41 +62,6 @@ const val CATALOG_0 = """
         <http://www.w3.org/ns/dcat#dataset>
                 <https://testdirektoratet.no/model/dataset/0> .
 
-<https://datasets.fellesdatakatalog.digdir.no/catalogs/6e4237cc-98d6-3e7c-a892-8ac1f0ffb37f>
-        a       <http://www.w3.org/ns/dcat#record> ;
-        <http://purl.org/dc/terms/identifier>
-                "6e4237cc-98d6-3e7c-a892-8ac1f0ffb37f" ;
-        <http://purl.org/dc/terms/issued>
-                "2020-03-12T11:52:16.122Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
-        <http://purl.org/dc/terms/modified>
-                "2020-03-12T11:52:16.122Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
-        <http://xmlns.com/foaf/0.1/primaryTopic>
-                <https://testdirektoratet.no/model/dataset-catalog/0> .
-"""
-
-const val CATALOG_1 = """
-<https://testdirektoratet.no/model/dataset-catalog/1>
-        a       <http://www.w3.org/ns/dcat#Catalog> ;
-        <http://purl.org/dc/terms/publisher>
-                <https://organization-catalogue.fellesdatakatalog.brreg.no/organizations/123456789> ;
-        <http://purl.org/dc/terms/title>
-                "Datasettkatalog 1 for Testdirektoratet"@nb ;
-        <http://www.w3.org/ns/dcat#dataset>
-                <https://testdirektoratet.no/model/dataset/1> .
-
-<https://datasets.fellesdatakatalog.digdir.no/catalogs/6f0a37af-a9c1-38bc-b343-bd025b43b5e8>
-        a       <http://www.w3.org/ns/dcat#record> ;
-        <http://purl.org/dc/terms/identifier>
-                "6f0a37af-a9c1-38bc-b343-bd025b43b5e8" ;
-        <http://purl.org/dc/terms/issued>
-                "2020-03-12T11:52:16.122Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
-        <http://purl.org/dc/terms/modified>
-                "2020-03-12T11:52:16.122Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
-        <http://xmlns.com/foaf/0.1/primaryTopic>
-                <https://testdirektoratet.no/model/dataset-catalog/1> .
-"""
-
-const val DATASET_0 = """
 <https://testdirektoratet.no/model/dataset/0>
         a       <http://www.w3.org/ns/dcat#Dataset> ;
         <http://purl.org/dc/terms/accessRights>
@@ -103,20 +120,18 @@ const val DATASET_0 = """
                 ] ;
         <http://purl.org/dc/terms/description>
                 "Search API"@nb .
+""".trim()
 
-<https://datasets.fellesdatakatalog.digdir.no/datasets/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
-        a       <http://www.w3.org/ns/dcat#record> ;
-        <http://purl.org/dc/terms/identifier>
-                "a1c680ca-62d7-34d5-aa4c-d39b5db033ae" ;
-        <http://purl.org/dc/terms/issued>
-                "2020-03-12T11:52:16.122Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
-        <http://purl.org/dc/terms/modified>
-                "2020-03-12T11:52:16.122Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
-        <http://xmlns.com/foaf/0.1/primaryTopic>
-                <https://testdirektoratet.no/model/dataset/0> .
-"""
+val HARVEST_1 = """
+<https://testdirektoratet.no/model/dataset-catalog/1>
+        a       <http://www.w3.org/ns/dcat#Catalog> ;
+        <http://purl.org/dc/terms/publisher>
+                <https://organization-catalogue.fellesdatakatalog.brreg.no/organizations/123456789> ;
+        <http://purl.org/dc/terms/title>
+                "Datasettkatalog 1 for Testdirektoratet"@nb ;
+        <http://www.w3.org/ns/dcat#dataset>
+                <https://testdirektoratet.no/model/dataset/1> .
 
-const val DATASET_1 = """
 <https://testdirektoratet.no/model/dataset/1>
         a       <http://www.w3.org/ns/dcat#Dataset> ;
         <http://purl.org/dc/terms/accessRights>
@@ -166,17 +181,6 @@ const val DATASET_1 = """
         <http://xmlns.com/foaf/0.1/page>
                 <https://testdirektoratet.no> .
 
-<https://datasets.fellesdatakatalog.digdir.no/datasets/4667277a-9d27-32c1-aed5-612fa601f393>
-        a       <http://www.w3.org/ns/dcat#record> ;
-        <http://purl.org/dc/terms/identifier>
-                "4667277a-9d27-32c1-aed5-612fa601f393" ;
-        <http://purl.org/dc/terms/issued>
-                "2020-03-12T11:52:16.122Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
-        <http://purl.org/dc/terms/modified>
-                "2020-03-12T11:52:16.122Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
-        <http://xmlns.com/foaf/0.1/primaryTopic>
-                <https://testdirektoratet.no/model/dataset/1> .
-
 <https://testdirektoratet.no/model/periodoftime/1>
         a       <http://purl.org/dc/terms/PeriodOfTime> ;
         <http://www.w3.org/ns/dcat#startDate>
@@ -188,4 +192,4 @@ const val DATASET_1 = """
                 "Testdirektoratet"@nb ;
         <http://www.w3.org/2006/vcard/ns#hasURL>
                 <https://testdirektoratet.no> .
-"""
+""".trim()

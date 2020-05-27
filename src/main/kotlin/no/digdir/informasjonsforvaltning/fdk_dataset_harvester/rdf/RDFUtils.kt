@@ -82,54 +82,18 @@ fun Model.addDefaultPrefixes(): Model {
     return this
 }
 
-fun Resource.createDatasetModel(): Model =
-    listProperties()
-        .toModel()
-        .addNonURIPropertiesFromResource(this)
-        .addURIResourceProperties(this, DCTerms.publisher)
-        .addURIResourceProperties(this, DCAT.contactPoint)
-        .addURIResourceProperties(this, DCTerms.temporal)
-        .addURIResourceProperties(this, DCAT.distribution)
-        .addURIResourceDistributionAccessService(this)
-
 fun Resource.createModel(): Model =
     listProperties()
         .toModel()
-        .addNonURIPropertiesFromResource(this)
+        .addResourceNodes(this)
 
-private fun Model.addNonURIPropertiesFromResource(resource: Resource): Model {
+private fun Model.addResourceNodes(resource: Resource): Model {
     add(resource.listProperties())
 
     resource.listProperties()
         .toList()
         .filter { it.isResourceProperty() }
-        .filter { !it.resource.isURIResource }
-        .forEach { addNonURIPropertiesFromResource(it.resource) }
-
-    return this
-}
-
-private fun Model.addURIResourceProperties(resource: Resource, property: Property): Model {
-    resource.listProperties(property)
-        .toList()
-        .filter { it.isResourceProperty() && it.resource.isURIResource }
-        .forEach { addNonURIPropertiesFromResource(it.resource) }
-
-    return this
-}
-
-private fun Model.addURIResourceDistributionAccessService(resource: Resource): Model {
-    resource.listProperties(DCAT.distribution)
-        .forEach { distribution ->
-            distribution.resource
-                .listProperties(DCATAPI.accessService)
-                .toList()
-                .filter { accessService ->
-                    accessService.isResourceProperty() && accessService.resource.isURIResource }
-                .forEach { accessService ->
-                    addNonURIPropertiesFromResource(accessService.resource)
-                }
-        }
+        .forEach { addResourceNodes(it.resource) }
 
     return this
 }
@@ -141,24 +105,27 @@ private fun Statement.isResourceProperty(): Boolean =
         false
     }
 
-fun Model.extractMetaDataIdentifier(): String =
-    listResourcesWithProperty(RDF.type, DCAT.record)
+fun Model.extractMetaDataIdentifier(): String? =
+    listResourcesWithProperty(RDF.type, DCAT.CatalogRecord)
         .toList()
-        .first()
-        .getProperty(DCTerms.identifier).string
+        .firstOrNull()
+        ?.getProperty(DCTerms.identifier)
+        ?.string
 
 fun createIdFromUri(uri: String): String =
     UUID.nameUUIDFromBytes(uri.toByteArray())
         .toString()
 
-fun Model.extractCatalogModelURI(): String =
-    listResourcesWithProperty(RDF.type, DCAT.Catalog)
+fun Model.extractMetaDataTopic(): String? =
+    listResourcesWithProperty(RDF.type, DCAT.CatalogRecord)
         .toList()
-        .first()
-        .uri
+        .firstOrNull()
+        ?.getPropertyResourceValue(FOAF.primaryTopic)
+        ?.uri
 
-fun Model.extractDatasetModelURI(): String =
-    listResourcesWithProperty(RDF.type, DCAT.Dataset)
-        .toList()
-        .first()
-        .uri
+fun queryToGetMetaDataByUri(uri: String): String =
+    """PREFIX foaf: <${FOAF.NS}>
+       DESCRIBE * WHERE { 
+           ?s foaf:primaryTopic <$uri> 
+       }""".trimIndent()
+

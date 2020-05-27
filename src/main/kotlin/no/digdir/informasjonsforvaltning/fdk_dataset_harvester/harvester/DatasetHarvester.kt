@@ -3,17 +3,15 @@ package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.harvester
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.adapter.DatasetAdapter
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.configuration.ApplicationProperties
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.dto.HarvestDataSource
-import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.fuseki.CatalogFuseki
-import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.fuseki.DatasetFuseki
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.fuseki.MetaFuseki
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.fuseki.HarvestFuseki
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.JenaType
-import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.createDatasetModel
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.createIdFromUri
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.createModel
-import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.extractCatalogModelURI
-import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.extractDatasetModelURI
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.extractMetaDataIdentifier
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.jenaTypeFromAcceptHeader
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.parseRDFResponse
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.queryToGetMetaDataByUri
 import org.apache.jena.rdf.model.Literal
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.ModelFactory
@@ -31,142 +29,97 @@ private val LOGGER = LoggerFactory.getLogger(DatasetHarvester::class.java)
 @Service
 class DatasetHarvester(
     private val adapter: DatasetAdapter,
-    private val catalogFuseki: CatalogFuseki,
-    private val datasetFuseki: DatasetFuseki,
+    private val metaFuseki: MetaFuseki,
+    private val harvestFuseki: HarvestFuseki,
     private val applicationProperties: ApplicationProperties
 ) {
 
     fun harvestDatasetCatalog(source: HarvestDataSource, harvestDate: Calendar) {
-        LOGGER.debug("Starting harvest of ${source.url}")
-        val jenaWriterType = jenaTypeFromAcceptHeader(source.acceptHeaderValue)
+        if(source.url != null) {
+            LOGGER.debug("Starting harvest of ${source.url}")
+            val jenaWriterType = jenaTypeFromAcceptHeader(source.acceptHeaderValue)
 
-        if (jenaWriterType == null || jenaWriterType == JenaType.NOT_ACCEPTABLE) {
-            LOGGER.error("Not able to harvest from ${source.url}, header ${source.acceptHeaderValue} is not acceptable ")
-        } else {
-            adapter.getDatasetCatalog(source)
-                ?.let { parseRDFResponse(it, jenaWriterType, source.url) }
-                ?.filterModifiedAndAddMetaData(harvestDate)
-                ?.run {
-                    catalogs.forEach {
-                        val modelId = it.extractMetaDataIdentifier()
-                        catalogFuseki.saveWithGraphName(modelId, it)
-                        LOGGER.debug("Updated catalog model ${it.extractCatalogModelURI()}, id: $modelId")
-                    }
+            if (jenaWriterType == null || jenaWriterType == JenaType.NOT_ACCEPTABLE) {
+                LOGGER.error("Not able to harvest from ${source.url}, header ${source.acceptHeaderValue} is not acceptable ")
+            } else {
+                val harvested = adapter.getDatasets(source)
+                    ?.let { parseRDFResponse(it, jenaWriterType, source.url) }
 
-                    datasets.forEach {
-                        val modelId = it.extractMetaDataIdentifier()
-                        datasetFuseki.saveWithGraphName(modelId, it)
-                        LOGGER.debug("Updated dataset model ${it.extractDatasetModelURI()}, id: $modelId")
+                if (harvested == null) LOGGER.info("Not able to harvest ${source.url}")
+                else {
+                    val dbId = createIdFromUri(source.url)
+                    val dbData = harvestFuseki.fetchByGraphName(dbId)
+
+                    if (dbData != null && harvested.isIsomorphicWith(dbData)) LOGGER.info("No changes from last harvest of ${source.url}")
+                    else {
+                        LOGGER.info("Changes detected, saving data from ${source.url} on graph $dbId, and updating FDK meta data")
+                        harvestFuseki.saveWithGraphName(dbId, harvested)
+
+                        updateMetaData(harvested, dbData, harvestDate)
                     }
                 }
+            }
         }
     }
 
-    private fun catalogModelWithMetaData(resource: Resource, harvestDate: Calendar): HarvestedModel {
-        val dbId = createIdFromUri(resource.uri)
-        val dbModel = catalogFuseki.fetchByGraphName(dbId)
-        val harvested = resource.createModel()
-
-        val dbMetaData: Resource? = dbModel?.extractMetaDataResource()
-
-        val isModified = !harvestedIsIsomorphicWithDatabaseModel(dbModel, harvested, dbMetaData?.listProperties()?.toModel())
-
-        val updatedModel = if (!isModified && dbModel != null) {
-            LOGGER.debug("No changes detected in catalog model ${resource.uri}")
-            dbModel
-        } else harvested.addCatalogMetaData(dbId, resource.uri, dbMetaData, harvestDate)
-
-        return HarvestedModel(updatedModel, isModified)
-    }
-
-    private fun datasetModelWithMetaData(resource: Resource, harvestDate: Calendar): HarvestedModel {
-        val dbId = createIdFromUri(resource.uri)
-        val dbModel = datasetFuseki.fetchByGraphName(dbId)
-        val harvested = resource.createDatasetModel()
-
-        val dbMetaData: Resource? = dbModel?.extractMetaDataResource()
-
-        val isModified = !harvestedIsIsomorphicWithDatabaseModel(dbModel, harvested, dbMetaData?.listProperties()?.toModel())
-
-        val updatedModel = if (!isModified && dbModel != null) {
-            LOGGER.debug("No changes detected in dataset model ${resource.uri}")
-            dbModel
-        } else harvested.addDatasetMetaData(dbId, resource.uri, dbMetaData, harvestDate)
-
-        return HarvestedModel(updatedModel, isModified)
-    }
-
-    private fun Model.addCatalogMetaData(dbId: String, uri: String, dbMetaData: Resource?, harvestDate: Calendar): Model {
-        createResource("${applicationProperties.catalogUri}/$dbId")
-            .addProperty(RDF.type, DCAT.record)
-            .addProperty(DCTerms.identifier, dbId)
-            .addProperty(FOAF.primaryTopic, createResource(uri))
-            .addProperty(DCTerms.issued, issuedDate(dbMetaData, harvestDate))
-            .addModified(dbMetaData, harvestDate)
-        return this
-    }
-
-    private fun Model.addDatasetMetaData(dbId: String, uri: String, dbMetaData: Resource?, harvestDate: Calendar): Model {
-        createResource("${applicationProperties.datasetUri}/$dbId")
-            .addProperty(RDF.type, DCAT.record)
-            .addProperty(DCTerms.identifier, dbId)
-            .addProperty(FOAF.primaryTopic, createResource(uri))
-            .addProperty(DCTerms.issued,  issuedDate(dbMetaData, harvestDate))
-            .addModified(dbMetaData, harvestDate)
-
-        return this
-    }
-
-    private fun Model.filterModifiedAndAddMetaData(harvestDate: Calendar): ModifiedModels {
-        val catalogModels = mutableListOf<HarvestedModel>()
-        val datasetModels = mutableListOf<HarvestedModel>()
-
-        listResourcesWithProperty(RDF.type, DCAT.Catalog)
+    private fun updateMetaData(harvested: Model, oldData: Model?, harvestDate: Calendar) {
+        harvested.listResourcesWithProperty(RDF.type, DCAT.Catalog)
             .toList()
             .forEach {
-                catalogModels.add(catalogModelWithMetaData(it, harvestDate))
+                if(!it.isIsomorphicWithOldData(oldData)) {
+                    it.updateCatalogMetaData(harvestDate)
+                }
             }
 
-        listResourcesWithProperty(RDF.type, DCAT.Dataset)
-            .toList()
+        harvested.listResourcesWithProperty(RDF.type, DCAT.Dataset)
             .forEach {
-                datasetModels.add(datasetModelWithMetaData(it, harvestDate))
+                if(!it.isIsomorphicWithOldData(oldData)) {
+                    it.updateDatasetMetaData(harvestDate)
+                }
             }
+    }
 
-        return ModifiedModels(
-            catalogModels
-                .toList()
-                .filter { it.isModified }
-                .map { it.model },
-            datasetModels
-                .toList()
-                .filter { it.isModified }
-                .map { it.model }
-        )
+    private fun Resource.updateCatalogMetaData(harvestDate: Calendar): Unit {
+        val dbModel = metaFuseki.queryDescribe(queryToGetMetaDataByUri(uri))
+        val dbId = dbModel?.extractMetaDataIdentifier() ?: createIdFromUri(uri)
+        val resourceUri = "${applicationProperties.catalogUri}/$dbId"
+        val dbMetaData = dbModel?.getResource(resourceUri)
+
+        val metaModel = ModelFactory.createDefaultModel()
+
+        metaModel.createResource("${applicationProperties.catalogUri}/$dbId")
+            .addProperty(RDF.type, DCAT.CatalogRecord)
+            .addProperty(DCTerms.identifier, dbId)
+            .addProperty(FOAF.primaryTopic, metaModel.createResource(uri))
+            .addProperty(DCTerms.issued, metaModel.issuedDate(dbMetaData, harvestDate))
+            .addModified(dbMetaData, harvestDate)
+
+        metaFuseki.saveWithGraphName(dbId, metaModel)
+    }
+
+    private fun Resource.updateDatasetMetaData(harvestDate: Calendar): Unit {
+        val dbModel = metaFuseki.queryDescribe(queryToGetMetaDataByUri(uri))
+        val dbId = dbModel?.extractMetaDataIdentifier() ?: createIdFromUri(uri)
+        val resourceUri = "${applicationProperties.datasetUri}/$dbId"
+        val dbMetaData = dbModel?.getResource(resourceUri)
+
+        val metaModel = ModelFactory.createDefaultModel()
+
+        metaModel.createResource("${applicationProperties.datasetUri}/$dbId")
+            .addProperty(RDF.type, DCAT.CatalogRecord)
+            .addProperty(DCTerms.identifier, dbId)
+            .addProperty(FOAF.primaryTopic, metaModel.createResource(uri))
+            .addProperty(DCTerms.issued,  metaModel.issuedDate(dbMetaData, harvestDate))
+            .addModified(dbMetaData, harvestDate)
+
+        metaFuseki.saveWithGraphName(dbId, metaModel)
     }
 }
 
-private data class HarvestedModel(
-    val model: Model,
-    val isModified: Boolean
-)
-
-private data class ModifiedModels(
-    val catalogs: List<Model>,
-    val datasets: List<Model>
-)
-
-private fun Model.extractMetaDataResource(): Resource? =
-    listResourcesWithProperty(RDF.type, DCAT.record)
-        .toList()
-        .let { if (it.isNotEmpty()) it.first() else null }
-
-private fun harvestedIsIsomorphicWithDatabaseModel(fullModelFromDB: Model?, harvestedModel: Model, metaDataModelFromDB: Model?): Boolean =
-    fullModelFromDB?.isIsomorphicWith(
-        harvestedModel.union(
-            metaDataModelFromDB ?: ModelFactory.createDefaultModel()
-        )
-    ) ?: false
+private fun Resource.isIsomorphicWithOldData(fullModelFromDB: Model?): Boolean =
+    fullModelFromDB?.getResource(uri)?.let {
+        createModel().isIsomorphicWith(it.createModel())
+    } ?: false
 
 private fun Model.issuedDate(dbResource: Resource?, harvestDate: Calendar): Literal =
     dbResource?.listProperties(DCTerms.issued)

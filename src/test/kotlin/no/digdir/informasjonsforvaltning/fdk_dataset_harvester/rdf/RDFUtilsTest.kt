@@ -44,11 +44,11 @@ class RDFUtilsTest {
 
         val datasetModel0 = harvestedModel0
             .listResourcesWithProperty(RDF.type, DCAT.Dataset)
-            .toList().first().createDatasetModel()
+            .toList().first().createModel()
 
         val datasetModel1 = harvestedModel1
             .listResourcesWithProperty(RDF.type, DCAT.Dataset)
-            .toList().first().createDatasetModel()
+            .toList().first().createModel()
 
         Assertions.assertTrue(datasetModel0.isIsomorphicWith(expected0))
         Assertions.assertTrue(datasetModel1.isIsomorphicWith(expected1))
