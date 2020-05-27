@@ -343,9 +343,7 @@ public class ElasticSearchResultHandler implements CrawlerResultHandler {
 
         for (Catalog catalog : catalogs) {
 
-            String catalogTitle = catalog.getTitle().get(catalog.getTitle().keySet().stream().findFirst().get());
-
-            logger.debug("Processing catalog {} - {}", catalogTitle, catalog.getUri());
+            logger.debug("Processing catalog with id {}, and uri {}", catalog.getId(), catalog.getUri());
 
             CatalogHarvestRecord catalogRecord = new CatalogHarvestRecord();
             catalogRecord.setCatalogUri(catalog.getUri());
