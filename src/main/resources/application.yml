@@ -38,11 +38,12 @@ application:
 spring:
   profiles: contract-test
   rabbitmq:
-    host: ${WIREMOCK_TEST_HOST}
-    port: ${WIREMOCK_TEST_PORT}
+    host: localhost
+    port: 5000
     username: admin
     password: admin
 application:
-  harvestAdminRootUrl: ${WIREMOCK_TEST_URI}/api
-  datasetUri: ${WIREMOCK_TEST_URI}/datasets
-  catalogUri: ${WIREMOCK_TEST_URI}/catalogs
+  harvestAdminRootUrl: http://localhost:5000/api
+  datasetUri: http://localhost:5000/datasets
+  catalogUri: http://localhost:5000/catalogs
+server.port: 5555

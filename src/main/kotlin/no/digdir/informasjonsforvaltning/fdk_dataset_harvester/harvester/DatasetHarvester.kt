@@ -2,7 +2,7 @@ package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.harvester
 
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.adapter.DatasetAdapter
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.configuration.ApplicationProperties
-import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.dto.HarvestDataSource
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.HarvestDataSource
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.fuseki.MetaFuseki
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.fuseki.HarvestFuseki
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.JenaType

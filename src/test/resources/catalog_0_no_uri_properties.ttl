@@ -1,0 +1,17 @@
+@prefix adms:  <http://www.w3.org/ns/adms#> .
+@prefix dct:   <http://purl.org/dc/terms/> .
+@prefix dcatno: <http://difi.no/dcatno#> .
+@prefix dqv:   <http://www.w3.org/ns/dqvNS#> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+@prefix vcard: <http://www.w3.org/2006/vcard/ns#> .
+@prefix dcat:  <http://www.w3.org/ns/dcat#> .
+@prefix prov:  <http://www.w3.org/ns/prov#> .
+@prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+@prefix dcatapi: <http://dcat.no/dcatapi/> .
+
+<https://testdirektoratet.no/model/dataset-catalog/0>
+        a              dcat:Catalog ;
+        dct:publisher  <https://organization-catalogue.fellesdatakatalog.brreg.no/organizations/123456789> ;
+        dct:title      "Datasettkatalog for Testdirektoratet"@nb ;
+        dcat:dataset   <https://testdirektoratet.no/model/dataset/0> .

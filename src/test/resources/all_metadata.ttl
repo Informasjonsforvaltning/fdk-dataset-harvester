@@ -3,28 +3,28 @@
 @prefix dcat:  <http://www.w3.org/ns/dcat#> .
 @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
 
-<http://host.testcontainers.internal:5000/catalogs/6f0a37af-a9c1-38bc-b343-bd025b43b5e8>
+<http://localhost:5000/catalogs/6f0a37af-a9c1-38bc-b343-bd025b43b5e8>
         a                  dcat:CatalogRecord ;
         dct:identifier     "6f0a37af-a9c1-38bc-b343-bd025b43b5e8" ;
         dct:issued         "2020-03-12T11:52:16.122Z"^^xsd:dateTime ;
         dct:modified       "2020-03-12T11:52:16.122Z"^^xsd:dateTime ;
         foaf:primaryTopic  <https://testdirektoratet.no/model/dataset-catalog/1> .
 
-<http://host.testcontainers.internal:5000/datasets/4667277a-9d27-32c1-aed5-612fa601f393>
+<http://localhost:5000/datasets/4667277a-9d27-32c1-aed5-612fa601f393>
         a                  dcat:CatalogRecord ;
         dct:identifier     "4667277a-9d27-32c1-aed5-612fa601f393" ;
         dct:issued         "2020-03-12T11:52:16.122Z"^^xsd:dateTime ;
         dct:modified       "2020-03-12T11:52:16.122Z"^^xsd:dateTime ;
         foaf:primaryTopic  <https://testdirektoratet.no/model/dataset/1> .
 
-<http://host.testcontainers.internal:5000/datasets/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
+<http://localhost:5000/datasets/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
         a                  dcat:CatalogRecord ;
         dct:identifier     "a1c680ca-62d7-34d5-aa4c-d39b5db033ae" ;
         dct:issued         "2020-03-12T11:52:16.122Z"^^xsd:dateTime ;
         dct:modified       "2020-03-12T11:52:16.122Z"^^xsd:dateTime ;
         foaf:primaryTopic  <https://testdirektoratet.no/model/dataset/0> .
 
-<http://host.testcontainers.internal:5000/catalogs/6e4237cc-98d6-3e7c-a892-8ac1f0ffb37f>
+<http://localhost:5000/catalogs/6e4237cc-98d6-3e7c-a892-8ac1f0ffb37f>
         a                  dcat:CatalogRecord ;
         dct:identifier     "6e4237cc-98d6-3e7c-a892-8ac1f0ffb37f" ;
         dct:issued         "2020-03-12T11:52:16.122Z"^^xsd:dateTime ;
