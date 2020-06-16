@@ -1,6 +1,6 @@
 package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.adapter
 
-import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.dto.HarvestDataSource
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.HarvestDataSource
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service

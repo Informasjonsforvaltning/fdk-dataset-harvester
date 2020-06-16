@@ -39,9 +39,9 @@ class HarvesterTest {
             .thenReturn(javaClass.classLoader.getResourceAsStream("harvest_response_0.ttl")!!.reader().readText())
 
         whenever(valuesMock.catalogUri)
-            .thenReturn("http://host.testcontainers.internal:5000/catalogs")
+            .thenReturn("http://localhost:5000/catalogs")
         whenever(valuesMock.datasetUri)
-            .thenReturn("http://host.testcontainers.internal:5000/datasets")
+            .thenReturn("http://localhost:5000/datasets")
 
 
         val expectedSavedHarvest = responseReader.parseResponse(HARVEST_0, "TURTLE")
@@ -69,9 +69,9 @@ class HarvesterTest {
             .thenReturn(javaClass.classLoader.getResourceAsStream("harvest_response_error.ttl")!!.reader().readText())
 
         whenever(valuesMock.catalogUri)
-            .thenReturn("http://host.testcontainers.internal:5000/catalogs")
+            .thenReturn("http://localhost:5000/catalogs")
         whenever(valuesMock.datasetUri)
-            .thenReturn("http://host.testcontainers.internal:5000/datasets")
+            .thenReturn("http://localhost:5000/datasets")
 
         harvester.harvestDatasetCatalog(TEST_HARVEST_SOURCE, TEST_HARVEST_DATE)
 

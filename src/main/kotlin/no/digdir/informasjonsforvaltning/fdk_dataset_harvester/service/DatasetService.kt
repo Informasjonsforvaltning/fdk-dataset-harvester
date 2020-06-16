@@ -3,12 +3,13 @@ package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.configuration.ApplicationProperties
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.fuseki.HarvestFuseki
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.fuseki.MetaFuseki
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.MissingHarvestException
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.JenaType
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.addDefaultPrefixes
-import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.createModel
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.createRDFResponse
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.extractMetaDataTopic
 import org.apache.jena.rdf.model.Model
+import org.apache.jena.rdf.model.ModelFactory
 import org.apache.jena.vocabulary.DCAT
 import org.apache.jena.vocabulary.RDF
 import org.slf4j.LoggerFactory
@@ -41,7 +42,7 @@ class DatasetService(
         return metaFuseki.queryDescribe(query)
             ?.let { metaData ->
                 val topicURI = metaData.extractMetaDataTopic()
-                if (topicURI != null) metaData.union(getByURI(topicURI))
+                if (topicURI != null) metaData.union(datasetByURI(topicURI))
                 else null
             }
             ?.addDefaultPrefixes()
@@ -54,16 +55,43 @@ class DatasetService(
         return metaFuseki.queryDescribe(query)
             ?.let { metaData ->
                 val topicURI = metaData.extractMetaDataTopic()
-                if (topicURI != null) metaData.union(getByURI(topicURI))
+                if (topicURI != null) metaData.union(catalogByURI(topicURI))
                 else null
             }
             ?.addDefaultPrefixes()
             ?.createRDFResponse(returnType)
     }
 
-    private fun getByURI(uri: String): Model =
-        harvestFuseki.fetchCompleteModel()
-            .getResource(uri)
-            .createModel()
+    private fun catalogByURI(uri: String): Model {
+        val literalsQuery = "DESCRIBE <$uri>"
+        val propertiesQuery = "DESCRIBE * WHERE { <$uri> ?p ?o }"
+
+        val datasetProperties = "dcat:dataset/dcat:distribution|dcat:dataset/dcat:distribution/dcatapi:accessService|dcat:dataset/dct:publisher|dcat:dataset/dcat:contactPoint|dcat:dataset/dct:spatial"
+        val queryPrefixes = "PREFIX dcat: <http://www.w3.org/ns/dcat#> PREFIX dct: <http://purl.org/dc/terms/> PREFIX dcatapi: <http://dcat.no/dcatapi/>"
+        val datasetPropertiesQuery = "$queryPrefixes DESCRIBE * WHERE { <$uri> $datasetProperties ?o }"
+
+        val harvestedData = harvestFuseki.queryDescribe(literalsQuery)
+            ?.union(harvestFuseki.queryDescribe(propertiesQuery) ?: ModelFactory.createDefaultModel())
+            ?.union(harvestFuseki.queryDescribe(datasetPropertiesQuery) ?: ModelFactory.createDefaultModel())
+
+        if (harvestedData == null) throw MissingHarvestException()
+        else return harvestedData
+    }
+
+    private fun datasetByURI(uri: String): Model {
+        val literalsQuery = "DESCRIBE <$uri>"
+        val propertiesQuery = "DESCRIBE * WHERE { <$uri> ?p ?o }"
+
+        val distributionProperties = "dcat:distribution/dcatapi:accessService"
+        val queryPrefixes = "PREFIX dcat: <http://www.w3.org/ns/dcat#> PREFIX dcatapi: <http://dcat.no/dcatapi/>"
+        val distributionPropertiesQuery = "$queryPrefixes DESCRIBE * WHERE { <$uri> $distributionProperties ?o }"
+
+        val harvestedData = harvestFuseki.queryDescribe(literalsQuery)
+            ?.union(harvestFuseki.queryDescribe(propertiesQuery) ?: ModelFactory.createDefaultModel())
+            ?.union(harvestFuseki.queryDescribe(distributionPropertiesQuery) ?: ModelFactory.createDefaultModel())
+
+        if (harvestedData == null) throw MissingHarvestException()
+        else return harvestedData
+    }
 
 }

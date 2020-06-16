@@ -1,4 +1,4 @@
-package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.dto
+package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 
