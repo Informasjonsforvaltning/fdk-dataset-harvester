@@ -66,20 +66,14 @@ class DatasetHarvester(
         harvested.listResourcesWithProperty(RDF.type, DCAT.Catalog)
             .toList()
             .forEach {
-                if(!it.isIsomorphicWithOldData(oldData)) {
-                    it.updateCatalogMetaData(harvestDate)
-                }
-            }
-
-        harvested.listResourcesWithProperty(RDF.type, DCAT.Dataset)
-            .forEach {
-                if(!it.isIsomorphicWithOldData(oldData)) {
-                    it.updateDatasetMetaData(harvestDate)
+                val catalogModel = it.createModel()
+                if(!catalogModel.isIsomorphicWithOldData(it.uri, oldData)) {
+                    it.updateCatalogMetaData(harvestDate, catalogModel, oldData)
                 }
             }
     }
 
-    private fun Resource.updateCatalogMetaData(harvestDate: Calendar): Unit {
+    private fun Resource.updateCatalogMetaData(harvestDate: Calendar, catalogModel: Model, oldData: Model?): Unit {
         val dbModel = metaFuseki.queryDescribe(queryToGetMetaDataByUri(uri))
         val dbId = dbModel?.extractMetaDataIdentifier() ?: createIdFromUri(uri)
         val resourceUri = "${applicationProperties.catalogUri}/$dbId"
@@ -95,9 +89,16 @@ class DatasetHarvester(
             .addModified(dbMetaData, harvestDate)
 
         metaFuseki.saveWithGraphName(dbId, metaModel)
+
+        catalogModel.listResourcesWithProperty(RDF.type, DCAT.Dataset)
+            .forEach {
+                if(!it.isIsomorphicWithOldData(oldData)) {
+                    it.updateDatasetMetaData(harvestDate, resourceUri)
+                }
+            }
     }
 
-    private fun Resource.updateDatasetMetaData(harvestDate: Calendar): Unit {
+    private fun Resource.updateDatasetMetaData(harvestDate: Calendar, catalogURI: String): Unit {
         val dbModel = metaFuseki.queryDescribe(queryToGetMetaDataByUri(uri))
         val dbId = dbModel?.extractMetaDataIdentifier() ?: createIdFromUri(uri)
         val resourceUri = "${applicationProperties.datasetUri}/$dbId"
@@ -109,6 +110,7 @@ class DatasetHarvester(
             .addProperty(RDF.type, DCAT.CatalogRecord)
             .addProperty(DCTerms.identifier, dbId)
             .addProperty(FOAF.primaryTopic, metaModel.createResource(uri))
+            .addProperty(DCTerms.isPartOf,  metaModel.createResource(catalogURI))
             .addProperty(DCTerms.issued,  metaModel.issuedDate(dbMetaData, harvestDate))
             .addModified(dbMetaData, harvestDate)
 
@@ -119,6 +121,11 @@ class DatasetHarvester(
 private fun Resource.isIsomorphicWithOldData(fullModelFromDB: Model?): Boolean =
     fullModelFromDB?.getResource(uri)?.let {
         createModel().isIsomorphicWith(it.createModel())
+    } ?: false
+
+private fun Model.isIsomorphicWithOldData(uri: String, fullModelFromDB: Model?): Boolean =
+    fullModelFromDB?.getResource(uri)?.let {
+        isIsomorphicWith(it.createModel())
     } ?: false
 
 private fun Model.issuedDate(dbResource: Resource?, harvestDate: Calendar): Literal =
