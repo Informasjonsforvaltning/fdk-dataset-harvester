@@ -35,6 +35,8 @@ val META_DATASET_0 ="""
                 "2020-03-12T11:52:16.122Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
         <http://purl.org/dc/terms/modified>
                 "2020-03-12T11:52:16.122Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+        <http://purl.org/dc/terms/isPartOf>
+                <http://localhost:5000/catalogs/6e4237cc-98d6-3e7c-a892-8ac1f0ffb37f> ;
         <http://xmlns.com/foaf/0.1/primaryTopic>
                 <https://testdirektoratet.no/model/dataset/0> .
 """.trim()
@@ -48,6 +50,8 @@ val META_DATASET_1 ="""
                 "2020-03-12T11:52:16.122Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
         <http://purl.org/dc/terms/modified>
                 "2020-03-12T11:52:16.122Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
+        <http://purl.org/dc/terms/isPartOf>
+                <http://localhost:5000/catalogs/6f0a37af-a9c1-38bc-b343-bd025b43b5e8> ;
         <http://xmlns.com/foaf/0.1/primaryTopic>
                 <https://testdirektoratet.no/model/dataset/1> .
 """.trim()

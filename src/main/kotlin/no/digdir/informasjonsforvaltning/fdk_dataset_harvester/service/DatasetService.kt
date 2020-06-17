@@ -8,6 +8,7 @@ import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.JenaType
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.addDefaultPrefixes
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.createRDFResponse
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.extractMetaDataTopic
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.queryToGetMetaDataByCatalogUri
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.ModelFactory
 import org.apache.jena.vocabulary.DCAT
@@ -50,13 +51,20 @@ class DatasetService(
     }
 
     fun getDatasetCatalog(id: String, returnType: JenaType): String? {
-        val query = "DESCRIBE <${applicationProperties.catalogUri}/$id>"
-        LOGGER.info(query)
-        return metaFuseki.queryDescribe(query)
+        val metaCatalogQuery = "DESCRIBE <${applicationProperties.catalogUri}/$id>"
+        LOGGER.info(metaCatalogQuery)
+        return metaFuseki.queryDescribe(metaCatalogQuery)
             ?.let { metaData ->
+
+                val metaDatasets: Model = metaFuseki
+                    .queryDescribe(queryToGetMetaDataByCatalogUri("${applicationProperties.catalogUri}/$id"))
+                    ?: ModelFactory.createDefaultModel()
+
                 val topicURI = metaData.extractMetaDataTopic()
-                if (topicURI != null) metaData.union(catalogByURI(topicURI))
-                else null
+                if (topicURI != null) {
+                    metaData.union(catalogByURI(topicURI))
+                        .union(metaDatasets)
+                } else null
             }
             ?.addDefaultPrefixes()
             ?.createRDFResponse(returnType)

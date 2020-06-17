@@ -7,6 +7,7 @@ import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.fuseki.HarvestFus
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.fuseki.MetaFuseki
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.MissingHarvestException
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.JenaType
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.queryToGetMetaDataByCatalogUri
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.META_CATALOG_0
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.CATALOG_ID_0
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.META_DATASET_0
@@ -116,13 +117,13 @@ class DatasetServiceTest {
         fun responseIsIsomorphicWithExpectedModel() {
             whenever(metaFuseki.queryDescribe("DESCRIBE <http://localhost:5000/catalogs/$CATALOG_ID_0>"))
                 .thenReturn(responseReader.parseResponse(META_CATALOG_0, "TURTLE"))
+            whenever(metaFuseki.queryDescribe(queryToGetMetaDataByCatalogUri("http://localhost:5000/catalogs/$CATALOG_ID_0")))
+                .thenReturn(responseReader.parseResponse(META_DATASET_0, "TURTLE"))
 
             whenever(harvestFuseki.queryDescribe("DESCRIBE <https://testdirektoratet.no/model/dataset-catalog/0>"))
                 .thenReturn(responseReader.parseFile("catalog_0_no_uri_properties.ttl", "TURTLE"))
-
             whenever(harvestFuseki.queryDescribe("DESCRIBE * WHERE { <https://testdirektoratet.no/model/dataset-catalog/0> ?p ?o }"))
                 .thenReturn(responseReader.parseFile("dataset_0_no_uri_properties.ttl", "TURTLE"))
-
             whenever(harvestFuseki.queryDescribe("PREFIX dcat: <http://www.w3.org/ns/dcat#> PREFIX dct: <http://purl.org/dc/terms/> PREFIX dcatapi: <http://dcat.no/dcatapi/> DESCRIBE * WHERE { <https://testdirektoratet.no/model/dataset-catalog/0> dcat:dataset/dcat:distribution|dcat:dataset/dcat:distribution/dcatapi:accessService|dcat:dataset/dct:publisher|dcat:dataset/dcat:contactPoint|dcat:dataset/dct:spatial ?o }"))
                 .thenReturn(responseReader.parseFile("distribution_0_no_uri_properties.ttl", "TURTLE").union(responseReader.parseFile("distribution_0_uri_properties.ttl", "TURTLE")))
 
