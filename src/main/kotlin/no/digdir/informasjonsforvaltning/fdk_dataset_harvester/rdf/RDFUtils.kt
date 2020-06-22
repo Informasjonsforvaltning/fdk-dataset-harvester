@@ -82,20 +82,56 @@ fun Model.addDefaultPrefixes(): Model {
     return this
 }
 
-fun Resource.createModel(): Model =
-    listProperties()
-        .toModel()
-        .addResourceNodes(this)
+fun Resource.modelOfResourceProperties(property: Property): Model {
+    val model = ModelFactory.createDefaultModel()
 
-private fun Model.addResourceNodes(resource: Resource): Model {
-    add(resource.listProperties())
-
-    resource.listProperties()
+    listProperties(property)
         .toList()
         .filter { it.isResourceProperty() }
-        .forEach { addResourceNodes(it.resource) }
+        .map { it.resource }
+        .forEach { model.add(it.listProperties()) }
 
-    return this
+    return model
+}
+
+fun Resource.modelOfDistributionProperties(): Model {
+    val model = ModelFactory.createDefaultModel()
+
+    listProperties(DCAT.distribution)
+        .toList()
+        .filter { it.isResourceProperty() }
+        .map { it.resource }
+        .forEach {
+            model.add(it.listProperties())
+            it.listProperties(DCATAPI.accessService).toList()
+                .filter { accessService -> accessService.isResourceProperty() }
+                .map { accessService -> accessService.resource }
+                .forEach { accessService ->
+                    model.add(accessService.listProperties())
+                    accessService.listProperties(DCATAPI.endpointDescription).toList()
+                        .filter { endpoint -> endpoint.isResourceProperty() }
+                        .forEach { endpoint -> model.add(endpoint.resource.listProperties()) }
+                }
+        }
+
+    return model
+}
+
+fun Resource.modelOfQualityProperties(): Model {
+    val model = ModelFactory.createDefaultModel()
+
+    listProperties(DQV.hasQualityAnnotation)
+        .toList()
+        .filter { it.isResourceProperty() }
+        .map { it.resource }
+        .forEach {
+            model.add(it.listProperties())
+            it.listProperties(PROV.hasBody).toList()
+                .filter { body -> body.isResourceProperty() }
+                .forEach { body -> model.add(body.resource.listProperties()) }
+        }
+
+    return model
 }
 
 private fun Statement.isResourceProperty(): Boolean =

@@ -1,0 +1,54 @@
+@prefix adms:  <http://www.w3.org/ns/adms#> .
+@prefix dqv:   <http://www.w3.org/ns/dqvNS#> .
+@prefix dct:   <http://purl.org/dc/terms/> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcatno: <http://difi.no/dcatno#> .
+@prefix vcard: <http://www.w3.org/2006/vcard/ns#> .
+@prefix dcat:  <http://www.w3.org/ns/dcat#> .
+@prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcatapi: <http://dcat.no/dcatapi/> .
+@prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix prov:  <http://www.w3.org/ns/prov#> .
+
+<https://testdirektoratet.no/model/dataset-catalog/0>
+        a              dcat:Catalog ;
+        dct:publisher  <https://organization-catalogue.fellesdatakatalog.brreg.no/organizations/123456789> ;
+        dct:title      "Catalog 0"@nb ;
+        dcat:dataset   <https://testdirektoratet.no/model/dataset/0> , <https://testdirektoratet.no/model/dataset/1> .
+
+<https://testdirektoratet.no/model/dataset-catalog/1>
+        a              dcat:Catalog ;
+        dct:publisher  <https://organization-catalogue.fellesdatakatalog.brreg.no/organizations/123456789> ;
+        dct:title      "Catalog 1"@nb ;
+        dcat:dataset   <https://testdirektoratet.no/model/dataset/2> , <https://testdirektoratet.no/model/dataset/3> .
+
+<https://testdirektoratet.no/model/dataset/1>
+        a                         dcat:Dataset ;
+        dcat:theme                <http://publications.europa.eu/resource/authority/data-theme/GOVE>,
+                                  <http://publications.europa.eu/resource/authority/data-theme/TECH> .
+
+<https://testdirektoratet.no/model/dataset/2>
+        a                         dcat:Dataset ;
+        dct:title                 "Dataset 2"@nb .
+
+<https://testdirektoratet.no/model/dataset/3>
+        a                         dcat:Dataset ;
+        dct:temporal              [ a                          dct:PeriodOfTime ;
+                                    dcat:startDate           "2019-04-02T00:00:00"^^xsd:dateTime ] .
+
+<https://testdirektoratet.no/model/dataset/0>
+        a                         dcat:Dataset ;
+        dcat:distribution         <https://testdirektoratet.no/model/distribution/0> .
+
+<https://testdirektoratet.no/model/distribution/0>
+        a                   dcat:Distribution ;
+        dct:format          "XML" ;
+        dcatapi:accessService  <https://testdirektoratet.no/model/access-service/0> .
+
+<https://testdirektoratet.no/model/access-service/0>
+        a                            dcatapi:DataDistributionService ;
+        dcatapi:endpointDescription  [ a           foaf:Document , skos:Concept ;
+                                       dct:source  "84caab4b-b004-4a97-9b92-7bf335cf50d2"
+                                     ] ;
+        dct:description              "Search API"@nb .
