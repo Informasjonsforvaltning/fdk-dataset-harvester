@@ -18,6 +18,7 @@ const val CATALOG_ID_0 = "6e4237cc-98d6-3e7c-a892-8ac1f0ffb37f"
 const val CATALOG_ID_1 = "6f0a37af-a9c1-38bc-b343-bd025b43b5e8"
 
 val TEST_HARVEST_DATE: Calendar = Calendar.Builder().setTimeZone(TimeZone.getTimeZone("UTC")).setDate(2020, 2, 12).setTimeOfDay(11, 52, 16, 122).build()
+val NEW_TEST_HARVEST_DATE: Calendar = Calendar.Builder().setTimeZone(TimeZone.getTimeZone("UTC")).setDate(2020, 6, 12).setTimeOfDay(11, 52, 16, 122).build()
 
 val TEST_HARVEST_SOURCE = HarvestDataSource(
     url = "$WIREMOCK_TEST_URI/harvest0",

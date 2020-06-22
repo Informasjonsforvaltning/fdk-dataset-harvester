@@ -7,6 +7,8 @@ import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.MissingHarv
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.JenaType
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.addDefaultPrefixes
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.createRDFResponse
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.datasetPropertyPaths
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.distributionPropertyPaths
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.extractMetaDataTopic
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.queryToGetMetaDataByCatalogUri
 import org.apache.jena.rdf.model.Model
@@ -74,9 +76,9 @@ class DatasetService(
         val literalsQuery = "DESCRIBE <$uri>"
         val propertiesQuery = "DESCRIBE * WHERE { <$uri> ?p ?o }"
 
-        val datasetProperties = "dcat:dataset/dcat:distribution|dcat:dataset/dcat:distribution/dcatapi:accessService|dcat:dataset/dct:publisher|dcat:dataset/dcat:contactPoint|dcat:dataset/dct:spatial"
+        val propertyPaths = datasetPropertyPaths.joinToString("|")
         val queryPrefixes = "PREFIX dcat: <http://www.w3.org/ns/dcat#> PREFIX dct: <http://purl.org/dc/terms/> PREFIX dcatapi: <http://dcat.no/dcatapi/>"
-        val datasetPropertiesQuery = "$queryPrefixes DESCRIBE * WHERE { <$uri> $datasetProperties ?o }"
+        val datasetPropertiesQuery = "$queryPrefixes DESCRIBE * WHERE { <$uri> $propertyPaths ?o }"
 
         val harvestedData = harvestFuseki.queryDescribe(literalsQuery)
             ?.union(harvestFuseki.queryDescribe(propertiesQuery) ?: ModelFactory.createDefaultModel())
@@ -90,9 +92,9 @@ class DatasetService(
         val literalsQuery = "DESCRIBE <$uri>"
         val propertiesQuery = "DESCRIBE * WHERE { <$uri> ?p ?o }"
 
-        val distributionProperties = "dcat:distribution/dcatapi:accessService"
+        val propertyPaths = distributionPropertyPaths.joinToString("|")
         val queryPrefixes = "PREFIX dcat: <http://www.w3.org/ns/dcat#> PREFIX dcatapi: <http://dcat.no/dcatapi/>"
-        val distributionPropertiesQuery = "$queryPrefixes DESCRIBE * WHERE { <$uri> $distributionProperties ?o }"
+        val distributionPropertiesQuery = "$queryPrefixes DESCRIBE * WHERE { <$uri> $propertyPaths ?o }"
 
         val harvestedData = harvestFuseki.queryDescribe(literalsQuery)
             ?.union(harvestFuseki.queryDescribe(propertiesQuery) ?: ModelFactory.createDefaultModel())

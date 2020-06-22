@@ -6,8 +6,9 @@ import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.HarvestData
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.fuseki.MetaFuseki
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.fuseki.HarvestFuseki
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.JenaType
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.catalogLiteralsDiffers
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.changedCatalogAndDatasets
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.createIdFromUri
-import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.createModel
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.extractMetaDataIdentifier
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.jenaTypeFromAcceptHeader
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.parseRDFResponse
@@ -63,17 +64,26 @@ class DatasetHarvester(
     }
 
     private fun updateMetaData(harvested: Model, oldData: Model?, harvestDate: Calendar) {
-        harvested.listResourcesWithProperty(RDF.type, DCAT.Catalog)
-            .toList()
-            .forEach {
-                val catalogModel = it.createModel()
-                if(!catalogModel.isIsomorphicWithOldData(it.uri, oldData)) {
-                    it.updateCatalogMetaData(harvestDate, catalogModel, oldData)
-                }
+        val changed = changedCatalogAndDatasets(harvested, oldData)
+
+        changed.keys.forEach { catalogURI ->
+            val catalogHasChanges = oldData == null ||
+                changed[catalogURI]?.isNotEmpty() ?: false ||
+                catalogLiteralsDiffers(catalogURI, harvested, oldData)
+
+            if (catalogHasChanges) {
+                val changedDatasets = changed[catalogURI]
+                    ?.map { harvested.getResource(it) }
+                    ?: emptyList()
+
+                harvested.getResource(catalogURI)
+                    .updateCatalogMetaData(harvestDate, changedDatasets)
             }
+
+        }
     }
 
-    private fun Resource.updateCatalogMetaData(harvestDate: Calendar, catalogModel: Model, oldData: Model?): Unit {
+    private fun Resource.updateCatalogMetaData(harvestDate: Calendar, changedDatasets: List<Resource>): Unit {
         val dbModel = metaFuseki.queryDescribe(queryToGetMetaDataByUri(uri))
         val dbId = dbModel?.extractMetaDataIdentifier() ?: createIdFromUri(uri)
         val resourceUri = "${applicationProperties.catalogUri}/$dbId"
@@ -90,12 +100,9 @@ class DatasetHarvester(
 
         metaFuseki.saveWithGraphName(dbId, metaModel)
 
-        catalogModel.listResourcesWithProperty(RDF.type, DCAT.Dataset)
-            .forEach {
-                if(!it.isIsomorphicWithOldData(oldData)) {
-                    it.updateDatasetMetaData(harvestDate, resourceUri)
-                }
-            }
+        changedDatasets.forEach { dataset ->
+            dataset.updateDatasetMetaData(harvestDate, resourceUri)
+        }
     }
 
     private fun Resource.updateDatasetMetaData(harvestDate: Calendar, catalogURI: String): Unit {
@@ -117,16 +124,6 @@ class DatasetHarvester(
         metaFuseki.saveWithGraphName(dbId, metaModel)
     }
 }
-
-private fun Resource.isIsomorphicWithOldData(fullModelFromDB: Model?): Boolean =
-    fullModelFromDB?.getResource(uri)?.let {
-        createModel().isIsomorphicWith(it.createModel())
-    } ?: false
-
-private fun Model.isIsomorphicWithOldData(uri: String, fullModelFromDB: Model?): Boolean =
-    fullModelFromDB?.getResource(uri)?.let {
-        isIsomorphicWith(it.createModel())
-    } ?: false
 
 private fun Model.issuedDate(dbResource: Resource?, harvestDate: Calendar): Literal =
     dbResource?.listProperties(DCTerms.issued)
