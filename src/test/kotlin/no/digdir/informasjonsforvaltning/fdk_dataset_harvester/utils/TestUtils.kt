@@ -1,12 +1,17 @@
 package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.JenaType
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.createRDFResponse
 import org.slf4j.LoggerFactory
-import java.io.BufferedReader
-import java.net.URL
 import org.springframework.http.HttpStatus
+import java.io.BufferedReader
+import java.io.IOException
 import java.net.HttpURLConnection
+import java.net.URL
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
+
 
 private val logger = LoggerFactory.getLogger(ApiTestContext::class.java)
 
@@ -54,6 +59,23 @@ fun addTestDataToFuseki(turtleBody: String, endpoint: String, port: Int) {
     }
 }
 
-private fun isOK(response: Int?): Boolean =
-    if(response == null) false
-    else HttpStatus.resolve(response)?.is2xxSuccessful == true
+private fun isOK(response: Int?): Boolean = HttpStatus.resolve(response ?: 0)?.is2xxSuccessful ?: false
+
+fun String.encodeForSparql(): String {
+    val urlEncoded : String = URLEncoder.encode(this, "UTF-8")
+    return urlEncoded.replace("+", "%20")
+}
+
+fun isJson(jsonInString: String?): Boolean =
+            try {
+                val mapper = ObjectMapper()
+                mapper.readTree(jsonInString)
+                true
+            } catch (e: IOException) {
+                false
+            }
+
+fun isXml(xmlString: String?): Boolean = if (xmlString == null) false else xmlString.startsWith("<") && xmlString.replace("\n","").endsWith(">")
+
+
+

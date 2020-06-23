@@ -160,11 +160,9 @@ paths:
                 type: string
               example: '---------------------------------------------------------------------------------- | id                                                              | count        | ================================================================================== | "https://data.brreg.no/enhetsregisteret/api/enheter/974760673"  |   643        | ----------------------------------------------------------------------------------'
         '204':
-          description: OK. The query was executed succsessfully but did not return any data
+          description: "OK. The query was executed succsessfully but did not return any data"
         '400':
-          description: Bad Request. Attempt to execute a malformed query
-        '403':
-          description: Forbidden. Attempt to execute invalid operation in query
+          description: "Bad Request. Attempt to execute a malformed query, other sparql operations than ASK, or non-sparql queries"
       operationId: get-sparql-select
       parameters:
         - schema:
@@ -180,17 +178,15 @@ paths:
         - sparql
       responses:
         '200':
-          description: "OK. The query was executed succsessfully and returned data"
+          description: "OK. The query was executed successfully and returned data"
         '204':
-          description: "No Content. The query was executed succsessfully but did not return any data"
+          description: "No Content. The query was executed successfully but did not return any data"
         '400':
-          description: "Bad Request. Attempt to execute a malformed query"
-        '403':
-          description: "Forbidden. Attempt to execute invalid operation in query"
+          description: "Bad Request. Attempt to execute a malformed query, other sparql operations than ASK, or non-sparql queries"
       operationId: get-sparql-ask
   /sparql/describe:
     get:
-      description: "Endpoint for perforimg SPARQL DESCRIBE queries against FDK's datasets, returns a single result RDF graph containing RDF data about resources"
+      description: "Endpoint for perform SPARQL DESCRIBE queries against FDK's datasets, returns a single result RDF graph containing RDF data about resources"
       summary: "Query FDK's datasets with SPARQL DESCRIBE"
       tags:
         - sparql
@@ -200,9 +196,7 @@ paths:
         '204':
           description: "No Content. The query was executed succsessfully but did not return any data"
         '400':
-          description: "Bad Request. Attempt to execute a malformed query"
-        '403':
-          description: "Forbidden. Attempt to execute invalid operation in query"
+          description: "Bad Request. Attempt to execute a malformed query, other sparql operations than DESCRIBE, or non-sparql queries"
       operationId: get-sparql-describe
   /sparql/construct:
     get:
@@ -216,7 +210,5 @@ paths:
         '204':
           description: "No Content. The query was executed succsessfully but did not return any data"
         '400':
-          description: "Bad Request. Attempt to execute a malformed query"
-        '403':
-          description: "Forbidden. Attempt to execute invalid operation in query"
+          description: "Bad Request. Attempt to execute a malformed query, other sparql operations than CONSTRUCT, or non-sparql queries"
       operationId: get-sparql-construct

@@ -1,9 +1,11 @@
 package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service
 
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.fuseki.HarvestFuseki
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.fuseki.QueryResponseFormat
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.JenaType
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.addDefaultPrefixes
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.createRDFResponse
+import org.apache.jena.sparql.engine.http.QueryExceptionHTTP
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
@@ -26,9 +28,11 @@ class SparqlService (private val harvestFuseki: HarvestFuseki) {
         }
 
 
-    fun sparqlSelect(query: String): String? =
+    fun sparqlSelect(query: String, format: String): String? =
         when {
-            query.toUpperCase().contains("SELECT") -> harvestFuseki.querySelect(query)
+            query.toUpperCase().contains("SELECT") ->
+                    harvestFuseki.querySelect(query, format.getQueryResponseFormat()
+                    )
             else -> {
                 LOGGER.info("select query does not contain select, will not be executed: $query")
                 throw IllegalArgumentException()
@@ -56,4 +60,11 @@ class SparqlService (private val harvestFuseki: HarvestFuseki) {
                 throw IllegalArgumentException()
             }
         }
+}
+
+private fun String.getQueryResponseFormat(): QueryResponseFormat = when(this) {
+    "text/plain" -> QueryResponseFormat.TEXT
+    "application/json" -> QueryResponseFormat.JSON
+    "application/xml" -> QueryResponseFormat.XML
+    else -> QueryResponseFormat.TEXT
 }

@@ -1,11 +1,13 @@
 package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.controller
 
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service.SparqlService
+import org.apache.jena.sparql.engine.http.QueryExceptionHTTP
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestParam
+import javax.servlet.http.HttpServletRequest
 
 @Controller
 class SparqlController(private val sparqlService: SparqlService) {
@@ -31,21 +33,32 @@ class SparqlController(private val sparqlService: SparqlService) {
         }
 
     @GetMapping("/sparql/select")
-    fun sparqlSelect(@RequestParam(value = "query", required = true) query: String): ResponseEntity<String> =
+    fun sparqlSelect(@RequestParam(value = "query", required = true) query: String,  httpServletRequest: HttpServletRequest): ResponseEntity<String> =
         try {
-            sparqlService.sparqlSelect(query)
-                ?.let { ResponseEntity(it, HttpStatus.OK) }
+            val acceptFormat = httpServletRequest.getHeader("Accept")
+            sparqlService.sparqlSelect(query = query, format = acceptFormat)
+                ?.let {
+                    ResponseEntity(it, HttpStatus.OK)
+                }
                 ?: ResponseEntity(HttpStatus.NO_CONTENT)
-        } catch (ex: IllegalArgumentException) {
-            ResponseEntity(HttpStatus.BAD_REQUEST)
+        } catch (ex: Exception) {
+            when(ex){
+                is IllegalArgumentException -> ResponseEntity(HttpStatus.BAD_REQUEST)
+                is QueryExceptionHTTP -> ResponseEntity(HttpStatus.valueOf(ex.statusCode))
+                else -> ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
+            }
         }
 
     @GetMapping("/sparql/ask")
     fun sparqlAsk(@RequestParam(value = "query", required = true) query: String): ResponseEntity<Boolean> =
         try {
             ResponseEntity(sparqlService.sparqlAsk(query), HttpStatus.OK)
-        } catch (ex: IllegalArgumentException) {
-            ResponseEntity(HttpStatus.BAD_REQUEST)
+        } catch (ex: Exception) {
+            when(ex){
+                is java.lang.IllegalArgumentException -> ResponseEntity(HttpStatus.BAD_REQUEST)
+                is QueryExceptionHTTP -> ResponseEntity(HttpStatus.valueOf(ex.statusCode))
+                else -> ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
+            }
         }
 
 }

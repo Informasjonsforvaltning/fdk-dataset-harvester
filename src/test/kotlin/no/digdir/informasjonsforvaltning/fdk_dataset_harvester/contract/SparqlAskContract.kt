@@ -1,7 +1,9 @@
 package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.contract
 
-import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.ApiTestContext
-import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.TestResponseReader
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Disabled
+
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
@@ -14,15 +16,62 @@ import org.springframework.test.context.ContextConfiguration
         webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
 @ContextConfiguration(initializers = [ApiTestContext.Initializer::class])
 @Tag("contract")
+@Disabled
 class SparqlAskContract : ApiTestContext() {
 
     @Test
-    fun testShouldReturn200forQueriesWithResult() {}
+    fun testShouldReturn200forTrueResult() {
+        val askOrganizationHasMoreThan10Datasets =
+                "$SPARQL_PREFIX_DCAT\n" +
+                "$SPARQL_PREFIX_DCT\n" +
+                "ASK\n" +
+                        "{\n" +
+                        "  ?entry a dcat:Dataset;\n" +
+                        "         dct:publisher ?publisher \n" +
+                        "} \n" +
+                        "HAVING(count(?entry) > 10)"
+        val result = apiGet(
+                endpoint = "$SPARQL_ASK_ENDPOINT?query=$askOrganizationHasMoreThan10Datasets",
+                acceptHeader = null)
+        assertEquals(200,result["status"])
+    }
     @Test
-    fun testShouldReturn204forQueriesWithNoResult() {}
+    fun testShouldReturn204forFalse() {
+        val askOrganizationHasMoreThan10000Datasets =
+                "$SPARQL_PREFIX_DCAT\n" +
+                        "$SPARQL_PREFIX_DCT\n" +
+                        "ASK\n" +
+                        "{\n" +
+                        "  ?entry a dcat:Dataset;\n" +
+                        "         dct:publisher ?publisher \n" +
+                        "} \n" +
+                        "HAVING(count(?entry) > 10000)"
+        val result = apiGet(
+                endpoint = "$SPARQL_ASK_ENDPOINT?query=$askOrganizationHasMoreThan10000Datasets",
+                acceptHeader = null)
+        assertEquals(204,result["status"])
+    }
     @Test
-    fun testShouldReturn400forMalformedSparqlQueries() {}
+    fun testShouldReturn400forMalformedSparqlQueries() {
+        val malformedAskQuery =
+                "$SPARQL_PREFIX_DCAT\n" +
+                        "$SPARQL_PREFIX_DCT\n" +
+                        "ASK\n ?entry" +
+                        "{\n" +
+                        "  ?entry a dcat:Dataset;\n" +
+                        "         dct:publisher ?publisher \n" +
+                        "} \n" +
+                        "HAVING(count(?entry) > 10000)"
+        val result = apiGet(
+                endpoint = "$SPARQL_ASK_ENDPOINT?query=$malformedAskQuery",
+                acceptHeader = null)
+        assertEquals(204,result["status"])
+        
+    }
     @Test
-    fun testShouldReturn403forQueriesContainingUpdate() {}
+    fun testShouldReturn400forQueriesContainingUpdate() {}
+    @Test
+    fun testShouldReturn400forQueriesContainingInsert() {
+    }
 
 }
