@@ -40,7 +40,7 @@ public class RabbitMQSettings {
 
     @Bean
     public Binding binding(TopicExchange topicExchange, Queue queue) {
-        return BindingBuilder.bind(queue).to(topicExchange).with("dataset.*.HarvestTrigger");
+        return BindingBuilder.bind(queue).to(topicExchange).with("dataset.publisher.HarvestTrigger");
     }
 
     @Bean
