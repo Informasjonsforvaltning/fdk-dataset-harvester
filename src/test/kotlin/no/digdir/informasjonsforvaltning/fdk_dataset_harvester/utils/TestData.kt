@@ -16,6 +16,16 @@ const val DATASET_ID_0 = "a1c680ca-62d7-34d5-aa4c-d39b5db033ae"
 const val DATASET_ID_1 = "4667277a-9d27-32c1-aed5-612fa601f393"
 const val CATALOG_ID_0 = "6e4237cc-98d6-3e7c-a892-8ac1f0ffb37f"
 const val CATALOG_ID_1 = "6f0a37af-a9c1-38bc-b343-bd025b43b5e8"
+const val SPARQL_PREFIX_DCT = "PREFIX dct: <http://purl.org/dc/terms/>"
+const val SPARQL_PREFIX_DCAT = "PREFIX dcat: <http://www.w3.org/ns/dcat#"
+const val SPARQL_UPDATE_QUERY = "PREFIX dc: <http://purl.org/dc/elements/1.1/>\n" +
+        "INSERT DATA\n" +
+        "{ \n" +
+        "  <http://example/book1> dc:title \"A new book\" ;\n" +
+        "                         dc:creator \"A.N.Other\" .\n" +
+        "}"
+const val SPARQL_ASK_ENDPOINT= "/sparql/ask"
+const val SPARQL_SELECT_ENDPOINT= "/sparql/select"
 
 val TEST_HARVEST_DATE: Calendar = Calendar.Builder().setTimeZone(TimeZone.getTimeZone("UTC")).setDate(2020, 2, 12).setTimeOfDay(11, 52, 16, 122).build()
 val NEW_TEST_HARVEST_DATE: Calendar = Calendar.Builder().setTimeZone(TimeZone.getTimeZone("UTC")).setDate(2020, 6, 12).setTimeOfDay(11, 52, 16, 122).build()
