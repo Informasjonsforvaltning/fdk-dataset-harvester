@@ -4,6 +4,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.adapter.HarvestAdminAdapter
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rabbit.RabbitMQPublisher
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.util.MultiValueMap
@@ -12,18 +13,21 @@ import javax.annotation.PostConstruct
 
 private val LOGGER = LoggerFactory.getLogger(HarvesterActivity::class.java)
 private const val DATASET_TYPE = "dataset"
+private const val HARVEST_ALL_ID = "all"
 
 @Service
 class HarvesterActivity(
     private val harvestAdminAdapter: HarvestAdminAdapter,
-    private val harvester: DatasetHarvester
+    private val harvester: DatasetHarvester,
+    private val publisher: RabbitMQPublisher
 ): CoroutineScope by CoroutineScope(Dispatchers.Default) {
 
     @PostConstruct
     private fun fullHarvestOnStartup() = initiateHarvest(null)
 
     fun initiateHarvest(params: MultiValueMap<String, String>?) {
-        LOGGER.debug("starting harvest with parameters $params")
+        if (params == null) LOGGER.debug("starting harvest of all datasets")
+        else LOGGER.debug("starting harvest with parameters $params")
 
         val harvest = launch {
             harvestAdminAdapter.getDataSources(params)
@@ -38,6 +42,8 @@ class HarvesterActivity(
         launch {
             harvest.join()
             LOGGER.debug("completed harvest with parameters $params")
+
+            publisher.send(HARVEST_ALL_ID)
         }
     }
 }
