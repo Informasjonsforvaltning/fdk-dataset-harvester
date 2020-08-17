@@ -33,7 +33,7 @@ class SparqlController(private val sparqlService: SparqlService) {
         }
 
     @GetMapping("/sparql/select")
-    fun sparqlSelect(@RequestParam(value = "query", required = true) query: String,  httpServletRequest: HttpServletRequest): ResponseEntity<String> =
+    fun sparqlSelect(@RequestParam(value = "query", required = true) query: String, httpServletRequest: HttpServletRequest): ResponseEntity<String> =
         try {
             val acceptFormat = httpServletRequest.getHeader("Accept")
             sparqlService.sparqlSelect(query = query, format = acceptFormat)
@@ -42,7 +42,7 @@ class SparqlController(private val sparqlService: SparqlService) {
                 }
                 ?: ResponseEntity(HttpStatus.NO_CONTENT)
         } catch (ex: Exception) {
-            when(ex){
+            when (ex) {
                 is IllegalArgumentException -> ResponseEntity(HttpStatus.BAD_REQUEST)
                 is QueryExceptionHTTP -> ResponseEntity(HttpStatus.valueOf(ex.statusCode))
                 else -> ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -54,8 +54,35 @@ class SparqlController(private val sparqlService: SparqlService) {
         try {
             ResponseEntity(sparqlService.sparqlAsk(query), HttpStatus.OK)
         } catch (ex: Exception) {
-            when(ex){
+            when (ex) {
                 is java.lang.IllegalArgumentException -> ResponseEntity(HttpStatus.BAD_REQUEST)
+                is QueryExceptionHTTP -> ResponseEntity(HttpStatus.valueOf(ex.statusCode))
+                else -> ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
+            }
+        }
+
+    @GetMapping("/sparql/meta/describe")
+    fun sparqlMetaDescribe(@RequestParam(value = "query", required = true) query: String): ResponseEntity<String> =
+        try {
+            sparqlService.sparqlMetaDescribe(query)
+                ?.let { ResponseEntity(it, HttpStatus.OK) }
+                ?: ResponseEntity(HttpStatus.NO_CONTENT)
+        } catch (ex: IllegalArgumentException) {
+            ResponseEntity(HttpStatus.BAD_REQUEST)
+        }
+
+    @GetMapping("/sparql/meta/select")
+    fun sparqlMetaSelect(@RequestParam(value = "query", required = true) query: String, httpServletRequest: HttpServletRequest): ResponseEntity<String> =
+        try {
+            val acceptFormat = httpServletRequest.getHeader("Accept")
+            sparqlService.sparqlMetaSelect(query = query, format = acceptFormat)
+                ?.let {
+                    ResponseEntity(it, HttpStatus.OK)
+                }
+                ?: ResponseEntity(HttpStatus.NO_CONTENT)
+        } catch (ex: Exception) {
+            when (ex) {
+                is IllegalArgumentException -> ResponseEntity(HttpStatus.BAD_REQUEST)
                 is QueryExceptionHTTP -> ResponseEntity(HttpStatus.valueOf(ex.statusCode))
                 else -> ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR)
             }
