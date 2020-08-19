@@ -79,6 +79,7 @@ class MetaFuseki(private val fusekiProperties: FusekiProperties) {
     fun saveWithGraphName(graphName: String, model: Model) =
         metaConnection().use {
             it.begin(ReadWrite.WRITE)
+            it.delete(graphName)
             it.put(graphName, model)
         }
 
