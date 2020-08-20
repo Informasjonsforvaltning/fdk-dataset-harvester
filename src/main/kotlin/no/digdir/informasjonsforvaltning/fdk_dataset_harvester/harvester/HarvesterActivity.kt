@@ -34,7 +34,13 @@ class HarvesterActivity(
                 .filter { it.dataType == DATASET_TYPE }
                 .forEach {
                     if (it.url != null) {
-                        launch { harvester.harvestDatasetCatalog(it, Calendar.getInstance()) }
+                        launch {
+                            try {
+                                harvester.harvestDatasetCatalog(it, Calendar.getInstance())
+                            } catch (exception: Exception) {
+                                LOGGER.error("Harvest of ${it.url} failed", exception)
+                            }
+                        }
                     }
                 }
         }
