@@ -1,20 +1,15 @@
 package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.fuseki
 
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.configuration.FusekiProperties
-import org.apache.http.HttpException
 import org.apache.jena.query.ReadWrite
 import org.apache.jena.query.ResultSet
 import org.apache.jena.query.ResultSetFormatter
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdfconnection.RDFConnection
 import org.apache.jena.rdfconnection.RDFConnectionFuseki
-import org.apache.jena.sparql.engine.http.QueryExceptionHTTP
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import org.springframework.web.client.HttpClientErrorException
-import org.springframework.web.server.NotAcceptableStatusException
 import java.io.ByteArrayOutputStream
-import java.lang.IllegalArgumentException
 
 private val LOGGER = LoggerFactory.getLogger(HarvestFuseki::class.java)
 
