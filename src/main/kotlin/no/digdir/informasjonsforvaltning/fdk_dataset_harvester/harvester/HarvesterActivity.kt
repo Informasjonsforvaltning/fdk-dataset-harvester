@@ -2,7 +2,10 @@ package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.harvester
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.adapter.HarvestAdminAdapter
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rabbit.RabbitMQPublisher
 import org.slf4j.LoggerFactory
@@ -22,6 +25,9 @@ class HarvesterActivity(
     private val publisher: RabbitMQPublisher
 ): CoroutineScope by CoroutineScope(Dispatchers.Default) {
 
+    private val activitySemaphore = Semaphore(1)
+    private val harvestSemaphore = Semaphore(2)
+
     @PostConstruct
     private fun fullHarvestOnStartup() = initiateHarvest(null)
 
@@ -30,26 +36,34 @@ class HarvesterActivity(
         else LOGGER.debug("starting harvest with parameters $params")
 
         val harvest = launch {
-            harvestAdminAdapter.getDataSources(params)
-                .filter { it.dataType == DATASET_TYPE }
-                .forEach {
-                    if (it.url != null) {
-                        launch {
-                            try {
-                                harvester.harvestDatasetCatalog(it, Calendar.getInstance())
-                            } catch (exception: Exception) {
-                                LOGGER.error("Harvest of ${it.url} failed", exception)
+            activitySemaphore.withPermit {
+                harvestAdminAdapter.getDataSources(params)
+                    .filter { it.dataType == DATASET_TYPE }
+                    .forEach {
+                        if (it.url != null) {
+                            launch {
+                                harvestSemaphore.withPermit {
+                                    try {
+                                        harvester.harvestDatasetCatalog(it, Calendar.getInstance())
+                                    } catch (exception: Exception) {
+                                        LOGGER.error("Harvest of ${it.url} failed", exception)
+                                    }
+                                }
                             }
                         }
                     }
-                }
+            }
         }
 
-        launch {
+        val onHarvestCompletion = launch {
             harvest.join()
             LOGGER.debug("completed harvest with parameters $params")
 
             publisher.send(HARVEST_ALL_ID)
+            harvest.cancelChildren()
+            harvest.cancel()
         }
+
+        onHarvestCompletion.invokeOnCompletion { onHarvestCompletion.cancel() }
     }
 }
