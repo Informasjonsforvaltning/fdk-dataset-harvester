@@ -103,14 +103,15 @@ fun Resource.modelOfDistributionProperties(): Model {
         .map { it.resource }
         .forEach {
             model.add(it.listProperties())
-            it.listProperties(DCATAPI.accessService).toList()
-                .filter { accessService -> accessService.isResourceProperty() }
-                .map { accessService -> accessService.resource }
-                .forEach { accessService ->
-                    model.add(accessService.listProperties())
-                    accessService.listProperties(DCATAPI.endpointDescription).toList()
-                        .filter { endpoint -> endpoint.isResourceProperty() }
-                        .forEach { endpoint -> model.add(endpoint.resource.listProperties()) }
+            it.listProperties().toList()
+                .filter { property -> property.isResourceProperty() }
+                .forEach { property ->
+                    if (property.predicate == DCATAPI.accessService) {
+                        model.add(property.resource.listProperties())
+                        property.resource.listProperties(DCATAPI.endpointDescription).toList()
+                            .filter { endpoint -> endpoint.isResourceProperty() }
+                            .forEach { endpoint -> model.add(endpoint.resource.listProperties()) }
+                    } else model.add(property.resource.listProperties())
                 }
         }
 
@@ -126,7 +127,7 @@ fun Resource.modelOfQualityProperties(): Model {
         .map { it.resource }
         .forEach {
             model.add(it.listProperties())
-            it.listProperties(PROV.hasBody).toList()
+            it.listProperties().toList()
                 .filter { body -> body.isResourceProperty() }
                 .forEach { body -> model.add(body.resource.listProperties()) }
         }
@@ -134,7 +135,7 @@ fun Resource.modelOfQualityProperties(): Model {
     return model
 }
 
-private fun Statement.isResourceProperty(): Boolean =
+fun Statement.isResourceProperty(): Boolean =
     try {
         resource.isResource
     } catch (ex: ResourceRequiredException) {

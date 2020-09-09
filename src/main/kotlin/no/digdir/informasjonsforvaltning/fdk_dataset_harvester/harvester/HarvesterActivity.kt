@@ -57,9 +57,11 @@ class HarvesterActivity(
 
         val onHarvestCompletion = launch {
             harvest.join()
-            LOGGER.debug("completed harvest with parameters $params")
+            harvester.updateUnionModel()
 
-            publisher.send(HARVEST_ALL_ID)
+            if (params != null) LOGGER.debug("completed harvest with parameters $params")
+            else LOGGER.debug("completed full harvest")
+
             harvest.cancelChildren()
             harvest.cancel()
         }

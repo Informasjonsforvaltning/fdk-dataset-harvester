@@ -6,6 +6,7 @@ import org.springframework.context.ApplicationContextInitializer
 import org.springframework.context.ConfigurableApplicationContext
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.wait.strategy.HttpWaitStrategy
+import org.testcontainers.containers.wait.strategy.Wait
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
@@ -16,6 +17,7 @@ abstract class ApiTestContext {
     internal class Initializer : ApplicationContextInitializer<ConfigurableApplicationContext> {
         override fun initialize(configurableApplicationContext: ConfigurableApplicationContext) {
             TestPropertyValues.of(
+                "spring.data.mongodb.uri=mongodb://${MONGO_USER}:${MONGO_PASSWORD}@localhost:${mongoContainer.getMappedPort(MONGO_PORT)}/datasetHarvester?authSource=admin&authMechanism=SCRAM-SHA-1",
                 "fuseki.datasetUri=http://localhost:${fusekiContainer.getMappedPort(API_PORT)}/fuseki/dataset-harvest",
                 "fuseki.metaUri=http://localhost:${fusekiContainer.getMappedPort(API_PORT)}/fuseki/dataset-meta"
             ).applyTo(configurableApplicationContext.environment)
@@ -25,11 +27,19 @@ abstract class ApiTestContext {
     companion object {
 
         private val logger = LoggerFactory.getLogger(ApiTestContext::class.java)
+        var mongoContainer: KGenericContainer
         var fusekiContainer: KGenericContainer
 
         init {
 
             startMockServer()
+
+            mongoContainer = KGenericContainer("mongo:latest")
+                    .withEnv(MONGO_ENV_VALUES)
+                    .withExposedPorts(MONGO_PORT)
+                    .waitingFor(Wait.forListeningPort())
+
+            mongoContainer.start()
 
             fusekiContainer = KGenericContainer("eu.gcr.io/digdir-fdk-infra/fdk-fuseki-service:latest")
                 .withExposedPorts(API_PORT)
