@@ -39,8 +39,8 @@ jobs:
           command: |
             helm init --client-only
             helm repo add fdk https://informasjonsforvaltning.github.io/helm-chart/
-            helm fetch --untar --untardir ./helm fdk/new-dataset-harvester
-            helm template --set DOCKER_IMAGE_NAME="eu.gcr.io/digdir-fdk-infra/fdk-dataset-harvester:$GITHUB_SHA" -f ./helm/new-dataset-harvester/values/staging.yaml ./helm/new-dataset-harvester/ > ./kubectlapply.yaml
+            helm fetch --untar --untardir ./helm fdk/fdk-dataset-harvester
+            helm template --set DOCKER_IMAGE_NAME="eu.gcr.io/digdir-fdk-infra/fdk-dataset-harvester:$GITHUB_SHA" -f ./helm/fdk-dataset-harvester/values/staging.yaml ./helm/fdk-dataset-harvester/ > ./kubectlapply.yaml
             chmod o+w ./kubectlapply.yaml
             cat kubectlapply.yaml
 
@@ -64,4 +64,4 @@ jobs:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
         uses: pullreminders/slack-action@master
         with:
-          args: '{\"channel\":\"C7NTH118T\",\"text\":\"Application: new-dataset-harvester deployed to staging\"}'
+          args: '{\"channel\":\"C7NTH118T\",\"text\":\"Application: fdk-dataset-harvester deployed to staging\"}'
