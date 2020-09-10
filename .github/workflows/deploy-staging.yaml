@@ -1,4 +1,4 @@
-name: Build and deploy to staging (digdir) when pull request is created
+name: Build and deploy to staging when pull request is created
 
 on:
   pull_request:
@@ -64,4 +64,4 @@ jobs:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
         uses: pullreminders/slack-action@master
         with:
-          args: '{\"channel\":\"C7NTH118T\",\"text\":\"Application: new-dataset-harvester deployed to digdir-staging\"}'
+          args: '{\"channel\":\"C7NTH118T\",\"text\":\"Application: new-dataset-harvester deployed to staging\"}'
