@@ -3,6 +3,7 @@ package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.harvester
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.CatalogDBO
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.DatasetDBO
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.*
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service.ungzip
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.Property
 import org.apache.jena.rdf.model.Resource
@@ -17,10 +18,10 @@ import java.util.*
 
 fun CatalogAndDatasetModels.catalogDiffersFromDB(dbo: CatalogDBO?): Boolean =
     if (dbo == null) true
-    else !harvestedCatalog.isIsomorphicWith(parseRDFResponse(dbo.turtleHarvested, JenaType.TURTLE, null))
+    else !harvestedCatalog.isIsomorphicWith(parseRDFResponse(ungzip(dbo.turtleHarvested), JenaType.TURTLE, null))
 
 fun DatasetModel.differsFromDB(dbo: DatasetDBO): Boolean =
-    !harvestedDataset.isIsomorphicWith(parseRDFResponse(dbo.turtleHarvested, JenaType.TURTLE, null))
+    !harvestedDataset.isIsomorphicWith(parseRDFResponse(ungzip(dbo.turtleHarvested), JenaType.TURTLE, null))
 
 fun Resource.parsePropertyToCalendar(property: Property): List<Calendar>? =
     listProperties(property)
