@@ -24,24 +24,27 @@ class DatasetService(
 
     fun getAll(returnType: JenaType): String =
         miscellaneousRepository.findByIdOrNull(UNION_ID)
+            ?.let { ungzip(it.turtle) }
             ?.let {
-                if (returnType == JenaType.TURTLE) it.turtle
-                else parseRDFResponse(it.turtle, JenaType.TURTLE, null)?.createRDFResponse(returnType)
+                if (returnType == JenaType.TURTLE) it
+                else parseRDFResponse(it, JenaType.TURTLE, null)?.createRDFResponse(returnType)
             }
             ?: ModelFactory.createDefaultModel().createRDFResponse(returnType)
 
     fun getDataset(id: String, returnType: JenaType): String? =
         datasetRepository.findOneByFdkId(id)
+            ?.let { ungzip(it.turtleDataset) }
             ?.let {
-                if (returnType == JenaType.TURTLE) it.turtleDataset
-                else parseRDFResponse(it.turtleDataset, JenaType.TURTLE, null)?.createRDFResponse(returnType)
+                if (returnType == JenaType.TURTLE) it
+                else parseRDFResponse(it, JenaType.TURTLE, null)?.createRDFResponse(returnType)
             }
 
     fun getDatasetCatalog(id: String, returnType: JenaType): String? =
         catalogRepository.findOneByFdkId(id)
+            ?.let { ungzip(it.turtleCatalog) }
             ?.let {
-                if (returnType == JenaType.TURTLE) it.turtleCatalog
-                else parseRDFResponse(it.turtleCatalog, JenaType.TURTLE, null)?.createRDFResponse(returnType)
+                if (returnType == JenaType.TURTLE) it
+                else parseRDFResponse(it, JenaType.TURTLE, null)?.createRDFResponse(returnType)
             }
 
 }

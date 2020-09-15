@@ -46,7 +46,7 @@ class DatasetServiceTest {
             val allCatalogs = MiscellaneousTurtle(
                 id = UNION_ID,
                 isHarvestedSource = false,
-                turtle = javaClass.classLoader.getResource("all_catalogs.ttl")!!.readText()
+                turtle = gzip(javaClass.classLoader.getResource("all_catalogs.ttl")!!.readText())
             )
 
             whenever(miscRepository.findById(UNION_ID))

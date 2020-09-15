@@ -15,12 +15,12 @@ import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.Miscellaneo
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.repository.CatalogRepository
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.repository.DatasetRepository
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.repository.MiscellaneousRepository
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service.gzip
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.*
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import java.util.*
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 @Tag("unit")
 class HarvesterTest {
@@ -47,38 +47,23 @@ class HarvesterTest {
         whenever(valuesMock.datasetUri)
             .thenReturn("http://localhost:5000/datasets")
 
-        val expectedSavedHarvest = responseReader.parseResponse(HARVEST_0, "TURTLE")
-        val expectedDatasetHarvestData = responseReader.parseFile("parsed_dataset_0.ttl", "TURTLE")
-        val expectedDatasetModel = responseReader.parseFile("dataset_0.ttl", "TURTLE")
-        val expectedCatalogHarvestData = responseReader.parseFile("harvest_response_0.ttl", "TURTLE")
-        val expectedCatalogModel = responseReader.parseFile("catalog_0.ttl", "TURTLE")
-
-        val expectedCatalogDBO = CATALOG_DBO_0.copy(turtleHarvested = "", turtleCatalog = "")
-        val expectedDatasetDBO = DATASET_DBO_0.copy(turtleHarvested = "", turtleDataset = "")
-
         harvester.harvestDatasetCatalog(TEST_HARVEST_SOURCE_0, TEST_HARVEST_DATE)
 
         argumentCaptor<MiscellaneousTurtle>().apply {
             verify(miscellaneousRepository, times(1)).save(capture())
-            assertEquals(TEST_HARVEST_SOURCE_0.url, firstValue.id)
-            assertTrue(firstValue.isHarvestedSource)
-            assertTrue(expectedSavedHarvest.isIsomorphicWith(responseReader.parseResponse(firstValue.turtle, "TURTLE")))
+            assertEquals(SAVED_HARVEST, firstValue)
         }
 
         argumentCaptor<List<CatalogDBO>>().apply {
             verify(catalogRepository, times(1)).saveAll(capture())
             assertEquals(1, firstValue.size)
-            assertEquals(expectedCatalogDBO, firstValue.first().copy(turtleHarvested = "", turtleCatalog = ""))
-            assertTrue(expectedCatalogHarvestData.isIsomorphicWith(responseReader.parseResponse(firstValue.first().turtleHarvested, "TURTLE")))
-            assertTrue(expectedCatalogModel.isIsomorphicWith(responseReader.parseResponse(firstValue.first().turtleCatalog, "TURTLE")))
+            assertEquals(CATALOG_DBO_0, firstValue.first())
         }
 
         argumentCaptor<List<DatasetDBO>>().apply {
             verify(datasetRepository, times(1)).saveAll(capture())
             assertEquals(1, firstValue.size)
-            assertEquals(expectedDatasetDBO, firstValue.first().copy(turtleHarvested = "", turtleDataset = ""))
-            assertTrue(expectedDatasetHarvestData.isIsomorphicWith(responseReader.parseResponse(firstValue.first().turtleHarvested, "TURTLE")))
-            assertTrue(expectedDatasetModel.isIsomorphicWith(responseReader.parseResponse(firstValue.first().turtleDataset, "TURTLE")))
+            assertEquals(DATASET_DBO_0, firstValue.first())
         }
 
     }
@@ -89,15 +74,7 @@ class HarvesterTest {
             .thenReturn(responseReader.readFile("harvest_response_0.ttl"))
 
         whenever(miscellaneousRepository.findById("http://localhost:5000/harvest0"))
-            .thenReturn(
-                Optional.of(
-                    MiscellaneousTurtle(
-                        id="http://localhost:5000/harvest0",
-                        isHarvestedSource = true,
-                        turtle = responseReader.readFile("harvest_response_0.ttl")
-                    )
-                )
-            )
+            .thenReturn(Optional.of(SAVED_HARVEST.copy(turtle = gzip(responseReader.readFile("harvest_response_0.ttl")))))
 
         whenever(valuesMock.catalogUri)
             .thenReturn("http://localhost:5000/catalogs")
@@ -125,18 +102,14 @@ class HarvesterTest {
         whenever(adapter.getDatasets(TEST_HARVEST_SOURCE_0))
             .thenReturn(responseReader.readFile("harvest_response_0.ttl"))
 
-        val catalogDiffTurtle = responseReader.readFile("harvest_response_0_catalog_diff.ttl")
+        val catalogDiffTurtle = gzip(responseReader.readFile("harvest_response_0_catalog_diff.ttl"))
 
         whenever(miscellaneousRepository.findById("http://localhost:5000/harvest0"))
-            .thenReturn(
-                Optional.of(
-                    MiscellaneousTurtle(
-                        id="http://localhost:5000/harvest0",
-                        isHarvestedSource = true,
-                        turtle = catalogDiffTurtle)))
+            .thenReturn(Optional.of(SAVED_HARVEST.copy(turtle = catalogDiffTurtle)))
 
         whenever(catalogRepository.findById("https://testdirektoratet.no/model/dataset-catalog/0"))
             .thenReturn(Optional.of(CATALOG_DBO_0.copy(turtleHarvested = catalogDiffTurtle)))
+
         whenever(datasetRepository.findById("https://testdirektoratet.no/model/dataset/0"))
             .thenReturn(Optional.of(DATASET_DBO_0))
 
@@ -146,30 +119,28 @@ class HarvesterTest {
             .thenReturn("http://localhost:5000/datasets")
 
 
-        val expectedSavedHarvest = responseReader.parseResponse(HARVEST_0, "TURTLE")
-        val expectedCatalogHarvestData = responseReader.parseResponse(HARVEST_0, "TURTLE")
-        val expectedCatalogModel = responseReader.parseFile("catalog_0_diff_update.ttl", "TURTLE")
+        val expectedSavedHarvest = MiscellaneousTurtle(
+            id="http://localhost:5000/harvest0",
+            isHarvestedSource = true,
+            turtle = gzip(HARVEST_0)
+        )
 
         val expectedCatalogDBO = CATALOG_DBO_0.copy(
             modified = listOf(TEST_HARVEST_DATE, NEW_TEST_HARVEST_DATE),
-            turtleHarvested = "",
-            turtleCatalog = "")
+            turtleCatalog = gzip(responseReader.readFile("catalog_0_diff_update.ttl"))
+        )
 
         harvester.harvestDatasetCatalog(TEST_HARVEST_SOURCE_0, NEW_TEST_HARVEST_DATE)
 
         argumentCaptor<MiscellaneousTurtle>().apply {
             verify(miscellaneousRepository, times(1)).save(capture())
-            assertEquals(TEST_HARVEST_SOURCE_0.url, firstValue.id)
-            assertTrue(firstValue.isHarvestedSource)
-            assertTrue(expectedSavedHarvest.isIsomorphicWith(responseReader.parseResponse(firstValue.turtle, "TURTLE")))
+            assertEquals(expectedSavedHarvest, firstValue)
         }
 
         argumentCaptor<List<CatalogDBO>>().apply {
             verify(catalogRepository, times(1)).saveAll(capture())
             assertEquals(1, firstValue.size)
-            assertEquals(expectedCatalogDBO, firstValue.first().copy(turtleHarvested = "", turtleCatalog = ""))
-            assertTrue(expectedCatalogHarvestData.isIsomorphicWith(responseReader.parseResponse(firstValue.first().turtleHarvested, "TURTLE")))
-            assertTrue(expectedCatalogModel.isIsomorphicWith(responseReader.parseResponse(firstValue.first().turtleCatalog, "TURTLE")))
+            assertEquals(expectedCatalogDBO, firstValue.first())
         }
 
         argumentCaptor<List<DatasetDBO>>().apply {

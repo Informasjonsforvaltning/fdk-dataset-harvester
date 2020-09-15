@@ -9,6 +9,8 @@ import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.*
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.repository.CatalogRepository
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.repository.DatasetRepository
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.repository.MiscellaneousRepository
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service.gzip
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service.ungzip
 import org.apache.jena.rdf.model.*
 import org.apache.jena.sparql.vocabulary.FOAF
 import org.apache.jena.vocabulary.DCAT
@@ -36,14 +38,14 @@ class DatasetHarvester(
         var unionModel = ModelFactory.createDefaultModel()
 
         catalogRepository.findAll()
-            .map { parseRDFResponse(it.turtleCatalog, JenaType.TURTLE, null) }
+            .map { parseRDFResponse(ungzip(it.turtleCatalog), JenaType.TURTLE, null) }
             .forEach { unionModel = unionModel.union(it) }
 
         miscRepository.save(
             MiscellaneousTurtle(
                 id = UNION_ID,
                 isHarvestedSource = false,
-                turtle = unionModel.createRDFResponse(JenaType.TURTLE)
+                turtle = gzip(unionModel.createRDFResponse(JenaType.TURTLE))
             )
         )
     }
@@ -64,7 +66,7 @@ class DatasetHarvester(
                     val dbId = createIdFromUri(source.url)
                     val dbData = miscRepository
                         .findByIdOrNull(source.url)
-                        ?.let { parseRDFResponse(it.turtle, JenaType.TURTLE, null) }
+                        ?.let { parseRDFResponse(ungzip(it.turtle), JenaType.TURTLE, null) }
 
                     if (dbData != null && harvested.isIsomorphicWith(dbData)) LOGGER.info("No changes from last harvest of ${source.url}")
                     else {
@@ -74,7 +76,7 @@ class DatasetHarvester(
                             MiscellaneousTurtle(
                                 id = source.url,
                                 isHarvestedSource = true,
-                                turtle = harvested.createRDFResponse(JenaType.TURTLE)
+                                turtle = gzip(harvested.createRDFResponse(JenaType.TURTLE))
                             )
                         )
                         val fusekiModel = harvestFuseki.fetchByGraphName(dbId)
@@ -138,7 +140,7 @@ class DatasetHarvester(
 
                 datasetsWithIsChanged
                     .map { pair -> pair.first }
-                    .map { dataset -> parseRDFResponse(dataset.turtleDataset, JenaType.TURTLE, null) }
+                    .map { dataset -> parseRDFResponse(ungzip(dataset.turtleDataset), JenaType.TURTLE, null) }
                     .forEach { model -> catalogModel = catalogModel.union(model) }
 
                 datasetsWithIsChanged
@@ -151,8 +153,8 @@ class DatasetHarvester(
                         fdkId = fdkId,
                         issued = issued,
                         modified = modified,
-                        turtleHarvested = it.first.harvestedCatalog.createRDFResponse(JenaType.TURTLE),
-                        turtleCatalog = catalogModel.createRDFResponse(JenaType.TURTLE)
+                        turtleHarvested = gzip(it.first.harvestedCatalog.createRDFResponse(JenaType.TURTLE)),
+                        turtleCatalog = gzip(catalogModel.createRDFResponse(JenaType.TURTLE))
                     )
                 )
             }
@@ -198,8 +200,8 @@ class DatasetHarvester(
             isPartOf = catalogURI,
             issued = issued,
             modified = modified,
-            turtleHarvested = harvestedDataset.createRDFResponse(JenaType.TURTLE),
-            turtleDataset = metaModel.union(harvestedDataset).createRDFResponse(JenaType.TURTLE)
+            turtleHarvested = gzip(harvestedDataset.createRDFResponse(JenaType.TURTLE)),
+            turtleDataset = gzip(metaModel.union(harvestedDataset).createRDFResponse(JenaType.TURTLE))
         )
     }
 }
