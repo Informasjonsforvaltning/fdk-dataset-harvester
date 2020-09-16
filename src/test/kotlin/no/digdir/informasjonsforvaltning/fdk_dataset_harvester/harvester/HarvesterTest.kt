@@ -30,12 +30,11 @@ class HarvesterTest {
     private val catalogRepository: CatalogRepository = mock()
     private val datasetRepository: DatasetRepository = mock()
     private val miscellaneousRepository: MiscellaneousRepository = mock()
-    private val rabbitMQPublisher: RabbitMQPublisher = mock()
     private val valuesMock: ApplicationProperties = mock()
     private val adapter: DatasetAdapter = mock()
 
     private val harvester = DatasetHarvester(adapter, metaFuseki, harvestFuseki, catalogRepository,
-        datasetRepository, miscellaneousRepository, rabbitMQPublisher, valuesMock)
+        datasetRepository, miscellaneousRepository, valuesMock)
 
     private val responseReader = TestResponseReader()
 

@@ -62,8 +62,11 @@ class HarvesterActivity(
             if (params != null) LOGGER.debug("completed harvest with parameters $params")
             else LOGGER.debug("completed full harvest")
 
+            publisher.sendUpdateAssessmentsMessage()
+
             harvest.cancelChildren()
             harvest.cancel()
+
         }
 
         onHarvestCompletion.invokeOnCompletion { onHarvestCompletion.cancel() }
