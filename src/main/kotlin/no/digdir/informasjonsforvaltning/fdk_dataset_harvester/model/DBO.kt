@@ -24,14 +24,8 @@ data class DatasetDBO (
     val fdkId: String,
 
     val isPartOf: String,
-
-    @JsonDeserialize(using = DateDeserializers.CalendarDeserializer::class)
-    @JsonSerialize(using = CalendarSerializer::class)
-    val issued: Calendar,
-
-    @JsonDeserialize(using = DateDeserializers.CalendarDeserializer::class)
-    @JsonSerialize(using = CalendarSerializer::class)
-    val modified: Calendar,
+    val issued: Long,
+    val modified: Long,
 
     val turtleHarvested: ByteArray,
     val turtleDataset: ByteArray
@@ -73,13 +67,8 @@ data class CatalogDBO (
         @Indexed(unique = true)
         val fdkId: String,
 
-        @JsonDeserialize(using = DateDeserializers.CalendarDeserializer::class)
-        @JsonSerialize(using = CalendarSerializer::class)
-        val issued: Calendar,
-
-        @JsonDeserialize(using = DateDeserializers.CalendarDeserializer::class)
-        @JsonSerialize(using = CalendarSerializer::class)
-        val modified: Calendar,
+        val issued: Long,
+        val modified: Long,
 
         val turtleHarvested: ByteArray,
         val turtleCatalog: ByteArray

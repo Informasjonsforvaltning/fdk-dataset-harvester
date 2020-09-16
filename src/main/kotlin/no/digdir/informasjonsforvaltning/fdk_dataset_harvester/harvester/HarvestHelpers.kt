@@ -101,6 +101,12 @@ private fun Model.addNonDatasetResourceToModel(resource: Resource): Model {
     return this
 }
 
+fun calendarFromTimestamp(timestamp: Long): Calendar {
+    val calendar = Calendar.getInstance()
+    calendar.timeInMillis = timestamp
+    return calendar
+}
+
 data class CatalogAndDatasetModels (
     val resource: Resource,
     val harvestedCatalog: Model,

@@ -127,7 +127,7 @@ class HarvesterTest {
         )
 
         val expectedCatalogDBO = CATALOG_DBO_0.copy(
-            modified = NEW_TEST_HARVEST_DATE,
+            modified = NEW_TEST_HARVEST_DATE.timeInMillis,
             turtleCatalog = gzip(responseReader.readFile("catalog_0_diff_update.ttl"))
         )
 

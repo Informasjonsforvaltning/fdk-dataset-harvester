@@ -107,7 +107,7 @@ class DatasetHarvester(
 
                 val fusekiMetaData = fusekiModel?.getResource(resourceUri)
 
-                val issued: Calendar = it.second?.issued
+                val issued: Calendar = it.second?.issued?.let { timestamp -> calendarFromTimestamp(timestamp) }
                     ?: fusekiMetaData?.parsePropertyToCalendar(DCTerms.issued)?.firstOrNull()
                     ?: harvestDate
 
@@ -117,7 +117,7 @@ class DatasetHarvester(
 
                 val modified: Calendar = when {
                     differsFromFuseki -> harvestDate
-                    it.second?.modified != null -> it.second!!.modified
+                    it.second?.modified != null -> calendarFromTimestamp(it.second!!.modified)
                     fusekiModified != null -> fusekiModified
                     else -> harvestDate
                 }
@@ -154,8 +154,8 @@ class DatasetHarvester(
                     CatalogDBO(
                         uri = catalogURI,
                         fdkId = fdkId,
-                        issued = issued,
-                        modified = modified,
+                        issued = issued.timeInMillis,
+                        modified = modified.timeInMillis,
                         turtleHarvested = gzip(it.first.harvestedCatalog.createRDFResponse(JenaType.TURTLE)),
                         turtleCatalog = gzip(catalogModel.createRDFResponse(JenaType.TURTLE))
                     )
@@ -177,7 +177,7 @@ class DatasetHarvester(
         val metaModel = ModelFactory.createDefaultModel()
         metaModel.addDefaultPrefixes()
 
-        val issued: Calendar = dbDataset?.issued
+        val issued: Calendar = dbDataset?.issued?.let { timestamp -> calendarFromTimestamp(timestamp) }
             ?: fusekiMetaData?.parsePropertyToCalendar(DCTerms.issued)?.firstOrNull()
             ?: harvestDate
 
@@ -187,7 +187,7 @@ class DatasetHarvester(
 
         val modified: Calendar = when {
             differsFromFuseki -> harvestDate
-            dbDataset?.modified != null -> dbDataset.modified
+            dbDataset?.modified != null -> calendarFromTimestamp(dbDataset.modified)
             fusekiModified != null -> fusekiModified
             else -> harvestDate
         }
@@ -204,8 +204,8 @@ class DatasetHarvester(
             uri = resource.uri,
             fdkId = fdkId,
             isPartOf = catalogURI,
-            issued = issued,
-            modified = modified,
+            issued = issued.timeInMillis,
+            modified = modified.timeInMillis,
             turtleHarvested = gzip(harvestedDataset.createRDFResponse(JenaType.TURTLE)),
             turtleDataset = gzip(metaModel.union(harvestedDataset).createRDFResponse(JenaType.TURTLE))
         )
