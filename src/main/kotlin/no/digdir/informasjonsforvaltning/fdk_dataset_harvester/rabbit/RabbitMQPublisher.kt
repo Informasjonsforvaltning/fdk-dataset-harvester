@@ -18,4 +18,13 @@ class RabbitMQPublisher(private val template: RabbitTemplate) {
             LOGGER.error("Could not trigger search update: ${e.message}")
         }
     }
+
+    fun sendUpdateAssessmentsMessage() {
+        try {
+            template.convertAndSend("updates", "assessments.update", "")
+            LOGGER.debug("Successfully sent assessments.update message")
+        } catch (e: AmqpException) {
+            LOGGER.error("Could not trigger assessments update", e)
+        }
+    }
 }
