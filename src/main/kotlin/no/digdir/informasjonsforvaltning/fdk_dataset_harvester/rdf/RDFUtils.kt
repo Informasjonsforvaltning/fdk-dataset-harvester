@@ -171,4 +171,3 @@ fun queryToGetMetaDataByCatalogUri(uri: String): String =
        DESCRIBE * WHERE { 
            ?s dct:isPartOf <$uri> 
        }""".trimIndent()
-

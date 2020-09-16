@@ -40,7 +40,7 @@ val CATALOG_DBO_0 = CatalogDBO(
     uri = "https://testdirektoratet.no/model/dataset-catalog/0",
     fdkId = CATALOG_ID_0,
     issued = TEST_HARVEST_DATE,
-    modified = listOf(TEST_HARVEST_DATE),
+    modified = TEST_HARVEST_DATE,
     turtleHarvested = gzip(responseReader.readFile("harvest_response_0.ttl")),
     turtleCatalog = gzip(responseReader.readFile("catalog_0.ttl"))
 )
@@ -49,7 +49,7 @@ val DATASET_DBO_0 = DatasetDBO(
     fdkId = DATASET_ID_0,
     isPartOf = "http://localhost:5000/catalogs/6e4237cc-98d6-3e7c-a892-8ac1f0ffb37f",
     issued = TEST_HARVEST_DATE,
-    modified = listOf(TEST_HARVEST_DATE),
+    modified = TEST_HARVEST_DATE,
     turtleHarvested = gzip(responseReader.readFile("parsed_dataset_0.ttl")),
     turtleDataset = gzip(responseReader.readFile("dataset_0.ttl"))
 )

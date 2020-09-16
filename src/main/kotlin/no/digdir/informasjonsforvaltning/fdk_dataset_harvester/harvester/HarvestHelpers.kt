@@ -34,10 +34,6 @@ fun Resource.parsePropertyToCalendar(property: Property): List<Calendar>? =
             cal
         }
 
-fun Resource.addModified(modified: List<Calendar>) {
-    modified.forEach { addProperty(DCTerms.modified, model.createTypedLiteral(it)) }
-}
-
 fun splitCatalogsFromModel(harvested: Model): List<CatalogAndDatasetModels> =
     harvested.listResourcesWithProperty(RDF.type, DCAT.Catalog)
         .toList()

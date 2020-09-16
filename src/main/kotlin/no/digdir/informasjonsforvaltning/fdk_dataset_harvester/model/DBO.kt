@@ -31,7 +31,7 @@ data class DatasetDBO (
 
     @JsonDeserialize(using = DateDeserializers.CalendarDeserializer::class)
     @JsonSerialize(using = CalendarSerializer::class)
-    val modified: List<Calendar>,
+    val modified: Calendar,
 
     val turtleHarvested: ByteArray,
     val turtleDataset: ByteArray
@@ -79,7 +79,7 @@ data class CatalogDBO (
 
         @JsonDeserialize(using = DateDeserializers.CalendarDeserializer::class)
         @JsonSerialize(using = CalendarSerializer::class)
-        val modified: List<Calendar>,
+        val modified: Calendar,
 
         val turtleHarvested: ByteArray,
         val turtleCatalog: ByteArray

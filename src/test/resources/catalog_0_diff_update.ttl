@@ -56,7 +56,7 @@
         a                  dcat:CatalogRecord ;
         dct:identifier     "6e4237cc-98d6-3e7c-a892-8ac1f0ffb37f" ;
         dct:issued         "2020-03-12T11:52:16.122Z"^^xsd:dateTime ;
-        dct:modified       "2020-03-12T11:52:16.122Z"^^xsd:dateTime , "2020-07-12T11:52:16.122Z"^^xsd:dateTime ;
+        dct:modified       "2020-07-12T11:52:16.122Z"^^xsd:dateTime ;
         foaf:primaryTopic  <https://testdirektoratet.no/model/dataset-catalog/0> .
 
 <http://localhost:5000/datasets/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
