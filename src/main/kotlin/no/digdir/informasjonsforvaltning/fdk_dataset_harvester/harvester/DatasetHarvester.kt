@@ -5,7 +5,6 @@ import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.configuration.App
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.fuseki.MetaFuseki
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.fuseki.HarvestFuseki
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.*
-import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rabbit.RabbitMQPublisher
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.*
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.repository.CatalogRepository
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.repository.DatasetRepository
@@ -32,7 +31,6 @@ class DatasetHarvester(
     private val catalogRepository: CatalogRepository,
     private val datasetRepository: DatasetRepository,
     private val miscRepository: MiscellaneousRepository,
-    private val rabbitMQPublisher: RabbitMQPublisher,
     private val applicationProperties: ApplicationProperties
 ) {
 
@@ -86,8 +84,6 @@ class DatasetHarvester(
                         val differsFromFuseki = if (fusekiModel != null) !harvested.isIsomorphicWith(fusekiModel) else true
 
                         updateDB(harvested, harvestDate, differsFromFuseki)
-
-                        rabbitMQPublisher.sendUpdateAssessmentsMessage()
                     }
                 }
             }
