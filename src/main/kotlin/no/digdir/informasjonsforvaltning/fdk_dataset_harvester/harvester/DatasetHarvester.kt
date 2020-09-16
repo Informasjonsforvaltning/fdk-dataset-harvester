@@ -115,12 +115,15 @@ class DatasetHarvester(
                     ?: fusekiMetaData?.parsePropertyToCalendar(DCTerms.issued)?.firstOrNull()
                     ?: harvestDate
 
-                val fusekiModified = fusekiMetaData?.parsePropertyToCalendar(DCTerms.modified)
-                val modified: List<Calendar> = when {
-                    it.second?.modified != null -> listOf(it.second!!.modified, listOf(harvestDate)).flatten()
-                    fusekiModified != null && differsFromFuseki-> listOf(fusekiModified, listOf(harvestDate)).flatten()
+                val fusekiModified = fusekiMetaData
+                    ?.parsePropertyToCalendar(DCTerms.modified)
+                    ?.maxOrNull()
+
+                val modified: Calendar = when {
+                    differsFromFuseki -> harvestDate
+                    it.second?.modified != null -> it.second!!.modified
                     fusekiModified != null -> fusekiModified
-                    else -> listOf(harvestDate)
+                    else -> harvestDate
                 }
 
                 var catalogModel = it.first.harvestedCatalogWithoutDatasets
@@ -130,7 +133,7 @@ class DatasetHarvester(
                     .addProperty(DCTerms.identifier, fdkId)
                     .addProperty(FOAF.primaryTopic, catalogModel.createResource(catalogURI))
                     .addProperty(DCTerms.issued, catalogModel.createTypedLiteral(issued))
-                    .addModified(modified)
+                    .addProperty(DCTerms.modified, catalogModel.createTypedLiteral(modified))
 
                 val datasetsWithIsChanged = it.first.datasets
                     .map { dataset ->
@@ -182,12 +185,15 @@ class DatasetHarvester(
             ?: fusekiMetaData?.parsePropertyToCalendar(DCTerms.issued)?.firstOrNull()
             ?: harvestDate
 
-        val fusekiModified = fusekiMetaData?.parsePropertyToCalendar(DCTerms.modified)
-        val modified: List<Calendar> = when {
-            dbDataset?.modified != null -> listOf(dbDataset.modified, listOf(harvestDate)).flatten()
-            fusekiModified != null && differsFromFuseki-> listOf(fusekiModified, listOf(harvestDate)).flatten()
+        val fusekiModified = fusekiMetaData
+            ?.parsePropertyToCalendar(DCTerms.modified)
+            ?.maxOrNull()
+
+        val modified: Calendar = when {
+            differsFromFuseki -> harvestDate
+            dbDataset?.modified != null -> dbDataset.modified
             fusekiModified != null -> fusekiModified
-            else -> listOf(harvestDate)
+            else -> harvestDate
         }
 
         metaModel.createResource("${applicationProperties.datasetUri}/$fdkId")
@@ -196,7 +202,7 @@ class DatasetHarvester(
             .addProperty(FOAF.primaryTopic, metaModel.createResource(resource.uri))
             .addProperty(DCTerms.isPartOf, metaModel.createResource(catalogURI))
             .addProperty(DCTerms.issued, metaModel.createTypedLiteral(issued))
-            .addModified(modified)
+            .addProperty(DCTerms.modified, metaModel.createTypedLiteral(modified))
 
         return DatasetDBO (
             uri = resource.uri,
