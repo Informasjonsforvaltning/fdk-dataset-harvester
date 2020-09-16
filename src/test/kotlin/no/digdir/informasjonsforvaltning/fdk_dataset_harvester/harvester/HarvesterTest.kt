@@ -12,6 +12,7 @@ import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.fuseki.HarvestFus
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.CatalogDBO
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.DatasetDBO
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.MiscellaneousTurtle
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rabbit.RabbitMQPublisher
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.repository.CatalogRepository
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.repository.DatasetRepository
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.repository.MiscellaneousRepository
@@ -29,11 +30,12 @@ class HarvesterTest {
     private val catalogRepository: CatalogRepository = mock()
     private val datasetRepository: DatasetRepository = mock()
     private val miscellaneousRepository: MiscellaneousRepository = mock()
+    private val rabbitMQPublisher: RabbitMQPublisher = mock()
     private val valuesMock: ApplicationProperties = mock()
     private val adapter: DatasetAdapter = mock()
 
     private val harvester = DatasetHarvester(adapter, metaFuseki, harvestFuseki, catalogRepository,
-        datasetRepository, miscellaneousRepository, valuesMock)
+        datasetRepository, miscellaneousRepository, rabbitMQPublisher, valuesMock)
 
     private val responseReader = TestResponseReader()
 
