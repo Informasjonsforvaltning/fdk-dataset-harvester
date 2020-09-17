@@ -1,9 +1,8 @@
 package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.harvester
 
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.adapter.DatasetAdapter
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.adapter.FusekiAdapter
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.configuration.ApplicationProperties
-import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.fuseki.MetaFuseki
-import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.fuseki.HarvestFuseki
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.*
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.*
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.repository.CatalogRepository
@@ -26,12 +25,11 @@ private val LOGGER = LoggerFactory.getLogger(DatasetHarvester::class.java)
 @Service
 class DatasetHarvester(
     private val adapter: DatasetAdapter,
-    private val metaFuseki: MetaFuseki,
-    private val harvestFuseki: HarvestFuseki,
     private val catalogRepository: CatalogRepository,
     private val datasetRepository: DatasetRepository,
     private val miscRepository: MiscellaneousRepository,
-    private val applicationProperties: ApplicationProperties
+    private val applicationProperties: ApplicationProperties,
+    private val fusekiAdapter: FusekiAdapter
 ) {
 
     fun updateUnionModel() {
@@ -40,6 +38,8 @@ class DatasetHarvester(
         catalogRepository.findAll()
             .map { parseRDFResponse(ungzip(it.turtleCatalog), JenaType.TURTLE, null) }
             .forEach { unionModel = unionModel.union(it) }
+
+        fusekiAdapter.storeUnionModel(unionModel)
 
         miscRepository.save(
             MiscellaneousTurtle(
@@ -79,18 +79,15 @@ class DatasetHarvester(
                                 turtle = gzip(harvested.createRDFResponse(JenaType.TURTLE))
                             )
                         )
-                        val fusekiModel = harvestFuseki.fetchByGraphName(dbId)
 
-                        val differsFromFuseki = if (fusekiModel != null) !harvested.isIsomorphicWith(fusekiModel) else true
-
-                        updateDB(harvested, harvestDate, differsFromFuseki)
+                        updateDB(harvested, harvestDate)
                     }
                 }
             }
         }
     }
 
-    private fun updateDB(harvested: Model, harvestDate: Calendar, differsFromFuseki: Boolean) {
+    private fun updateDB(harvested: Model, harvestDate: Calendar) {
         val catalogsToSave = mutableListOf<CatalogDBO>()
         val datasetsToSave = mutableListOf<DatasetDBO>()
 
@@ -100,42 +97,27 @@ class DatasetHarvester(
             .forEach {
                 val catalogURI = it.first.resource.uri
 
-                val fusekiModel = metaFuseki.queryDescribe(queryToGetMetaDataByUri(catalogURI))
-
-                val fdkId = it.second?.fdkId ?: fusekiModel?.extractMetaDataIdentifier() ?: createIdFromUri(catalogURI)
+                val fdkId = it.second?.fdkId ?: createIdFromUri(catalogURI)
                 val resourceUri = "${applicationProperties.catalogUri}/$fdkId"
 
-                val fusekiMetaData = fusekiModel?.getResource(resourceUri)
-
-                val issued: Calendar = it.second?.issued?.let { timestamp -> calendarFromTimestamp(timestamp) }
-                    ?: fusekiMetaData?.parsePropertyToCalendar(DCTerms.issued)?.firstOrNull()
+                val issued = it.second?.issued
+                    ?.let { timestamp -> calendarFromTimestamp(timestamp) }
                     ?: harvestDate
-
-                val fusekiModified = fusekiMetaData
-                    ?.parsePropertyToCalendar(DCTerms.modified)
-                    ?.maxOrNull()
-
-                val modified: Calendar = when {
-                    differsFromFuseki -> harvestDate
-                    it.second?.modified != null -> calendarFromTimestamp(it.second!!.modified)
-                    fusekiModified != null -> fusekiModified
-                    else -> harvestDate
-                }
 
                 var catalogModel = it.first.harvestedCatalogWithoutDatasets
 
-                catalogModel.createResource("${applicationProperties.catalogUri}/$fdkId")
+                catalogModel.createResource(resourceUri)
                     .addProperty(RDF.type, DCAT.CatalogRecord)
                     .addProperty(DCTerms.identifier, fdkId)
                     .addProperty(FOAF.primaryTopic, catalogModel.createResource(catalogURI))
                     .addProperty(DCTerms.issued, catalogModel.createTypedLiteral(issued))
-                    .addProperty(DCTerms.modified, catalogModel.createTypedLiteral(modified))
+                    .addProperty(DCTerms.modified, catalogModel.createTypedLiteral(harvestDate))
 
                 val datasetsWithIsChanged = it.first.datasets
                     .map { dataset ->
                         val dbDataset = datasetRepository.findByIdOrNull(dataset.resource.uri)
                         if (dbDataset == null || dataset.differsFromDB(dbDataset)) {
-                            Pair(dataset.mapToUpdatedDBO(harvestDate, resourceUri, dbDataset, differsFromFuseki), true)
+                            Pair(dataset.mapToUpdatedDBO(harvestDate, resourceUri, dbDataset), true)
                         } else {
                             Pair(dbDataset, false)
                         }
@@ -155,7 +137,7 @@ class DatasetHarvester(
                         uri = catalogURI,
                         fdkId = fdkId,
                         issued = issued.timeInMillis,
-                        modified = modified.timeInMillis,
+                        modified = harvestDate.timeInMillis,
                         turtleHarvested = gzip(it.first.harvestedCatalog.createRDFResponse(JenaType.TURTLE)),
                         turtleCatalog = gzip(catalogModel.createRDFResponse(JenaType.TURTLE))
                     )
@@ -166,31 +148,15 @@ class DatasetHarvester(
         datasetRepository.saveAll(datasetsToSave)
     }
 
-    private fun DatasetModel.mapToUpdatedDBO(harvestDate: Calendar, catalogURI: String, dbDataset: DatasetDBO?, differsFromFuseki: Boolean): DatasetDBO {
-        val fusekiModel = metaFuseki.queryDescribe(queryToGetMetaDataByUri(resource.uri))
-
-        val fdkId = dbDataset?.fdkId ?: fusekiModel?.extractMetaDataIdentifier() ?: createIdFromUri(resource.uri)
-        val resourceUri = "${applicationProperties.datasetUri}/$fdkId"
-
-        val fusekiMetaData = fusekiModel?.getResource(resourceUri)
+    private fun DatasetModel.mapToUpdatedDBO(harvestDate: Calendar, catalogURI: String, dbDataset: DatasetDBO?): DatasetDBO {
+        val fdkId = dbDataset?.fdkId ?: createIdFromUri(resource.uri)
 
         val metaModel = ModelFactory.createDefaultModel()
         metaModel.addDefaultPrefixes()
 
-        val issued: Calendar = dbDataset?.issued?.let { timestamp -> calendarFromTimestamp(timestamp) }
-            ?: fusekiMetaData?.parsePropertyToCalendar(DCTerms.issued)?.firstOrNull()
+        val issued: Calendar = dbDataset?.issued
+            ?.let { timestamp -> calendarFromTimestamp(timestamp) }
             ?: harvestDate
-
-        val fusekiModified = fusekiMetaData
-            ?.parsePropertyToCalendar(DCTerms.modified)
-            ?.maxOrNull()
-
-        val modified: Calendar = when {
-            differsFromFuseki -> harvestDate
-            dbDataset?.modified != null -> calendarFromTimestamp(dbDataset.modified)
-            fusekiModified != null -> fusekiModified
-            else -> harvestDate
-        }
 
         metaModel.createResource("${applicationProperties.datasetUri}/$fdkId")
             .addProperty(RDF.type, DCAT.CatalogRecord)
@@ -198,14 +164,14 @@ class DatasetHarvester(
             .addProperty(FOAF.primaryTopic, metaModel.createResource(resource.uri))
             .addProperty(DCTerms.isPartOf, metaModel.createResource(catalogURI))
             .addProperty(DCTerms.issued, metaModel.createTypedLiteral(issued))
-            .addProperty(DCTerms.modified, metaModel.createTypedLiteral(modified))
+            .addProperty(DCTerms.modified, metaModel.createTypedLiteral(harvestDate))
 
         return DatasetDBO (
             uri = resource.uri,
             fdkId = fdkId,
             isPartOf = catalogURI,
             issued = issued.timeInMillis,
-            modified = modified.timeInMillis,
+            modified = harvestDate.timeInMillis,
             turtleHarvested = gzip(harvestedDataset.createRDFResponse(JenaType.TURTLE)),
             turtleDataset = gzip(metaModel.union(harvestedDataset).createRDFResponse(JenaType.TURTLE))
         )

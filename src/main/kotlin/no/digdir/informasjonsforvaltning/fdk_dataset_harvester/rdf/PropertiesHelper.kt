@@ -16,8 +16,6 @@ val datasetPropertyPaths = listOf(
     "dcat:dataset/dct:spatial"
 )
 
-val distributionPropertyPaths = listOf("dcat:distribution/dcatapi:accessService")
-
 fun changedCatalogAndDatasets(harvested: Model, dbModel: Model?): Map<String, List<String>> {
     val catalogMap = mutableMapOf<String, List<String>>()
     harvested.listResourcesWithProperty(RDF.type, DCAT.Catalog)
@@ -79,13 +77,4 @@ fun qualityDiffers(harvested: Resource, db: Resource): Boolean {
     val dbQualityModel = db.modelOfQualityProperties()
 
     return !harvestedQualityModel.isIsomorphicWith(dbQualityModel)
-}
-
-fun catalogLiteralsDiffers(uri: String, harvested: Model, fromDB: Model): Boolean {
-    val harvestedCatalog = harvested.getResource(uri)
-    val obj: RDFNode? = null
-    return if (fromDB.contains(harvestedCatalog, null, obj)) {
-        val dbCatalog = fromDB.getResource(uri)
-        resourceLiteralsDiffers(harvestedCatalog, dbCatalog)
-    } else true
 }

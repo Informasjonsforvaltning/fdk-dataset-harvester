@@ -17,9 +17,7 @@ abstract class ApiTestContext {
     internal class Initializer : ApplicationContextInitializer<ConfigurableApplicationContext> {
         override fun initialize(configurableApplicationContext: ConfigurableApplicationContext) {
             TestPropertyValues.of(
-                "spring.data.mongodb.uri=mongodb://${MONGO_USER}:${MONGO_PASSWORD}@localhost:${mongoContainer.getMappedPort(MONGO_PORT)}/datasetHarvester?authSource=admin&authMechanism=SCRAM-SHA-1",
-                "fuseki.datasetUri=http://localhost:${fusekiContainer.getMappedPort(API_PORT)}/fuseki/dataset-harvest",
-                "fuseki.metaUri=http://localhost:${fusekiContainer.getMappedPort(API_PORT)}/fuseki/dataset-meta"
+                "spring.data.mongodb.uri=mongodb://${MONGO_USER}:${MONGO_PASSWORD}@localhost:${mongoContainer.getMappedPort(MONGO_PORT)}/datasetHarvester?authSource=admin&authMechanism=SCRAM-SHA-1"
             ).applyTo(configurableApplicationContext.environment)
         }
     }
@@ -28,7 +26,6 @@ abstract class ApiTestContext {
 
         private val logger = LoggerFactory.getLogger(ApiTestContext::class.java)
         var mongoContainer: KGenericContainer
-        var fusekiContainer: KGenericContainer
 
         init {
 
@@ -41,22 +38,7 @@ abstract class ApiTestContext {
 
             mongoContainer.start()
 
-            fusekiContainer = KGenericContainer("eu.gcr.io/digdir-fdk-infra/fdk-fuseki-service:latest")
-                .withExposedPorts(API_PORT)
-                .waitingFor(HttpWaitStrategy()
-                    .forPort(API_PORT)
-                    .forPath("/fuseki/dataset-meta")
-                    .forStatusCode(200)
-                    .withStartupTimeout(Duration.ofMinutes(1)))
-
-            fusekiContainer.start()
-
-            addTestDataToFuseki(HARVEST_0, "dataset-harvest?graph=$TEST_HARVEST_SOURCE_ID_0", fusekiContainer.getMappedPort(API_PORT))
-            addTestDataToFuseki(HARVEST_1, "dataset-harvest?graph=$TEST_HARVEST_SOURCE_ID_1", fusekiContainer.getMappedPort(API_PORT))
-            addTestDataToFuseki(META_DATASET_0, "dataset-meta?graph=$DATASET_ID_0", fusekiContainer.getMappedPort(API_PORT))
-            addTestDataToFuseki(META_DATASET_1, "dataset-meta?graph=$DATASET_ID_1", fusekiContainer.getMappedPort(API_PORT))
-            addTestDataToFuseki(META_CATALOG_0, "dataset-meta?graph=$CATALOG_ID_0", fusekiContainer.getMappedPort(API_PORT))
-            addTestDataToFuseki(META_CATALOG_1, "dataset-meta?graph=$CATALOG_ID_1", fusekiContainer.getMappedPort(API_PORT))
+            populateDB()
 
             try {
                 val con = URL("http://localhost:5000/ping").openConnection() as HttpURLConnection

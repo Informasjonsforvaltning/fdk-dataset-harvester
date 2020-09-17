@@ -1,199 +1,106 @@
 package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils
 
-val META_CATALOG_0 = """
-<http://localhost:5000/catalogs/6e4237cc-98d6-3e7c-a892-8ac1f0ffb37f>
-        a       <http://www.w3.org/ns/dcat#CatalogRecord> ;
-        <http://purl.org/dc/terms/identifier>
-                "6e4237cc-98d6-3e7c-a892-8ac1f0ffb37f" ;
-        <http://purl.org/dc/terms/issued>
-                "2020-03-12T11:52:16.122Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
-        <http://purl.org/dc/terms/modified>
-                "2020-03-12T11:52:16.122Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
-        <http://xmlns.com/foaf/0.1/primaryTopic>
-                <https://testdirektoratet.no/model/dataset-catalog/0> .
-""".trimIndent()
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.CatalogDBO
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.DatasetDBO
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.MiscellaneousTurtle
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.UNION_ID
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service.gzip
+import org.bson.Document
 
-val META_CATALOG_1 = """
-<http://localhost:5000/catalogs/6f0a37af-a9c1-38bc-b343-bd025b43b5e8>
-        a       <http://www.w3.org/ns/dcat#CatalogRecord> ;
-        <http://purl.org/dc/terms/identifier>
-                "6f0a37af-a9c1-38bc-b343-bd025b43b5e8" ;
-        <http://purl.org/dc/terms/issued>
-                "2020-03-12T11:52:16.122Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
-        <http://purl.org/dc/terms/modified>
-                "2020-03-12T11:52:16.122Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
-        <http://xmlns.com/foaf/0.1/primaryTopic>
-                <https://testdirektoratet.no/model/dataset-catalog/1> .
-""".trim()
+private val responseReader = TestResponseReader()
 
-val META_DATASET_0 ="""
-<http://localhost:5000/datasets/a1c680ca-62d7-34d5-aa4c-d39b5db033ae>
-        a       <http://www.w3.org/ns/dcat#CatalogRecord> ;
-        <http://purl.org/dc/terms/identifier>
-                "a1c680ca-62d7-34d5-aa4c-d39b5db033ae" ;
-        <http://purl.org/dc/terms/issued>
-                "2020-03-12T11:52:16.122Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
-        <http://purl.org/dc/terms/modified>
-                "2020-03-12T11:52:16.122Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
-        <http://purl.org/dc/terms/isPartOf>
-                <http://localhost:5000/catalogs/6e4237cc-98d6-3e7c-a892-8ac1f0ffb37f> ;
-        <http://xmlns.com/foaf/0.1/primaryTopic>
-                <https://testdirektoratet.no/model/dataset/0> .
-""".trim()
+val CATALOG_DBO_0 = CatalogDBO(
+    uri = "https://testdirektoratet.no/model/dataset-catalog/0",
+    fdkId = CATALOG_ID_0,
+    issued = TEST_HARVEST_DATE.timeInMillis,
+    modified = TEST_HARVEST_DATE.timeInMillis,
+    turtleHarvested = gzip(responseReader.readFile("harvest_response_0.ttl")),
+    turtleCatalog = gzip(responseReader.readFile("catalog_0.ttl"))
+)
 
-val META_DATASET_1 ="""
-<http://localhost:5000/datasets/4667277a-9d27-32c1-aed5-612fa601f393>
-        a       <http://www.w3.org/ns/dcat#CatalogRecord> ;
-        <http://purl.org/dc/terms/identifier>
-                "4667277a-9d27-32c1-aed5-612fa601f393" ;
-        <http://purl.org/dc/terms/issued>
-                "2020-03-12T11:52:16.122Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
-        <http://purl.org/dc/terms/modified>
-                "2020-03-12T11:52:16.122Z"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
-        <http://purl.org/dc/terms/isPartOf>
-                <http://localhost:5000/catalogs/6f0a37af-a9c1-38bc-b343-bd025b43b5e8> ;
-        <http://xmlns.com/foaf/0.1/primaryTopic>
-                <https://testdirektoratet.no/model/dataset/1> .
-""".trim()
+val DATASET_DBO_0 = DatasetDBO(
+    uri = "https://testdirektoratet.no/model/dataset/0",
+    fdkId = DATASET_ID_0,
+    isPartOf = "http://localhost:5000/catalogs/6e4237cc-98d6-3e7c-a892-8ac1f0ffb37f",
+    issued = TEST_HARVEST_DATE.timeInMillis,
+    modified = TEST_HARVEST_DATE.timeInMillis,
+    turtleHarvested = gzip(responseReader.readFile("parsed_dataset_0.ttl")),
+    turtleDataset = gzip(responseReader.readFile("dataset_0.ttl"))
+)
 
-val HARVEST_0 = """
-<https://testdirektoratet.no/model/dataset-catalog/0>
-        a       <http://www.w3.org/ns/dcat#Catalog> ;
-        <http://purl.org/dc/terms/publisher>
-                <https://organization-catalogue.fellesdatakatalog.brreg.no/organizations/123456789> ;
-        <http://purl.org/dc/terms/title>
-                "Datasettkatalog for Testdirektoratet"@nb ;
-        <http://www.w3.org/ns/dcat#dataset>
-                <https://testdirektoratet.no/model/dataset/0> .
+val CATALOG_DBO_1 = CatalogDBO(
+    uri = "https://testdirektoratet.no/model/dataset-catalog/1",
+    fdkId = CATALOG_ID_1,
+    issued = TEST_HARVEST_DATE.timeInMillis,
+    modified = TEST_HARVEST_DATE.timeInMillis,
+    turtleHarvested = gzip(responseReader.readFile("harvest_response_1.ttl")),
+    turtleCatalog = gzip(responseReader.readFile("catalog_1.ttl"))
+)
 
-<https://testdirektoratet.no/model/dataset/0>
-        a       <http://www.w3.org/ns/dcat#Dataset> ;
-        <http://purl.org/dc/terms/accessRights>
-                <http://publications.europa.eu/resource/authority/access-right/PUBLIC> ;
-        <http://purl.org/dc/terms/description>
-                "Description of dataset 0"@nb ;
-        <http://purl.org/dc/terms/identifier>
-                "adb4cf00-31c8-460c-9563-55f204cf8221" ;
-        <http://purl.org/dc/terms/issued>
-                "2019-03-22T13:11:16.546902"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
-        <http://purl.org/dc/terms/language>
-                <http://publications.europa.eu/resource/authority/language/NOR> ;
-        <http://purl.org/dc/terms/temporal>
-                [ a       <http://purl.org/dc/terms/PeriodOfTime> ;
-                  <http://www.w3.org/ns/dcat#startDate>
-                          "2019-04-02T00:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime>
-                ] ;
-        <http://purl.org/dc/terms/title>
-                "Dataset 0"@nb ;
-        <http://www.w3.org/ns/dcat#contactPoint>
-                [ a       <http://www.w3.org/2006/vcard/ns#Organization> ;
-                  <http://www.w3.org/2006/vcard/ns#hasOrganizationName>
-                          "Testdirektoratet"@nb ;
-                  <http://www.w3.org/2006/vcard/ns#hasURL>
-                          <https://testdirektoratet.no>
-                ] ;
-        <http://www.w3.org/ns/dcat#distribution>
-                <https://testdirektoratet.no/model/distribution/0> ;
-        <http://www.w3.org/ns/dcat#endpointDescription>
-                <https://testdirektoratet.no/openapi/dataset/0.yaml> ;
-        <http://www.w3.org/ns/dcat#keyword>
-                "fest" , "test" ;
-        <http://www.w3.org/ns/dcat#theme>
-                <http://publications.europa.eu/resource/authority/data-theme/TECH> , <http://publications.europa.eu/resource/authority/data-theme/GOVE> ;
-        <http://xmlns.com/foaf/0.1/page>
-                <https://testdirektoratet.no> .
+val DATASET_DBO_1 = DatasetDBO(
+    uri = "https://testdirektoratet.no/model/dataset/1",
+    fdkId = DATASET_ID_1,
+    isPartOf = "http://localhost:5000/catalogs/6f0a37af-a9c1-38bc-b343-bd025b43b5e8",
+    issued = TEST_HARVEST_DATE.timeInMillis,
+    modified = TEST_HARVEST_DATE.timeInMillis,
+    turtleHarvested = gzip(responseReader.readFile("parsed_dataset_1.ttl")),
+    turtleDataset = gzip(responseReader.readFile("dataset_1.ttl"))
+)
 
-<https://testdirektoratet.no/model/distribution/0>
-        a       <http://www.w3.org/ns/dcat#Distribution> ;
-        <http://purl.org/dc/terms/format>
-                "CSV JSON JSONP YAML XML" ;
-        <http://purl.org/dc/terms/license>
-                <https://data.norge.no/nlod/no> ;
-        <http://purl.org/dc/terms/title>
-                "Test distribution" ;
-        <http://www.w3.org/ns/dcat#accessURL>
-                <http://testdirektoratet.no/data/test/fest> ;
-        <http://dcat.no/dcatapi/accessService>
-                <http://example.com/92b5e4f7-dbbd-482c-b242-990a3628d395> .
 
-<http://example.com/92b5e4f7-dbbd-482c-b242-990a3628d395>
-        a       <http://dcat.no/dcatapi/DataDistributionService> ;
-        <http://dcat.no/dcatapi/endpointDescription>   
-                [ a             <http://xmlns.com/foaf/0.1/Document> , <http://www.w3.org/2004/02/skos/core#Concept> ;
-                  <http://purl.org/dc/terms/source>  "84caab4b-b004-4a97-9b92-7bf335cf50d2"
-                ] ;
-        <http://purl.org/dc/terms/description>
-                "Search API"@nb .
-""".trim()
+val UNION_DATA = MiscellaneousTurtle(
+    id = UNION_ID,
+    isHarvestedSource = false,
+    turtle = gzip(responseReader.readFile("all_catalogs.ttl"))
+)
 
-val HARVEST_1 = """
-<https://testdirektoratet.no/model/dataset-catalog/1>
-        a       <http://www.w3.org/ns/dcat#Catalog> ;
-        <http://purl.org/dc/terms/publisher>
-                <https://organization-catalogue.fellesdatakatalog.brreg.no/organizations/123456789> ;
-        <http://purl.org/dc/terms/title>
-                "Datasettkatalog 1 for Testdirektoratet"@nb ;
-        <http://www.w3.org/ns/dcat#dataset>
-                <https://testdirektoratet.no/model/dataset/1> .
 
-<https://testdirektoratet.no/model/dataset/1>
-        a       <http://www.w3.org/ns/dcat#Dataset> ;
-        <http://purl.org/dc/terms/accessRights>
-                <http://publications.europa.eu/resource/authority/access-right/PUBLIC> ;
-        <http://purl.org/dc/terms/description>
-                "Description of dataset 0"@nb ;
-        <http://purl.org/dc/terms/identifier>
-                "adb4cf00-31c8-460c-9563-55f204cf8221" ;
-        <http://purl.org/dc/terms/issued>
-                "2019-03-22T13:11:16.546902"^^<http://www.w3.org/2001/XMLSchema#dateTime> ;
-        <http://purl.org/dc/terms/language>
-                <http://publications.europa.eu/resource/authority/language/NOR> ;
-        <http://purl.org/dc/terms/temporal>
-                <https://testdirektoratet.no/model/periodoftime/1> ;
-        <http://purl.org/dc/terms/title>
-                "Dataset 0"@nb ;
-        <http://www.w3.org/ns/dcat#contactPoint>
-                <https://testdirektoratet.no/model/contact/1> ;
-        <http://www.w3.org/ns/dcat#distribution>
-                [ a       <http://www.w3.org/ns/dcat#Distribution> ;
-                  <http://purl.org/dc/terms/format>
-                          "CSV JSON JSONP YAML XML" ;
-                  <http://purl.org/dc/terms/license>
-                          <https://data.norge.no/nlod/no> ;
-                  <http://purl.org/dc/terms/title>
-                          "Test distribution 1" ;
-                  <http://www.w3.org/ns/dcat#accessURL>
-                          <http://testdirektoratet.no/data/test/1>
-                ] ;
-        <http://www.w3.org/ns/dcat#distribution>
-                [ a       <http://www.w3.org/ns/dcat#Distribution> ;
-                  <http://purl.org/dc/terms/format>
-                          "CSV JSON JSONP YAML XML" ;
-                  <http://purl.org/dc/terms/license>
-                          <https://data.norge.no/nlod/no> ;
-                  <http://purl.org/dc/terms/title>
-                          "Test distribution 2" ;
-                  <http://www.w3.org/ns/dcat#accessURL>
-                          <http://testdirektoratet.no/data/test/2>
-                ] ;
-        <http://www.w3.org/ns/dcat#endpointDescription>
-                <https://testdirektoratet.no/openapi/dataset/1.yaml> ;
-        <http://www.w3.org/ns/dcat#keyword>
-                "test" , "fest" ;
-        <http://www.w3.org/ns/dcat#theme>
-                <http://publications.europa.eu/resource/authority/data-theme/GOVE> , <http://publications.europa.eu/resource/authority/data-theme/TECH> ;
-        <http://xmlns.com/foaf/0.1/page>
-                <https://testdirektoratet.no> .
+val HARVEST_DBO_0 = MiscellaneousTurtle(
+    id = TEST_HARVEST_SOURCE_0.url!!,
+    isHarvestedSource = true,
+    turtle = gzip(responseReader.readFile("harvest_response_0.ttl"))
+)
 
-<https://testdirektoratet.no/model/periodoftime/1>
-        a       <http://purl.org/dc/terms/PeriodOfTime> ;
-        <http://www.w3.org/ns/dcat#startDate>
-                "2019-04-02T00:00:00"^^<http://www.w3.org/2001/XMLSchema#dateTime> .
 
-<https://testdirektoratet.no/model/contact/1>
-        a       <http://www.w3.org/2006/vcard/ns#Organization> ;
-        <http://www.w3.org/2006/vcard/ns#hasOrganizationName>
-                "Testdirektoratet"@nb ;
-        <http://www.w3.org/2006/vcard/ns#hasURL>
-                <https://testdirektoratet.no> .
-""".trim()
+val HARVEST_DBO_1 = MiscellaneousTurtle(
+    id = TEST_HARVEST_SOURCE_1.url!!,
+    isHarvestedSource = true,
+    turtle = gzip(responseReader.readFile("harvest_response_1.ttl"))
+)
+
+fun miscDBPopulation(): List<Document> =
+    listOf(UNION_DATA, HARVEST_DBO_0, HARVEST_DBO_1)
+        .map { it.mapDBO() }
+
+fun catalogDBPopulation(): List<Document> =
+    listOf(CATALOG_DBO_0, CATALOG_DBO_1)
+        .map { it.mapDBO() }
+
+fun datasetDBPopulation(): List<Document> =
+    listOf(DATASET_DBO_0, DATASET_DBO_1)
+        .map { it.mapDBO() }
+
+private fun CatalogDBO.mapDBO(): Document =
+    Document()
+        .append("_id", uri)
+        .append("fdkId", fdkId)
+        .append("issued", issued)
+        .append("modified", modified)
+        .append("turtleHarvested", turtleHarvested)
+        .append("turtleCatalog", turtleCatalog)
+
+private fun DatasetDBO.mapDBO(): Document =
+    Document()
+        .append("_id", uri)
+        .append("fdkId", fdkId)
+        .append("isPartOf", isPartOf)
+        .append("issued", issued)
+        .append("modified", modified)
+        .append("turtleHarvested", turtleHarvested)
+        .append("turtleDataset", turtleDataset)
+
+private fun MiscellaneousTurtle.mapDBO(): Document =
+    Document()
+        .append("_id", id)
+        .append("isHarvestedSource", isHarvestedSource)
+        .append("turtle", turtle)
