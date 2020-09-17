@@ -1,16 +1,11 @@
 package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.fasterxml.jackson.databind.deser.std.DateDeserializers
-import com.fasterxml.jackson.databind.ser.std.CalendarSerializer
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.JenaType
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.parseRDFResponse
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service.ungzip
 import org.springframework.data.annotation.Id
 import org.springframework.data.mongodb.core.index.Indexed
 import org.springframework.data.mongodb.core.mapping.Document
-import java.util.Calendar
 
 
 const val UNION_ID = "dataset-catalogs-union-graph"
@@ -27,8 +22,8 @@ data class DatasetDBO (
     val issued: Long,
     val modified: Long,
 
-    val turtleHarvested: ByteArray,
-    val turtleDataset: ByteArray
+    val turtleHarvested: String,
+    val turtleDataset: String
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -53,8 +48,8 @@ data class DatasetDBO (
         result = 31 * result + isPartOf.hashCode()
         result = 31 * result + issued.hashCode()
         result = 31 * result + modified.hashCode()
-        result = 31 * result + turtleHarvested.contentHashCode()
-        result = 31 * result + turtleDataset.contentHashCode()
+        result = 31 * result + turtleHarvested.hashCode()
+        result = 31 * result + turtleDataset.hashCode()
         return result
     }
 }
@@ -70,8 +65,8 @@ data class CatalogDBO (
         val issued: Long,
         val modified: Long,
 
-        val turtleHarvested: ByteArray,
-        val turtleCatalog: ByteArray
+        val turtleHarvested: String,
+        val turtleCatalog: String
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -94,8 +89,8 @@ data class CatalogDBO (
         result = 31 * result + fdkId.hashCode()
         result = 31 * result + issued.hashCode()
         result = 31 * result + modified.hashCode()
-        result = 31 * result + turtleHarvested.contentHashCode()
-        result = 31 * result + turtleCatalog.contentHashCode()
+        result = 31 * result + turtleHarvested.hashCode()
+        result = 31 * result + turtleCatalog.hashCode()
         return result
     }
 }
@@ -104,7 +99,7 @@ data class CatalogDBO (
 data class MiscellaneousTurtle (
         @Id val id: String,
         val isHarvestedSource: Boolean,
-        val turtle: ByteArray
+        val turtle: String
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -123,12 +118,12 @@ data class MiscellaneousTurtle (
     override fun hashCode(): Int {
         var result = id.hashCode()
         result = 31 * result + isHarvestedSource.hashCode()
-        result = 31 * result + turtle.contentHashCode()
+        result = 31 * result + turtle.hashCode()
         return result
     }
 }
 
-private fun zippedModelsAreIsometric(zip0: ByteArray, zip1: ByteArray): Boolean {
+private fun zippedModelsAreIsometric(zip0: String, zip1: String): Boolean {
     val model0 = parseRDFResponse(ungzip(zip0), JenaType.TURTLE, null)
     val model1 = parseRDFResponse(ungzip(zip1), JenaType.TURTLE, null)
 
