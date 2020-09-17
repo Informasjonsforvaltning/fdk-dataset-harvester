@@ -1,6 +1,5 @@
 package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.harvester
 
-import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.HARVEST_1
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.TestResponseReader
 import org.apache.jena.vocabulary.DCAT
 import org.apache.jena.vocabulary.RDF
@@ -26,7 +25,7 @@ class HarvestHelpersTest {
     @Test
     fun extractDatasetFromHarvestResponse() {
 
-        val harvested = responseReader.parseResponse(HARVEST_1, "TURTLE")
+        val harvested = responseReader.parseFile("harvest_response_1.ttl", "TURTLE")
 
         val dataset = harvested
             .listResourcesWithProperty(RDF.type, DCAT.Dataset)

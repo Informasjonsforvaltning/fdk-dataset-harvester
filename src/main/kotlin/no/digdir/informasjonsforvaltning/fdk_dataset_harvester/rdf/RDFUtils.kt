@@ -142,32 +142,6 @@ fun Statement.isResourceProperty(): Boolean =
         false
     }
 
-fun Model.extractMetaDataIdentifier(): String? =
-    listResourcesWithProperty(RDF.type, DCAT.CatalogRecord)
-        .toList()
-        .firstOrNull()
-        ?.getProperty(DCTerms.identifier)
-        ?.string
-
 fun createIdFromUri(uri: String): String =
     UUID.nameUUIDFromBytes(uri.toByteArray())
         .toString()
-
-fun Model.extractMetaDataTopic(): String? =
-    listResourcesWithProperty(RDF.type, DCAT.CatalogRecord)
-        .toList()
-        .firstOrNull()
-        ?.getPropertyResourceValue(FOAF.primaryTopic)
-        ?.uri
-
-fun queryToGetMetaDataByUri(uri: String): String =
-    """PREFIX foaf: <${FOAF.NS}>
-       DESCRIBE * WHERE { 
-           ?s foaf:primaryTopic <$uri> 
-       }""".trimIndent()
-
-fun queryToGetMetaDataByCatalogUri(uri: String): String =
-    """PREFIX dct: <${DCTerms.NS}>
-       DESCRIBE * WHERE { 
-           ?s dct:isPartOf <$uri> 
-       }""".trimIndent()

@@ -6,13 +6,11 @@ import com.nhaarman.mockitokotlin2.times
 import com.nhaarman.mockitokotlin2.verify
 import com.nhaarman.mockitokotlin2.whenever
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.adapter.DatasetAdapter
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.adapter.FusekiAdapter
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.configuration.ApplicationProperties
-import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.fuseki.MetaFuseki
-import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.fuseki.HarvestFuseki
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.CatalogDBO
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.DatasetDBO
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.MiscellaneousTurtle
-import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rabbit.RabbitMQPublisher
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.repository.CatalogRepository
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.repository.DatasetRepository
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.repository.MiscellaneousRepository
@@ -25,16 +23,15 @@ import kotlin.test.assertEquals
 
 @Tag("unit")
 class HarvesterTest {
-    private val harvestFuseki: HarvestFuseki = mock()
-    private val metaFuseki: MetaFuseki = mock()
     private val catalogRepository: CatalogRepository = mock()
     private val datasetRepository: DatasetRepository = mock()
     private val miscellaneousRepository: MiscellaneousRepository = mock()
     private val valuesMock: ApplicationProperties = mock()
+    private val fusekiAdapter: FusekiAdapter = mock()
     private val adapter: DatasetAdapter = mock()
 
-    private val harvester = DatasetHarvester(adapter, metaFuseki, harvestFuseki, catalogRepository,
-        datasetRepository, miscellaneousRepository, valuesMock)
+    private val harvester = DatasetHarvester(adapter, catalogRepository,
+        datasetRepository, miscellaneousRepository, valuesMock, fusekiAdapter)
 
     private val responseReader = TestResponseReader()
 
@@ -52,7 +49,7 @@ class HarvesterTest {
 
         argumentCaptor<MiscellaneousTurtle>().apply {
             verify(miscellaneousRepository, times(1)).save(capture())
-            assertEquals(SAVED_HARVEST, firstValue)
+            assertEquals(HARVEST_DBO_0, firstValue)
         }
 
         argumentCaptor<List<CatalogDBO>>().apply {
@@ -75,7 +72,7 @@ class HarvesterTest {
             .thenReturn(responseReader.readFile("harvest_response_0.ttl"))
 
         whenever(miscellaneousRepository.findById("http://localhost:5000/harvest0"))
-            .thenReturn(Optional.of(SAVED_HARVEST.copy(turtle = gzip(responseReader.readFile("harvest_response_0.ttl")))))
+            .thenReturn(Optional.of(HARVEST_DBO_0.copy(turtle = gzip(responseReader.readFile("harvest_response_0.ttl")))))
 
         whenever(valuesMock.catalogUri)
             .thenReturn("http://localhost:5000/catalogs")
@@ -106,7 +103,7 @@ class HarvesterTest {
         val catalogDiffTurtle = gzip(responseReader.readFile("harvest_response_0_catalog_diff.ttl"))
 
         whenever(miscellaneousRepository.findById("http://localhost:5000/harvest0"))
-            .thenReturn(Optional.of(SAVED_HARVEST.copy(turtle = catalogDiffTurtle)))
+            .thenReturn(Optional.of(HARVEST_DBO_0.copy(turtle = catalogDiffTurtle)))
 
         whenever(catalogRepository.findById("https://testdirektoratet.no/model/dataset-catalog/0"))
             .thenReturn(Optional.of(CATALOG_DBO_0.copy(turtleHarvested = catalogDiffTurtle)))
@@ -119,13 +116,6 @@ class HarvesterTest {
         whenever(valuesMock.datasetUri)
             .thenReturn("http://localhost:5000/datasets")
 
-
-        val expectedSavedHarvest = MiscellaneousTurtle(
-            id="http://localhost:5000/harvest0",
-            isHarvestedSource = true,
-            turtle = gzip(HARVEST_0)
-        )
-
         val expectedCatalogDBO = CATALOG_DBO_0.copy(
             modified = NEW_TEST_HARVEST_DATE.timeInMillis,
             turtleCatalog = gzip(responseReader.readFile("catalog_0_diff_update.ttl"))
@@ -135,7 +125,7 @@ class HarvesterTest {
 
         argumentCaptor<MiscellaneousTurtle>().apply {
             verify(miscellaneousRepository, times(1)).save(capture())
-            assertEquals(expectedSavedHarvest, firstValue)
+            assertEquals(HARVEST_DBO_0, firstValue)
         }
 
         argumentCaptor<List<CatalogDBO>>().apply {

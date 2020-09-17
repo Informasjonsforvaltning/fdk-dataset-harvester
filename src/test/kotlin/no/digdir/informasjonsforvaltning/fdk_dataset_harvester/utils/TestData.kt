@@ -1,7 +1,5 @@
 package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils
 
-import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.CatalogDBO
-import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.DatasetDBO
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.HarvestDataSource
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.MiscellaneousTurtle
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.createIdFromUri
@@ -9,8 +7,6 @@ import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service.gzip
 import org.testcontainers.shaded.com.google.common.collect.ImmutableMap
 import java.util.Calendar
 import java.util.TimeZone
-
-private val responseReader = TestResponseReader()
 
 const val API_PORT = 8080
 const val API_TEST_PORT = 5555
@@ -36,24 +32,6 @@ const val CATALOG_ID_1 = "6f0a37af-a9c1-38bc-b343-bd025b43b5e8"
 val TEST_HARVEST_DATE: Calendar = Calendar.Builder().setTimeZone(TimeZone.getTimeZone("UTC")).setDate(2020, 2, 12).setTimeOfDay(11, 52, 16, 122).build()
 val NEW_TEST_HARVEST_DATE: Calendar = Calendar.Builder().setTimeZone(TimeZone.getTimeZone("UTC")).setDate(2020, 6, 12).setTimeOfDay(11, 52, 16, 122).build()
 
-val CATALOG_DBO_0 = CatalogDBO(
-    uri = "https://testdirektoratet.no/model/dataset-catalog/0",
-    fdkId = CATALOG_ID_0,
-    issued = TEST_HARVEST_DATE.timeInMillis,
-    modified = TEST_HARVEST_DATE.timeInMillis,
-    turtleHarvested = gzip(responseReader.readFile("harvest_response_0.ttl")),
-    turtleCatalog = gzip(responseReader.readFile("catalog_0.ttl"))
-)
-val DATASET_DBO_0 = DatasetDBO(
-    uri = "https://testdirektoratet.no/model/dataset/0",
-    fdkId = DATASET_ID_0,
-    isPartOf = "http://localhost:5000/catalogs/6e4237cc-98d6-3e7c-a892-8ac1f0ffb37f",
-    issued = TEST_HARVEST_DATE.timeInMillis,
-    modified = TEST_HARVEST_DATE.timeInMillis,
-    turtleHarvested = gzip(responseReader.readFile("parsed_dataset_0.ttl")),
-    turtleDataset = gzip(responseReader.readFile("dataset_0.ttl"))
-)
-
 val TEST_HARVEST_SOURCE_0 = HarvestDataSource(
     url = "$WIREMOCK_TEST_URI/harvest0",
     acceptHeaderValue = "text/turtle",
@@ -73,12 +51,6 @@ val ERROR_HARVEST_SOURCE = HarvestDataSource(
     acceptHeaderValue = "text/turtle",
     dataType = "dataset",
     dataSourceType = "DCAT-AP-NO"
-)
-
-val SAVED_HARVEST = MiscellaneousTurtle(
-    id = TEST_HARVEST_SOURCE_0.url!!,
-    isHarvestedSource = true,
-    turtle = gzip(HARVEST_0)
 )
 
 val TEST_HARVEST_SOURCE_ID_0 = createIdFromUri("$WIREMOCK_TEST_URI/harvest0")

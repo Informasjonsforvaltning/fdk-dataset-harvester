@@ -10,8 +10,7 @@ private val mockserver = WireMockServer(LOCAL_SERVER_PORT)
 fun startMockServer() {
     if(!mockserver.isRunning) {
         mockserver.stubFor(get(urlEqualTo("/ping"))
-                .willReturn(aResponse()
-                        .withStatus(200))
+            .willReturn(aResponse().withStatus(200))
         )
         mockserver.stubFor(get(urlEqualTo("/api/datasources"))
             .willReturn(okJson(jacksonObjectMapper().writeValueAsString(
@@ -23,6 +22,10 @@ fun startMockServer() {
             .willReturn(ok(File("src/test/resources/harvest_response_1.ttl").readText())))
         mockserver.stubFor(get(urlMatching("/error-harvest"))
             .willReturn(ok(File("src/test/resources/harvest_response_error.ttl").readText())))
+
+        mockserver.stubFor(put(urlEqualTo("/fuseki/harvested?graph=datasets"))
+            .willReturn(aResponse().withStatus(200))
+        )
 
         mockserver.start()
     }

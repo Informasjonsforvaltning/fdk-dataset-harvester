@@ -23,17 +23,6 @@ fun CatalogAndDatasetModels.catalogDiffersFromDB(dbo: CatalogDBO?): Boolean =
 fun DatasetModel.differsFromDB(dbo: DatasetDBO): Boolean =
     !harvestedDataset.isIsomorphicWith(parseRDFResponse(ungzip(dbo.turtleHarvested), JenaType.TURTLE, null))
 
-fun Resource.parsePropertyToCalendar(property: Property): List<Calendar>? =
-    listProperties(property)
-        ?.toList()
-        ?.mapNotNull { it.string }
-        ?.map {
-            val cal = Calendar.getInstance()
-            val ldt = LocalDateTime.parse(it, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
-            cal.time = Date.from(ldt.atZone(ZoneId.of("Z")).toInstant())
-            cal
-        }
-
 fun splitCatalogsFromModel(harvested: Model): List<CatalogAndDatasetModels> =
     harvested.listResourcesWithProperty(RDF.type, DCAT.Catalog)
         .toList()

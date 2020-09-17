@@ -1,16 +1,17 @@
 package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.JenaType
-import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.createRDFResponse
+import com.mongodb.ConnectionString
+import com.mongodb.MongoClientSettings
+import com.mongodb.client.MongoClient
+import com.mongodb.client.MongoClients
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.ApiTestContext.Companion.mongoContainer
+import org.bson.codecs.configuration.CodecRegistries
+import org.bson.codecs.pojo.PojoCodecProvider
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import java.io.BufferedReader
-import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
-import java.net.URLEncoder
-import java.nio.charset.StandardCharsets
 
 
 private val logger = LoggerFactory.getLogger(ApiTestContext::class.java)
@@ -44,38 +45,23 @@ fun apiGet(endpoint: String, acceptHeader: String?): Map<String,Any> {
     }
 }
 
-fun addTestDataToFuseki(turtleBody: String, endpoint: String, port: Int) {
-    val rdfReader = TestResponseReader()
-    val body = rdfReader.parseResponse(turtleBody, "TURTLE").createRDFResponse(JenaType.JSON_LD).toByteArray()
-    with(URL("http://localhost:$port/fuseki/$endpoint").openConnection() as HttpURLConnection) {
-        setRequestProperty("Content-Type", "application/ld+json")
-        requestMethod = "PUT"
-        doOutput = true
-        val os = outputStream
-        os.write(body)
-        os.close()
-        connect()
-        if (!isOK(responseCode)) logger.error("fuseki add to $endpoint failed: $responseCode")
-    }
-}
-
 private fun isOK(response: Int?): Boolean = HttpStatus.resolve(response ?: 0)?.is2xxSuccessful ?: false
 
-fun String.encodeForSparql(): String {
-    val urlEncoded : String = URLEncoder.encode(this, "UTF-8")
-    return urlEncoded.replace("+", "%20")
+fun populateDB() {
+    val connectionString = ConnectionString("mongodb://${MONGO_USER}:${MONGO_PASSWORD}@localhost:${mongoContainer.getMappedPort(MONGO_PORT)}/datasetHarvester?authSource=admin&authMechanism=SCRAM-SHA-1")
+    val pojoCodecRegistry = CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(), CodecRegistries.fromProviders(PojoCodecProvider.builder().automatic(true).build()))
+
+    val client: MongoClient = MongoClients.create(connectionString)
+    val mongoDatabase = client.getDatabase("datasetHarvester").withCodecRegistry(pojoCodecRegistry)
+
+    val miscCollection = mongoDatabase.getCollection("misc")
+    miscCollection.insertMany(miscDBPopulation())
+
+    val catalogCollection = mongoDatabase.getCollection("catalog")
+    catalogCollection.insertMany(catalogDBPopulation())
+
+    val datasetCollection = mongoDatabase.getCollection("dataset")
+    datasetCollection.insertMany(datasetDBPopulation())
+
+    client.close()
 }
-
-fun isJson(jsonInString: String?): Boolean =
-            try {
-                val mapper = ObjectMapper()
-                mapper.readTree(jsonInString)
-                true
-            } catch (e: IOException) {
-                false
-            }
-
-fun isXml(xmlString: String?): Boolean = if (xmlString == null) false else xmlString.startsWith("<") && xmlString.replace("\n","").endsWith(">")
-
-
-
