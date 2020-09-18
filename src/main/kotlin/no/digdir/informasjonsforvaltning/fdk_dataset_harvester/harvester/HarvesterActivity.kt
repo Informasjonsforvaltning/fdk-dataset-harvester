@@ -63,6 +63,7 @@ class HarvesterActivity(
             else LOGGER.debug("completed full harvest")
 
             publisher.sendUpdateAssessmentsMessage()
+            publisher.send(HARVEST_ALL_ID)
 
             harvest.cancelChildren()
             harvest.cancel()
