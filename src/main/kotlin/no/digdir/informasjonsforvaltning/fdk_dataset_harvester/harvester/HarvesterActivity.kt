@@ -10,7 +10,6 @@ import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.adapter.HarvestAd
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rabbit.RabbitMQPublisher
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import org.springframework.util.MultiValueMap
 import java.util.*
 import javax.annotation.PostConstruct
 
@@ -31,8 +30,8 @@ class HarvesterActivity(
     @PostConstruct
     private fun fullHarvestOnStartup() = initiateHarvest(null)
 
-    fun initiateHarvest(params: MultiValueMap<String, String>?) {
-        if (params == null) LOGGER.debug("starting harvest of all datasets")
+    fun initiateHarvest(params: Map<String, String>?) {
+        if (params == null || params.isEmpty()) LOGGER.debug("starting harvest of all datasets")
         else LOGGER.debug("starting harvest with parameters $params")
 
         val harvest = launch {
@@ -59,7 +58,7 @@ class HarvesterActivity(
             harvest.join()
             harvester.updateUnionModel()
 
-            if (params != null) LOGGER.debug("completed harvest with parameters $params")
+            if (params != null && params.isNotEmpty()) LOGGER.debug("completed harvest with parameters $params")
             else LOGGER.debug("completed full harvest")
 
             publisher.sendUpdateAssessmentsMessage()
