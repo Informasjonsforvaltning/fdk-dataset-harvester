@@ -22,20 +22,20 @@ spring:
 
 ---
 spring:
-  profiles: develop
+  config.activate.on-profile: develop
   rabbitmq:
     host: 127.0.0.1
     port: 5672
     username: admin
     password: admin
   data.mongodb.uri: mongodb://admin:admin@localhost:27017/datasetHarvester?authSource=admin&authMechanism=SCRAM-SHA-1
-fuseki.datasetsGraphUri: http://localhost:3030/fuseki/harvested?graph=datasets
+fuseki.datasetsGraphUri: http://localhost:3030/fuseki/harvested?graph=https://datasets.fellesdatakatalog.digdir.no
 application:
   harvestAdminRootUrl: https://admin-api.staging.fellesdatakatalog.digdir.no/api
 
 ---
 spring:
-  profiles: contract-test
+  config.activate.on-profile: contract-test
   rabbitmq:
     host: localhost
     port: 5000
