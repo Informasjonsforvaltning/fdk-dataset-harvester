@@ -11,6 +11,7 @@ import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.repository.Miscel
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service.gzip
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service.ungzip
 import org.apache.jena.rdf.model.*
+import org.apache.jena.riot.Lang
 import org.apache.jena.sparql.vocabulary.FOAF
 import org.apache.jena.vocabulary.DCAT
 import org.apache.jena.vocabulary.DCTerms
@@ -36,7 +37,7 @@ class DatasetHarvester(
         var unionModel = ModelFactory.createDefaultModel()
 
         catalogRepository.findAll()
-            .map { parseRDFResponse(ungzip(it.turtleCatalog), JenaType.TURTLE, null) }
+            .map { parseRDFResponse(ungzip(it.turtleCatalog), Lang.TURTLE, null) }
             .forEach { unionModel = unionModel.union(it) }
 
         fusekiAdapter.storeUnionModel(unionModel)
@@ -45,7 +46,7 @@ class DatasetHarvester(
             MiscellaneousTurtle(
                 id = UNION_ID,
                 isHarvestedSource = false,
-                turtle = gzip(unionModel.createRDFResponse(JenaType.TURTLE))
+                turtle = gzip(unionModel.createRDFResponse(Lang.TURTLE))
             )
         )
     }
@@ -55,7 +56,7 @@ class DatasetHarvester(
             LOGGER.debug("Starting harvest of ${source.url}")
             val jenaWriterType = jenaTypeFromAcceptHeader(source.acceptHeaderValue)
 
-            if (jenaWriterType == null || jenaWriterType == JenaType.NOT_ACCEPTABLE) {
+            if (jenaWriterType == null || jenaWriterType == Lang.RDFNULL) {
                 LOGGER.error("Not able to harvest from ${source.url}, header ${source.acceptHeaderValue} is not acceptable ")
             } else {
                 val harvested = adapter.getDatasets(source)
@@ -66,7 +67,7 @@ class DatasetHarvester(
                     val dbId = createIdFromUri(source.url)
                     val dbData = miscRepository
                         .findByIdOrNull(source.url)
-                        ?.let { parseRDFResponse(ungzip(it.turtle), JenaType.TURTLE, null) }
+                        ?.let { parseRDFResponse(ungzip(it.turtle), Lang.TURTLE, null) }
 
                     if (dbData != null && harvested.isIsomorphicWith(dbData)) LOGGER.info("No changes from last harvest of ${source.url}")
                     else {
@@ -76,7 +77,7 @@ class DatasetHarvester(
                             MiscellaneousTurtle(
                                 id = source.url,
                                 isHarvestedSource = true,
-                                turtle = gzip(harvested.createRDFResponse(JenaType.TURTLE))
+                                turtle = gzip(harvested.createRDFResponse(Lang.TURTLE))
                             )
                         )
 
@@ -125,7 +126,7 @@ class DatasetHarvester(
 
                 datasetsWithIsChanged
                     .map { pair -> pair.first }
-                    .map { dataset -> parseRDFResponse(ungzip(dataset.turtleDataset), JenaType.TURTLE, null) }
+                    .map { dataset -> parseRDFResponse(ungzip(dataset.turtleDataset), Lang.TURTLE, null) }
                     .forEach { model -> catalogModel = catalogModel.union(model) }
 
                 datasetsWithIsChanged
@@ -138,8 +139,8 @@ class DatasetHarvester(
                         fdkId = fdkId,
                         issued = issued.timeInMillis,
                         modified = harvestDate.timeInMillis,
-                        turtleHarvested = gzip(it.first.harvestedCatalog.createRDFResponse(JenaType.TURTLE)),
-                        turtleCatalog = gzip(catalogModel.createRDFResponse(JenaType.TURTLE))
+                        turtleHarvested = gzip(it.first.harvestedCatalog.createRDFResponse(Lang.TURTLE)),
+                        turtleCatalog = gzip(catalogModel.createRDFResponse(Lang.TURTLE))
                     )
                 )
             }
@@ -172,8 +173,8 @@ class DatasetHarvester(
             isPartOf = catalogURI,
             issued = issued.timeInMillis,
             modified = harvestDate.timeInMillis,
-            turtleHarvested = gzip(harvestedDataset.createRDFResponse(JenaType.TURTLE)),
-            turtleDataset = gzip(metaModel.union(harvestedDataset).createRDFResponse(JenaType.TURTLE))
+            turtleHarvested = gzip(harvestedDataset.createRDFResponse(Lang.TURTLE)),
+            turtleDataset = gzip(metaModel.union(harvestedDataset).createRDFResponse(Lang.TURTLE))
         )
     }
 }

@@ -1,8 +1,8 @@
 package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.controller
 
-import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.JenaType
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.jenaTypeFromAcceptHeader
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service.DatasetService
+import org.apache.jena.riot.Lang
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -29,9 +29,9 @@ open class CatalogsController(private val datasetService: DatasetService) {
         LOGGER.info("get dataset catalog with id $id")
         val returnType = jenaTypeFromAcceptHeader(accept)
 
-        return if (returnType == JenaType.NOT_ACCEPTABLE) ResponseEntity(HttpStatus.NOT_ACCEPTABLE)
+        return if (returnType == Lang.RDFNULL) ResponseEntity(HttpStatus.NOT_ACCEPTABLE)
         else {
-            datasetService.getDatasetCatalog(id, returnType ?: JenaType.TURTLE)
+            datasetService.getDatasetCatalog(id, returnType ?: Lang.TURTLE)
                 ?.let { ResponseEntity(it, HttpStatus.OK) }
                 ?: ResponseEntity(HttpStatus.NOT_FOUND)
         }
@@ -42,7 +42,7 @@ open class CatalogsController(private val datasetService: DatasetService) {
         LOGGER.info("get all dataset catalogs")
         val returnType = jenaTypeFromAcceptHeader(httpServletRequest.getHeader("Accept"))
 
-        return if (returnType == JenaType.NOT_ACCEPTABLE) ResponseEntity(HttpStatus.NOT_ACCEPTABLE)
-        else ResponseEntity(datasetService.getAll(returnType ?: JenaType.TURTLE), HttpStatus.OK)
+        return if (returnType == Lang.RDFNULL) ResponseEntity(HttpStatus.NOT_ACCEPTABLE)
+        else ResponseEntity(datasetService.getAll(returnType ?: Lang.TURTLE), HttpStatus.OK)
     }
 }
