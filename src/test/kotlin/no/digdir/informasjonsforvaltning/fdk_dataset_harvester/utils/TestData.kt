@@ -1,9 +1,7 @@
 package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils
 
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.HarvestDataSource
-import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.MiscellaneousTurtle
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.createIdFromUri
-import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service.gzip
 import org.testcontainers.shaded.com.google.common.collect.ImmutableMap
 import java.util.Calendar
 import java.util.TimeZone
