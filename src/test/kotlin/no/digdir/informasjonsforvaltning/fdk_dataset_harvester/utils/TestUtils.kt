@@ -7,20 +7,49 @@ import com.mongodb.client.MongoClients
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.ApiTestContext.Companion.mongoContainer
 import org.bson.codecs.configuration.CodecRegistries
 import org.bson.codecs.pojo.PojoCodecProvider
-import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import java.io.BufferedReader
 import java.net.HttpURLConnection
 import java.net.URL
 
 
-private val logger = LoggerFactory.getLogger(ApiTestContext::class.java)
-
-fun apiGet(endpoint: String, acceptHeader: String?): Map<String,Any> {
+fun apiGet(port: Int, endpoint: String, acceptHeader: String?): Map<String,Any> {
 
     return try {
-        val connection = URL("$API_TEST_URI$endpoint").openConnection() as HttpURLConnection
+        val connection = URL("http://localhost:$port$endpoint").openConnection() as HttpURLConnection
         if(acceptHeader != null) connection.setRequestProperty("Accept", acceptHeader)
+        connection.connect()
+
+        if(isOK(connection.responseCode)) {
+            val responseBody = connection.inputStream.bufferedReader().use(BufferedReader::readText)
+            mapOf(
+                "body"   to responseBody,
+                "header" to connection.headerFields.toString(),
+                "status" to connection.responseCode)
+        } else {
+            mapOf(
+                "status" to connection.responseCode,
+                "header" to " ",
+                "body"   to " "
+            )
+        }
+    } catch (e: Exception) {
+        mapOf(
+            "status" to e.toString(),
+            "header" to " ",
+            "body"   to " "
+        )
+    }
+}
+
+fun authorizedPost(port: Int, endpoint: String, token: String?, headers: Map<String, String>): Map<String,Any> {
+
+    return try {
+        val connection = URL("http://localhost:$port$endpoint").openConnection() as HttpURLConnection
+        headers.forEach { (key, value) -> connection.setRequestProperty(key, value) }
+        if(!token.isNullOrEmpty()) connection.setRequestProperty("Authorization", "Bearer $token")
+
+        connection.requestMethod = "POST"
         connection.connect()
 
         if(isOK(connection.responseCode)) {
