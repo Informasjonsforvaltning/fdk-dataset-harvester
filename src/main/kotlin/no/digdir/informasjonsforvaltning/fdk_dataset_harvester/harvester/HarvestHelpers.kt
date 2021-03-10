@@ -7,6 +7,7 @@ import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service.ungzip
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.Property
 import org.apache.jena.rdf.model.Resource
+import org.apache.jena.riot.Lang
 import org.apache.jena.vocabulary.DCAT
 import org.apache.jena.vocabulary.DCTerms
 import org.apache.jena.vocabulary.RDF
@@ -18,10 +19,10 @@ import java.util.*
 
 fun CatalogAndDatasetModels.catalogDiffersFromDB(dbo: CatalogDBO?): Boolean =
     if (dbo == null) true
-    else !harvestedCatalog.isIsomorphicWith(parseRDFResponse(ungzip(dbo.turtleHarvested), JenaType.TURTLE, null))
+    else !harvestedCatalog.isIsomorphicWith(parseRDFResponse(ungzip(dbo.turtleHarvested), Lang.TURTLE, null))
 
 fun DatasetModel.differsFromDB(dbo: DatasetDBO): Boolean =
-    !harvestedDataset.isIsomorphicWith(parseRDFResponse(ungzip(dbo.turtleHarvested), JenaType.TURTLE, null))
+    !harvestedDataset.isIsomorphicWith(parseRDFResponse(ungzip(dbo.turtleHarvested), Lang.TURTLE, null))
 
 fun splitCatalogsFromModel(harvested: Model): List<CatalogAndDatasetModels> =
     harvested.listResourcesWithProperty(RDF.type, DCAT.Catalog)

@@ -6,6 +6,7 @@ import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.repository.Catalo
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.repository.DatasetRepository
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.repository.MiscellaneousRepository
 import org.apache.jena.rdf.model.ModelFactory
+import org.apache.jena.riot.Lang
 import org.slf4j.LoggerFactory
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -22,29 +23,29 @@ class DatasetService(
     fun countMetaData(): Long =
         catalogRepository.count()
 
-    fun getAll(returnType: JenaType): String =
+    fun getAll(returnType: Lang): String =
         miscellaneousRepository.findByIdOrNull(UNION_ID)
             ?.let { ungzip(it.turtle) }
             ?.let {
-                if (returnType == JenaType.TURTLE) it
-                else parseRDFResponse(it, JenaType.TURTLE, null)?.createRDFResponse(returnType)
+                if (returnType == Lang.TURTLE) it
+                else parseRDFResponse(it, Lang.TURTLE, null)?.createRDFResponse(returnType)
             }
             ?: ModelFactory.createDefaultModel().createRDFResponse(returnType)
 
-    fun getDataset(id: String, returnType: JenaType): String? =
+    fun getDataset(id: String, returnType: Lang): String? =
         datasetRepository.findOneByFdkId(id)
             ?.let { ungzip(it.turtleDataset) }
             ?.let {
-                if (returnType == JenaType.TURTLE) it
-                else parseRDFResponse(it, JenaType.TURTLE, null)?.createRDFResponse(returnType)
+                if (returnType == Lang.TURTLE) it
+                else parseRDFResponse(it, Lang.TURTLE, null)?.createRDFResponse(returnType)
             }
 
-    fun getDatasetCatalog(id: String, returnType: JenaType): String? =
+    fun getDatasetCatalog(id: String, returnType: Lang): String? =
         catalogRepository.findOneByFdkId(id)
             ?.let { ungzip(it.turtleCatalog) }
             ?.let {
-                if (returnType == JenaType.TURTLE) it
-                else parseRDFResponse(it, JenaType.TURTLE, null)?.createRDFResponse(returnType)
+                if (returnType == Lang.TURTLE) it
+                else parseRDFResponse(it, Lang.TURTLE, null)?.createRDFResponse(returnType)
             }
 
 }

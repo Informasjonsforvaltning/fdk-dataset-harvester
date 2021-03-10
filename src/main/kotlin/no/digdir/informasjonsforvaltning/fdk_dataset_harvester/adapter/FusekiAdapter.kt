@@ -1,10 +1,9 @@
 package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.adapter
 
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.configuration.FusekiProperties
-import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.HarvestDataSource
-import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.JenaType
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.createRDFResponse
 import org.apache.jena.rdf.model.Model
+import org.apache.jena.riot.Lang
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
@@ -26,7 +25,7 @@ class FusekiAdapter(private val fusekiProperties: FusekiProperties) {
                 doOutput = true
 
                 OutputStreamWriter(outputStream).use {
-                    it.write(model.createRDFResponse(JenaType.RDF_XML))
+                    it.write(model.createRDFResponse(Lang.RDFXML))
                     it.flush()
                 }
 

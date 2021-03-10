@@ -5,6 +5,7 @@ import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.CATALOG_ID_
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.DATASET_ID_0
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.DATASET_ID_1
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.TestResponseReader
+import org.apache.jena.riot.Lang
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
@@ -26,7 +27,7 @@ class RDFUtilsTest {
     fun rdfModelParser() {
         val rdfBody: String = javaClass.classLoader.getResourceAsStream("all_catalogs.ttl")!!.reader().readText()
 
-        val parsedRDFModel = parseRDFResponse(rdfBody, JenaType.TURTLE, "test")
+        val parsedRDFModel = parseRDFResponse(rdfBody, Lang.TURTLE, "test")
 
         val expected = responseReader.parseFile("all_catalogs.ttl", "TURTLE")
 
