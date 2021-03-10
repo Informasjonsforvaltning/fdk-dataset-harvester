@@ -6,11 +6,7 @@ import org.testcontainers.shaded.com.google.common.collect.ImmutableMap
 import java.util.Calendar
 import java.util.TimeZone
 
-const val API_PORT = 8080
-const val API_TEST_PORT = 5555
 const val LOCAL_SERVER_PORT = 5000
-
-const val API_TEST_URI = "http://localhost:$API_TEST_PORT"
 const val WIREMOCK_TEST_URI = "http://localhost:$LOCAL_SERVER_PORT"
 
 const val MONGO_USER = "testuser"

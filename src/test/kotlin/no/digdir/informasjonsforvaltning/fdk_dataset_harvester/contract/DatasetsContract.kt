@@ -17,7 +17,7 @@ import kotlin.test.assertTrue
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest(
     properties = ["spring.profiles.active=contract-test"],
-    webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ContextConfiguration(initializers = [ApiTestContext.Initializer::class])
 @Tag("contract")
 class DatasetsContract : ApiTestContext() {
@@ -25,7 +25,7 @@ class DatasetsContract : ApiTestContext() {
 
     @Test
     fun getDataset() {
-        val response = apiGet("/datasets/$DATASET_ID_0", "application/rdf+json")
+        val response = apiGet(port, "/datasets/$DATASET_ID_0", "application/rdf+json")
         assumeTrue(HttpStatus.OK.value() == response["status"])
 
         val expected = responseReader.parseFile("dataset_0.ttl", "TURTLE")
@@ -36,7 +36,7 @@ class DatasetsContract : ApiTestContext() {
 
     @Test
     fun idDoesNotExist() {
-        val response = apiGet("/datasets/123", "text/turtle")
+        val response = apiGet(port, "/datasets/123", "text/turtle")
         assertEquals(HttpStatus.NOT_FOUND.value(), response["status"])
     }
 
