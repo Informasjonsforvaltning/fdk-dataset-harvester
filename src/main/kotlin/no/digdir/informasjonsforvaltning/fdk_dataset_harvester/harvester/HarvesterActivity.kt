@@ -8,6 +8,7 @@ import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.adapter.HarvestAdminAdapter
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rabbit.RabbitMQPublisher
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service.UpdateService
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.util.*
@@ -21,7 +22,8 @@ private const val HARVEST_ALL_ID = "all"
 class HarvesterActivity(
     private val harvestAdminAdapter: HarvestAdminAdapter,
     private val harvester: DatasetHarvester,
-    private val publisher: RabbitMQPublisher
+    private val publisher: RabbitMQPublisher,
+    private val updateService: UpdateService
 ): CoroutineScope by CoroutineScope(Dispatchers.Default) {
 
     private val activitySemaphore = Semaphore(1)
@@ -56,7 +58,7 @@ class HarvesterActivity(
 
         val onHarvestCompletion = launch {
             harvest.join()
-            harvester.updateUnionModel()
+            updateService.updateMetaData()
 
             if (params != null && params.isNotEmpty()) LOGGER.debug("completed harvest with parameters $params")
             else LOGGER.debug("completed full harvest")

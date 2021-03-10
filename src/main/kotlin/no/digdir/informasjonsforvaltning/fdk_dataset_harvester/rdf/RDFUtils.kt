@@ -1,6 +1,8 @@
 package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf
 
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.Application
+import org.apache.jena.query.QueryExecutionFactory
+import org.apache.jena.query.QueryFactory
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.rdf.model.ModelFactory
 import org.apache.jena.rdf.model.Property
@@ -56,19 +58,11 @@ fun Model.createRDFResponse(responseType: Lang): String =
         out.toString("UTF-8")
     }
 
-fun Model.addDefaultPrefixes(): Model {
+fun Model.addMetaPrefixes(): Model {
     setNsPrefix("dct", DCTerms.NS)
     setNsPrefix("dcat", DCAT.NS)
     setNsPrefix("foaf", FOAF.getURI())
-    setNsPrefix("vcard", VCARD4.NS)
     setNsPrefix("xsd", XSD.NS)
-    setNsPrefix("skos", SKOS.uri)
-    setNsPrefix("rdf", RDF.uri)
-    setNsPrefix("adms", "http://www.w3.org/ns/adms#")
-    setNsPrefix("dcatno", "http://difi.no/dcatno#")
-    setNsPrefix("dqv", "http://www.w3.org/ns/dqvNS#")
-    setNsPrefix("prov", "http://www.w3.org/ns/prov#")
-    setNsPrefix("dcatapi", DCATAPI.uri)
 
     return this
 }
@@ -136,3 +130,17 @@ fun Statement.isResourceProperty(): Boolean =
 fun createIdFromUri(uri: String): String =
     UUID.nameUUIDFromBytes(uri.toByteArray())
         .toString()
+
+
+fun calendarFromTimestamp(timestamp: Long): Calendar {
+    val calendar = Calendar.getInstance()
+    calendar.timeInMillis = timestamp
+    return calendar
+}
+
+fun Model.containsTriple(subj: String, pred: String, obj: String): Boolean {
+    val askQuery = "ASK { $subj $pred $obj }"
+
+    val query = QueryFactory.create(askQuery)
+    return QueryExecutionFactory.create(query, this).execAsk()
+}
