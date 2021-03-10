@@ -1,23 +1,32 @@
 package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.controller
 
-import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.generated.api.DcatApNoDatasetsApi
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.JenaType
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.jenaTypeFromAcceptHeader
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service.DatasetService
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
-import javax.servlet.http.HttpServletRequest
+import org.springframework.web.bind.annotation.*
 
 private val LOGGER = LoggerFactory.getLogger(DatasetsController::class.java)
 
 @Controller
-open class DatasetsController(private val datasetService: DatasetService) : DcatApNoDatasetsApi {
+@CrossOrigin
+@RequestMapping(
+    value = ["/datasets"],
+    produces = ["text/turtle", "text/n3", "application/rdf+json", "application/ld+json", "application/rdf+xml", "application/n-triples"]
+)
+open class DatasetsController(private val datasetService: DatasetService) {
 
-    override fun getDatasetById(httpServletRequest: HttpServletRequest, id: String): ResponseEntity<String> {
+    @GetMapping("/{id}")
+    fun getDatasetById(
+        @RequestHeader(HttpHeaders.ACCEPT) accept: String?,
+        @PathVariable id: String
+    ): ResponseEntity<String> {
         LOGGER.info("get Dataset with id $id")
-        val returnType = jenaTypeFromAcceptHeader(httpServletRequest.getHeader("Accept"))
+        val returnType = jenaTypeFromAcceptHeader(accept)
 
         return if (returnType == JenaType.NOT_ACCEPTABLE) ResponseEntity(HttpStatus.NOT_ACCEPTABLE)
         else {
