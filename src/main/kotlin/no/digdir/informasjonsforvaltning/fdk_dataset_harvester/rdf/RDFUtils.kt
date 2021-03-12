@@ -67,59 +67,6 @@ fun Model.addMetaPrefixes(): Model {
     return this
 }
 
-fun Resource.modelOfResourceProperties(property: Property): Model {
-    val model = ModelFactory.createDefaultModel()
-
-    listProperties(property)
-        .toList()
-        .filter { it.isResourceProperty() }
-        .map { it.resource }
-        .forEach { model.add(it.listProperties()) }
-
-    return model
-}
-
-fun Resource.modelOfDistributionProperties(): Model {
-    val model = ModelFactory.createDefaultModel()
-
-    listProperties(DCAT.distribution)
-        .toList()
-        .filter { it.isResourceProperty() }
-        .map { it.resource }
-        .forEach {
-            model.add(it.listProperties())
-            it.listProperties().toList()
-                .filter { property -> property.isResourceProperty() }
-                .forEach { property ->
-                    if (property.predicate == DCATAPI.accessService) {
-                        model.add(property.resource.listProperties())
-                        property.resource.listProperties(DCATAPI.endpointDescription).toList()
-                            .filter { endpoint -> endpoint.isResourceProperty() }
-                            .forEach { endpoint -> model.add(endpoint.resource.listProperties()) }
-                    } else model.add(property.resource.listProperties())
-                }
-        }
-
-    return model
-}
-
-fun Resource.modelOfQualityProperties(): Model {
-    val model = ModelFactory.createDefaultModel()
-
-    listProperties(DQV.hasQualityAnnotation)
-        .toList()
-        .filter { it.isResourceProperty() }
-        .map { it.resource }
-        .forEach {
-            model.add(it.listProperties())
-            it.listProperties().toList()
-                .filter { body -> body.isResourceProperty() }
-                .forEach { body -> model.add(body.resource.listProperties()) }
-        }
-
-    return model
-}
-
 fun Statement.isResourceProperty(): Boolean =
     try {
         resource.isResource

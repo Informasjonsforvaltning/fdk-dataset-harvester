@@ -2,6 +2,7 @@ package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.harvester
 
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.*
 import org.apache.jena.rdf.model.Model
+import org.apache.jena.rdf.model.ModelFactory
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.riot.Lang
 import org.apache.jena.vocabulary.DCAT
@@ -30,16 +31,16 @@ fun extractCatalogs(harvested: Model): List<CatalogAndDatasetModels> =
                 .filter { it.isResourceProperty() }
                 .forEach {
                     if (it.predicate != DCAT.dataset) {
-                        catalogModelWithoutDatasets = catalogModelWithoutDatasets.addNonDatasetResourceToModel(it.resource)
+                        catalogModelWithoutDatasets = catalogModelWithoutDatasets.recursiveAddNonDatasetResource(it.resource, 5)
                     }
                 }
 
-            var catalogModel = catalogModelWithoutDatasets
-            catalogDatasets.forEach { catalogModel = catalogModel.union(it.harvestedDataset) }
+            var datasetsUnion = ModelFactory.createDefaultModel()
+            catalogDatasets.forEach { datasetsUnion = datasetsUnion.union(it.harvestedDataset) }
 
             CatalogAndDatasetModels(
                 resource = catalogResource,
-                harvestedCatalog = catalogModel,
+                harvestedCatalog = catalogModelWithoutDatasets.union(datasetsUnion),
                 harvestedCatalogWithoutDatasets = catalogModelWithoutDatasets,
                 datasets = catalogDatasets
             )
@@ -52,34 +53,38 @@ fun Resource.extractDataset(): DatasetModel {
     listProperties().toList()
         .filter { it.isResourceProperty() }
         .forEach {
-            if (it.predicate != DCAT.distribution && it != DQV.hasQualityAnnotation) {
-                datasetModel = datasetModel.addNonDatasetResourceToModel(it.resource)
-            }
+            datasetModel = datasetModel.recursiveAddNonDatasetResource(it.resource, 10)
         }
-
-    datasetModel = datasetModel.union(modelOfDistributionProperties())
-    datasetModel = datasetModel.union(modelOfQualityProperties())
 
     return DatasetModel(resource = this, harvestedDataset = datasetModel)
 }
 
-private fun Model.addNonDatasetResourceToModel(resource: Resource): Model {
+private fun Model.recursiveAddNonDatasetResource(resource: Resource, recursiveCount: Int): Model {
+    val newCount = recursiveCount - 1
+
+    if (resourceShouldBeAdded(resource)) {
+        add(resource.listProperties())
+
+        if (newCount > 0) {
+            resource.listProperties().toList()
+                .filter { it.isResourceProperty() }
+                .forEach { recursiveAddNonDatasetResource(it.resource, newCount) }
+        }
+    }
+
+    return this
+}
+
+private fun Model.resourceShouldBeAdded(resource: Resource): Boolean {
     val types = resource.listProperties(RDF.type)
         .toList()
         .map { it.`object` }
 
-    if (!types.contains(DCAT.Dataset)) {
-
-        add(resource.listProperties())
-
-        resource.listProperties().toList()
-            .filter { it.isResourceProperty() }
-            .forEach {
-                add(it.resource.listProperties())
-            }
+    return when {
+        types.contains(DCAT.Dataset) -> false
+        containsTriple("<${resource.uri}>", "a", "?o") -> false
+        else -> true
     }
-
-    return this
 }
 
 data class CatalogAndDatasetModels (
