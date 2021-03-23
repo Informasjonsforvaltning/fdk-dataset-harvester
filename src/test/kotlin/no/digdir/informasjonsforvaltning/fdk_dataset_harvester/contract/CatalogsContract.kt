@@ -24,8 +24,19 @@ class CatalogsContract : ApiTestContext() {
     private val responseReader = TestResponseReader()
 
     @Test
-    fun getCatalog() {
+    fun getCatalogNoRecords() {
         val response = apiGet(port, "/catalogs/$CATALOG_ID_0", "application/rdf+xml")
+        assumeTrue(HttpStatus.OK.value() == response["status"])
+
+        val expected = responseReader.parseFile("harvest_response_0.ttl", "TURTLE")
+        val responseModel = responseReader.parseResponse(response["body"] as String, "RDFXML")
+
+        assertTrue(expected.isIsomorphicWith(responseModel))
+    }
+
+    @Test
+    fun getCatalogWithRecords() {
+        val response = apiGet(port, "/catalogs/$CATALOG_ID_0?catalogrecords=true", "application/rdf+xml")
         assumeTrue(HttpStatus.OK.value() == response["status"])
 
         val expected = responseReader.parseFile("catalog_0.ttl", "TURTLE")
@@ -41,8 +52,19 @@ class CatalogsContract : ApiTestContext() {
     }
 
     @Test
-    fun findAll() {
+    fun findAllNoRecords() {
         val response = apiGet(port, "/catalogs", "text/turtle")
+        assumeTrue(HttpStatus.OK.value() == response["status"])
+
+        val expected = responseReader.parseFile("all_catalogs_no_records.ttl", "TURTLE")
+        val responseModel = responseReader.parseResponse(response["body"] as String, "TURTLE")
+
+        assertTrue(expected.isIsomorphicWith(responseModel))
+    }
+
+    @Test
+    fun findAllWithRecords() {
+        val response = apiGet(port, "/catalogs?catalogrecords=true", "text/turtle")
         assumeTrue(HttpStatus.OK.value() == response["status"])
 
         val expected = responseReader.parseFile("all_catalogs.ttl", "TURTLE")

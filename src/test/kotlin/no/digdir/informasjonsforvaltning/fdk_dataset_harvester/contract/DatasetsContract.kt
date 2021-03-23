@@ -24,8 +24,19 @@ class DatasetsContract : ApiTestContext() {
     private val responseReader = TestResponseReader()
 
     @Test
-    fun getDataset() {
+    fun getDatasetNoRecords() {
         val response = apiGet(port, "/datasets/$DATASET_ID_0", "application/rdf+json")
+        assumeTrue(HttpStatus.OK.value() == response["status"])
+
+        val expected = responseReader.parseFile("parsed_dataset_0.ttl", "TURTLE")
+        val responseModel = responseReader.parseResponse(response["body"] as String, "RDF/JSON")
+
+        assertTrue(expected.isIsomorphicWith(responseModel))
+    }
+
+    @Test
+    fun getDatasetWithRecords() {
+        val response = apiGet(port, "/datasets/$DATASET_ID_0?catalogrecords=true", "application/rdf+json")
         assumeTrue(HttpStatus.OK.value() == response["status"])
 
         val expected = responseReader.parseFile("dataset_0.ttl", "TURTLE")

@@ -23,14 +23,15 @@ open class DatasetsController(private val datasetService: DatasetService) {
     @GetMapping("/{id}")
     fun getDatasetById(
         @RequestHeader(HttpHeaders.ACCEPT) accept: String?,
-        @PathVariable id: String
+        @PathVariable id: String,
+        @RequestParam(value = "catalogrecords", required = false) catalogRecords: Boolean = false
     ): ResponseEntity<String> {
         LOGGER.info("get Dataset with id $id")
         val returnType = jenaTypeFromAcceptHeader(accept)
 
         return if (returnType == Lang.RDFNULL) ResponseEntity(HttpStatus.NOT_ACCEPTABLE)
         else {
-            datasetService.getDataset(id, returnType ?: Lang.TURTLE)
+            datasetService.getDataset(id, returnType ?: Lang.TURTLE, catalogRecords)
                 ?.let { ResponseEntity(it, HttpStatus.OK) }
                 ?: ResponseEntity(HttpStatus.NOT_FOUND)
         }
