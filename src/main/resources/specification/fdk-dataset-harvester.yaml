@@ -19,10 +19,6 @@ tags:
 servers:
   - url: 'https://datasets.fellesdatakatalog.digdir.no'
     description: Produksjonsmiljø
-  - url: 'https://datasets.staging.fellesdatakatalog.digdir.no'
-    description: Testmiljø
-  - url: 'https://datasets.demo.fellesdatakatalog.digdir.no'
-    description: Demomiljø
 paths:
   /catalogs:
     get:
