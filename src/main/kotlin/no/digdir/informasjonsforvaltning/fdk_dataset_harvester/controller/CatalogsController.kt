@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
-import javax.servlet.http.HttpServletRequest
 
 private val LOGGER = LoggerFactory.getLogger(CatalogsController::class.java)
 
@@ -17,7 +16,8 @@ private val LOGGER = LoggerFactory.getLogger(CatalogsController::class.java)
 @CrossOrigin
 @RequestMapping(
     value = ["/catalogs"],
-    produces = ["text/turtle", "text/n3", "application/rdf+json", "application/ld+json", "application/rdf+xml", "application/n-triples"]
+    produces = ["text/turtle", "text/n3", "application/rdf+json", "application/ld+json", "application/rdf+xml",
+        "application/n-triples", "application/n-quads", "application/trig", "application/trix"]
 )
 open class CatalogsController(private val datasetService: DatasetService) {
 

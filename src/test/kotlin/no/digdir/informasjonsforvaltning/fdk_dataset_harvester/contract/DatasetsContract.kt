@@ -4,6 +4,7 @@ import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.ApiTestCont
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.DATASET_ID_0
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.TestResponseReader
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.apiGet
+import org.apache.jena.riot.Lang
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assumptions.assumeTrue
 import org.junit.jupiter.api.Tag
@@ -36,11 +37,11 @@ class DatasetsContract : ApiTestContext() {
 
     @Test
     fun getDatasetWithRecords() {
-        val response = apiGet(port, "/datasets/$DATASET_ID_0?catalogrecords=true", "application/rdf+json")
+        val response = apiGet(port, "/datasets/$DATASET_ID_0?catalogrecords=true", "application/trig")
         assumeTrue(HttpStatus.OK.value() == response["status"])
 
         val expected = responseReader.parseFile("dataset_0.ttl", "TURTLE")
-        val responseModel = responseReader.parseResponse(response["body"] as String, "RDF/JSON")
+        val responseModel = responseReader.parseResponse(response["body"] as String, Lang.TRIG.name)
 
         assertTrue(expected.isIsomorphicWith(responseModel))
     }
