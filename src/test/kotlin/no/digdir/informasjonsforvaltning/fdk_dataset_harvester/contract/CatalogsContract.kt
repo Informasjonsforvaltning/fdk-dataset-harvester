@@ -4,6 +4,7 @@ import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.ApiTestCont
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.CATALOG_ID_0
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.TestResponseReader
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.apiGet
+import org.apache.jena.riot.Lang
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assumptions.assumeTrue
 import org.junit.jupiter.api.Tag
@@ -36,11 +37,11 @@ class CatalogsContract : ApiTestContext() {
 
     @Test
     fun getCatalogWithRecords() {
-        val response = apiGet(port, "/catalogs/$CATALOG_ID_0?catalogrecords=true", "application/rdf+xml")
+        val response = apiGet(port, "/catalogs/$CATALOG_ID_0?catalogrecords=true", "application/trix")
         assumeTrue(HttpStatus.OK.value() == response["status"])
 
         val expected = responseReader.parseFile("catalog_0.ttl", "TURTLE")
-        val responseModel = responseReader.parseResponse(response["body"] as String, "RDFXML")
+        val responseModel = responseReader.parseResponse(response["body"] as String, Lang.TRIX.name)
 
         assertTrue(expected.isIsomorphicWith(responseModel))
     }
@@ -64,11 +65,11 @@ class CatalogsContract : ApiTestContext() {
 
     @Test
     fun findAllWithRecords() {
-        val response = apiGet(port, "/catalogs?catalogrecords=true", "text/turtle")
+        val response = apiGet(port, "/catalogs?catalogrecords=true", "application/n-quads")
         assumeTrue(HttpStatus.OK.value() == response["status"])
 
         val expected = responseReader.parseFile("all_catalogs.ttl", "TURTLE")
-        val responseModel = responseReader.parseResponse(response["body"] as String, "TURTLE")
+        val responseModel = responseReader.parseResponse(response["body"] as String, Lang.NQUADS.name)
 
         assertTrue(expected.isIsomorphicWith(responseModel))
     }
