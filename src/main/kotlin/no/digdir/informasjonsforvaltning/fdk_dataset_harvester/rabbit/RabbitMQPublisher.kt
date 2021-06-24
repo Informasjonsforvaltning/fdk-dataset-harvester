@@ -15,7 +15,7 @@ class RabbitMQPublisher(private val template: RabbitTemplate) {
             template.convertAndSend("harvests","datasets.harvester.UpdateSearchTrigger", UpdateSearchMessage(dbId))
             LOGGER.debug("Successfully sent UpdateSearchTrigger for $dbId")
         } catch (e: AmqpException) {
-            LOGGER.error("Could not trigger search update: ${e.message}")
+            LOGGER.error("${e.stackTraceToString()}: Could not trigger search update")
         }
     }
 
@@ -24,7 +24,7 @@ class RabbitMQPublisher(private val template: RabbitTemplate) {
             template.convertAndSend("updates", "assessments.update", "")
             LOGGER.debug("Successfully sent assessments.update message")
         } catch (e: AmqpException) {
-            LOGGER.error("Could not trigger assessments update", e)
+            LOGGER.error("${e.stackTraceToString()}: Could not trigger assessments update")
         }
     }
 }
