@@ -19,7 +19,7 @@ class DatasetAdapter {
             connection.setRequestProperty("Accept", source.acceptHeaderValue)
 
             if (connection.responseCode != HttpStatus.OK.value()) {
-                LOGGER.error("Harvest from ${source.url} has failed")
+                LOGGER.error(Exception("Harvest from ${source.url} has failed").stackTraceToString())
                 null
             } else {
                 connection
@@ -29,7 +29,7 @@ class DatasetAdapter {
             }
 
         } catch (ex: Exception) {
-            LOGGER.error("Error when harvesting from ${source.url}: ${ex.message}")
+            LOGGER.error("${ex.stackTraceToString()}: Error when harvesting from ${source.url}")
             null
         }
 
