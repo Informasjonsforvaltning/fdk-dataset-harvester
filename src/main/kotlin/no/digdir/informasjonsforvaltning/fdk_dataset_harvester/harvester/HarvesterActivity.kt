@@ -47,7 +47,7 @@ class HarvesterActivity(
                                     try {
                                         harvester.harvestDatasetCatalog(it, Calendar.getInstance())
                                     } catch (exception: Exception) {
-                                        LOGGER.error("${exception.stackTraceToString()}: Harvest of ${it.url} failed: ")
+                                        LOGGER.error("Harvest of ${it.url} failed", exception)
                                     }
                                 }
                             }

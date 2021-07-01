@@ -1,5 +1,6 @@
 package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.adapter
 
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.harvester.HarvestException
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.HarvestDataSource
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -19,7 +20,7 @@ class DatasetAdapter {
             connection.setRequestProperty("Accept", source.acceptHeaderValue)
 
             if (connection.responseCode != HttpStatus.OK.value()) {
-                LOGGER.error(Exception("Harvest from ${source.url} has failed").stackTraceToString())
+                LOGGER.error("Harvest from ${source.url} has failed", HarvestException(source.url ?: "undefined"))
                 null
             } else {
                 connection
@@ -29,7 +30,7 @@ class DatasetAdapter {
             }
 
         } catch (ex: Exception) {
-            LOGGER.error("${ex.stackTraceToString()}: Error when harvesting from ${source.url}")
+            LOGGER.error("Error when harvesting from ${source.url}", ex)
             null
         }
 
