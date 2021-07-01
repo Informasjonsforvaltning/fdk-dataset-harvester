@@ -26,7 +26,7 @@ class DatasetHarvester(
 ) {
 
     fun harvestDatasetCatalog(source: HarvestDataSource, harvestDate: Calendar) =
-        if (source.url != null) {
+    if (source.url != null) {
         LOGGER.debug("Starting harvest of ${source.url}")
         val jenaWriterType = jenaTypeFromAcceptHeader(source.acceptHeaderValue)
 
@@ -37,12 +37,12 @@ class DatasetHarvester(
         }
 
         when {
-            jenaWriterType == null -> LOGGER.error(Exception("Not able to harvest from ${source.url}, no accept header supplied").stackTraceToString())
-            jenaWriterType == Lang.RDFNULL -> LOGGER.error(Exception("Not able to harvest from ${source.url}, header ${source.acceptHeaderValue} is not acceptable ").stackTraceToString())
+            jenaWriterType == null -> LOGGER.error("Not able to harvest from ${source.url}, no accept header supplied", HarvestException(source.url))
+            jenaWriterType == Lang.RDFNULL -> LOGGER.error("Not able to harvest from ${source.url}, header ${source.acceptHeaderValue} is not acceptable", HarvestException(source.url))
             harvested == null -> LOGGER.info("Not able to harvest ${source.url}")
             else -> updateIfChanged(harvested, source.url, harvestDate)
         }
-    } else LOGGER.error(Exception("Harvest source is not defined").stackTraceToString())
+    } else LOGGER.error("Harvest source is not defined", HarvestException("undefined"))
 
     private fun updateIfChanged(harvested: Model, sourceURL: String, harvestDate: Calendar) {
         val dbData = turtleService.getHarvestSource(sourceURL)

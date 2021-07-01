@@ -98,3 +98,5 @@ data class DatasetModel (
     val resource: Resource,
     val harvestedDataset: Model
 )
+
+class HarvestException(url: String) : Exception("Harvest failed for $url")
