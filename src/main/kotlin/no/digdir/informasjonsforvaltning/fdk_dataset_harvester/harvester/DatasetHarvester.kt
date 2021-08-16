@@ -39,7 +39,7 @@ class DatasetHarvester(
         when {
             jenaWriterType == null -> LOGGER.error("Not able to harvest from ${source.url}, no accept header supplied", HarvestException(source.url))
             jenaWriterType == Lang.RDFNULL -> LOGGER.error("Not able to harvest from ${source.url}, header ${source.acceptHeaderValue} is not acceptable", HarvestException(source.url))
-            harvested == null -> LOGGER.info("Not able to harvest ${source.url}")
+            harvested == null -> LOGGER.warn("Not able to harvest ${source.url}")
             else -> updateIfChanged(harvested, source.url, harvestDate)
         }
     } else LOGGER.error("Harvest source is not defined", HarvestException("undefined"))
@@ -51,10 +51,11 @@ class DatasetHarvester(
         if (dbData != null && harvested.isIsomorphicWith(dbData)) {
             LOGGER.info("No changes from last harvest of $sourceURL")
         } else {
-            LOGGER.info("Changes detected, saving data from $sourceURL, and updating FDK meta data")
+            LOGGER.debug("Changes detected, saving data from $sourceURL, and updating FDK meta data")
             turtleService.saveAsHarvestSource(harvested, sourceURL)
 
             updateDB(harvested, harvestDate)
+            LOGGER.debug("Harvest of $sourceURL completed")
         }
     }
 
