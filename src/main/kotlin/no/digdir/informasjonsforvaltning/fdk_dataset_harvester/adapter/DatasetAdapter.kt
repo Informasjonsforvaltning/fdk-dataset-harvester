@@ -10,6 +10,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 private val LOGGER = LoggerFactory.getLogger(DatasetAdapter::class.java)
+private const val TEN_MINUTES = 600000
 
 @Service
 class DatasetAdapter {
@@ -18,6 +19,8 @@ class DatasetAdapter {
         try {
             val connection = URL(source.url).openConnection() as HttpURLConnection
             connection.setRequestProperty("Accept", source.acceptHeaderValue)
+            connection.connectTimeout = TEN_MINUTES
+            connection.readTimeout = TEN_MINUTES
 
             if (connection.responseCode != HttpStatus.OK.value()) {
                 LOGGER.error("Harvest from ${source.url} has failed", HarvestException(source.url ?: "undefined"))

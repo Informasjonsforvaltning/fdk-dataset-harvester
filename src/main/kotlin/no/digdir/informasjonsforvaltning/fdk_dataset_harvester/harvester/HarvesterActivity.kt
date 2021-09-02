@@ -2,7 +2,6 @@ package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.harvester
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
@@ -27,7 +26,7 @@ class HarvesterActivity(
 ): CoroutineScope by CoroutineScope(Dispatchers.Default) {
 
     private val activitySemaphore = Semaphore(1)
-    private val harvestSemaphore = Semaphore(2)
+    private val harvestSemaphore = Semaphore(5)
 
     @PostConstruct
     private fun fullHarvestOnStartup() = initiateHarvest(null)
@@ -40,15 +39,14 @@ class HarvesterActivity(
             activitySemaphore.withPermit {
                 harvestAdminAdapter.getDataSources(params)
                     .filter { it.dataType == DATASET_TYPE }
+                    .filter { it.url != null }
                     .forEach {
-                        if (it.url != null) {
-                            launch {
-                                harvestSemaphore.withPermit {
-                                    try {
-                                        harvester.harvestDatasetCatalog(it, Calendar.getInstance())
-                                    } catch (exception: Exception) {
-                                        LOGGER.error("Harvest of ${it.url} failed", exception)
-                                    }
+                        launch {
+                            harvestSemaphore.withPermit {
+                                try {
+                                    harvester.harvestDatasetCatalog(it, Calendar.getInstance())
+                                } catch (exception: Exception) {
+                                    LOGGER.error("Harvest of ${it.url} failed", exception)
                                 }
                             }
                         }
@@ -56,8 +54,7 @@ class HarvesterActivity(
             }
         }
 
-        val onHarvestCompletion = launch {
-            harvest.join()
+        harvest.invokeOnCompletion {
             updateService.updateMetaData()
 
             if (params != null && params.isNotEmpty()) LOGGER.debug("completed harvest with parameters $params")
@@ -65,12 +62,6 @@ class HarvesterActivity(
 
             publisher.sendUpdateAssessmentsMessage()
             publisher.send(HARVEST_ALL_ID)
-
-            harvest.cancelChildren()
-            harvest.cancel()
-
         }
-
-        onHarvestCompletion.invokeOnCompletion { onHarvestCompletion.cancel() }
     }
 }
