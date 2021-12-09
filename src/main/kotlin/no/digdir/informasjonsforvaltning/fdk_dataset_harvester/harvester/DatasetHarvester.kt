@@ -54,13 +54,13 @@ class DatasetHarvester(
             LOGGER.debug("Changes detected, saving data from $sourceURL, and updating FDK meta data")
             turtleService.saveAsHarvestSource(harvested, sourceURL)
 
-            updateDB(harvested, harvestDate)
+            updateDB(harvested, harvestDate, sourceURL)
             LOGGER.debug("Harvest of $sourceURL completed")
         }
     }
 
-    private fun updateDB(harvested: Model, harvestDate: Calendar) {
-        extractCatalogs(harvested)
+    private fun updateDB(harvested: Model, harvestDate: Calendar, sourceURL: String) {
+        extractCatalogs(harvested, sourceURL)
             .map { Pair(it, catalogRepository.findByIdOrNull(it.resource.uri)) }
             .filter { it.first.catalogHasChanges(it.second?.fdkId) }
             .forEach {

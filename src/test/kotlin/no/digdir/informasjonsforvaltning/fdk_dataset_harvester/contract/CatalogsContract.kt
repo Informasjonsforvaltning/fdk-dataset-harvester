@@ -29,7 +29,7 @@ class CatalogsContract : ApiTestContext() {
         val response = apiGet(port, "/catalogs/$CATALOG_ID_0", "application/rdf+xml")
         assumeTrue(HttpStatus.OK.value() == response["status"])
 
-        val expected = responseReader.parseFile("harvest_response_0.ttl", "TURTLE")
+        val expected = responseReader.parseFile("catalog_0_no_records.ttl", "TURTLE")
         val responseModel = responseReader.parseResponse(response["body"] as String, "RDFXML")
 
         assertTrue(expected.isIsomorphicWith(responseModel))
