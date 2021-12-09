@@ -31,13 +31,7 @@
         a              dcat:Catalog ;
         dct:publisher  <https://organization-catalogue.fellesdatakatalog.brreg.no/organizations/123456789> ;
         dct:title      "Datasettkatalog for Testdirektoratet"@nb ;
-        dcat:dataset   <https://testdirektoratet.no/model/dataset/0> ,
-                       [ a          dcat:Dataset ;
-                         dct:title  "Is filtered"@en ] .
-
-[   a           dcat:Catalog ;
-    dct:title   "Is filtered"@en
-] .
+        dcat:dataset   <https://testdirektoratet.no/model/dataset/0> .
 
 <https://testdirektoratet.no/model/distribution/0>
         a                   dcat:Distribution ;

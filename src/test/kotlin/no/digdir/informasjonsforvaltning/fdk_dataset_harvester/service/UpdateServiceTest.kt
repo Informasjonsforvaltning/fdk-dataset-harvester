@@ -34,7 +34,7 @@ class UpdateServiceTest {
             whenever(datasetRepository.findAllByIsPartOf("http://localhost:5000/catalogs/$CATALOG_ID_0"))
                 .thenReturn(listOf(DATASET_DBO_0, DATASET_DBO_1))
             whenever(turtleService.getCatalog(CATALOG_ID_0, false))
-                .thenReturn(responseReader.readFile("harvest_response_0.ttl"))
+                .thenReturn(responseReader.readFile("catalog_0_no_records.ttl"))
             whenever(turtleService.getDataset(DATASET_ID_0, false))
                 .thenReturn(responseReader.readFile("parsed_dataset_0.ttl"))
             whenever(turtleService.getDataset(DATASET_ID_1, false))
@@ -83,7 +83,7 @@ class UpdateServiceTest {
                 .thenReturn(responseReader.readFile("catalog_1.ttl"))
 
             whenever(turtleService.getCatalog(CATALOG_ID_0, false))
-                .thenReturn(responseReader.readFile("harvest_response_0.ttl"))
+                .thenReturn(responseReader.readFile("catalog_0_no_records.ttl"))
             whenever(turtleService.getCatalog(CATALOG_ID_1, false))
                 .thenReturn(responseReader.readFile("harvest_response_1.ttl"))
 

@@ -17,7 +17,7 @@ class HarvestHelpersTest {
 
         val expected = responseReader.parseFile("harvest_response_3.ttl", "TURTLE")
 
-        val catalog = extractCatalogs(expected).first()
+        val catalog = extractCatalogs(expected, "test-url").first()
 
         assert(catalog.harvestedCatalog.isIsomorphicWith(expected))
     }
