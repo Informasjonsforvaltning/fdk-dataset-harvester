@@ -25,47 +25,93 @@ class DatasetHarvester(
     private val applicationProperties: ApplicationProperties
 ) {
 
-    fun harvestDatasetCatalog(source: HarvestDataSource, harvestDate: Calendar) =
-    if (source.url != null) {
-        LOGGER.debug("Starting harvest of ${source.url}")
-        val jenaWriterType = jenaTypeFromAcceptHeader(source.acceptHeaderValue)
+    fun harvestDatasetCatalog(source: HarvestDataSource, harvestDate: Calendar): HarvestReport? =
+        if (source.id != null && source.url != null) {
+            try {
+                LOGGER.debug("Starting harvest of ${source.url}")
 
-        val harvested = when (jenaWriterType) {
-            null -> null
-            Lang.RDFNULL -> null
-            else -> adapter.getDatasets(source)?.let { parseRDFResponse(it, jenaWriterType, source.url) }
+                when (val jenaWriterType = jenaTypeFromAcceptHeader(source.acceptHeaderValue)) {
+                    null -> {
+                        LOGGER.error(
+                            "Not able to harvest from ${source.url}, no accept header supplied",
+                            HarvestException(source.url)
+                        )
+                        HarvestReport(
+                            id = source.id,
+                            url = source.url,
+                            harvestError = true,
+                            errorMessage = "Not able to harvest, no accept header supplied",
+                            timestamp = harvestDate.timeInMillis
+                        )
+                    }
+                    Lang.RDFNULL -> {
+                        LOGGER.error(
+                            "Not able to harvest from ${source.url}, header ${source.acceptHeaderValue} is not acceptable",
+                            HarvestException(source.url)
+                        )
+                        HarvestReport(
+                            id = source.id,
+                            url = source.url,
+                            harvestError = true,
+                            errorMessage = "Not able to harvest, no accept header supplied",
+                            timestamp = harvestDate.timeInMillis
+                        )
+                    }
+                    else -> updateIfChanged(
+                        parseRDFResponse(adapter.getDatasets(source), jenaWriterType, source.url),
+                        source.id, source.url, harvestDate
+                    )
+                }
+            } catch (ex: Exception) {
+                LOGGER.error("Harvest of ${source.url} failed", ex)
+                HarvestReport(
+                    id = source.id,
+                    url = source.url,
+                    harvestError = true,
+                    errorMessage = ex.message,
+                    timestamp = harvestDate.timeInMillis
+                )
+            }
+        } else {
+            LOGGER.error("Harvest source is not valid", HarvestException("source not valid"))
+            null
         }
 
-        when {
-            jenaWriterType == null -> LOGGER.error("Not able to harvest from ${source.url}, no accept header supplied", HarvestException(source.url))
-            jenaWriterType == Lang.RDFNULL -> LOGGER.error("Not able to harvest from ${source.url}, header ${source.acceptHeaderValue} is not acceptable", HarvestException(source.url))
-            harvested == null -> LOGGER.warn("Not able to harvest ${source.url}")
-            else -> updateIfChanged(harvested, source.url, harvestDate)
-        }
-    } else LOGGER.error("Harvest source is not defined", HarvestException("undefined"))
-
-    private fun updateIfChanged(harvested: Model, sourceURL: String, harvestDate: Calendar) {
+    private fun updateIfChanged(
+        harvested: Model,
+        sourceId: String,
+        sourceURL: String,
+        harvestDate: Calendar
+    ): HarvestReport {
         val dbData = turtleService.getHarvestSource(sourceURL)
             ?.let { parseRDFResponse(it, Lang.TURTLE, null) }
 
-        if (dbData != null && harvested.isIsomorphicWith(dbData)) {
+        return if (dbData != null && harvested.isIsomorphicWith(dbData)) {
             LOGGER.info("No changes from last harvest of $sourceURL")
+            HarvestReport(
+                id = sourceId,
+                url = sourceURL,
+                harvestError = false,
+                timestamp = harvestDate.timeInMillis
+            )
         } else {
             LOGGER.debug("Changes detected, saving data from $sourceURL, and updating FDK meta data")
             turtleService.saveAsHarvestSource(harvested, sourceURL)
 
-            updateDB(harvested, harvestDate, sourceURL)
-            LOGGER.debug("Harvest of $sourceURL completed")
+            updateDB(harvested, harvestDate, sourceId, sourceURL)
         }
     }
 
-    private fun updateDB(harvested: Model, harvestDate: Calendar, sourceURL: String) {
+    private fun updateDB(harvested: Model, harvestDate: Calendar, sourceId: String, sourceURL: String): HarvestReport {
+        val updatedCatalogs = mutableListOf<CatalogMeta>()
+        val updatedDatasets = mutableListOf<DatasetMeta>()
         extractCatalogs(harvested, sourceURL)
             .map { Pair(it, catalogRepository.findByIdOrNull(it.resource.uri)) }
             .filter { it.first.catalogHasChanges(it.second?.fdkId) }
             .forEach {
                 val updatedCatalogMeta = it.first.mapToCatalogMeta(harvestDate, it.second)
                 catalogRepository.save(updatedCatalogMeta)
+                updatedCatalogs.add(updatedCatalogMeta)
 
                 turtleService.saveAsCatalog(
                     model = it.first.harvestedCatalog,
@@ -77,25 +123,35 @@ class DatasetHarvester(
 
                 it.first.datasets.forEach { dataset ->
                     dataset.updateDataset(harvestDate, fdkUri)
+                        ?.let { datasetMeta -> updatedDatasets.add(datasetMeta) }
                 }
             }
+        LOGGER.debug("Harvest of $sourceURL completed")
+        return HarvestReport(
+            id = sourceId,
+            url = sourceURL,
+            harvestError = false,
+            timestamp = harvestDate.timeInMillis,
+            changedCatalogs = updatedCatalogs.map { FdkIdAndUri(fdkId = it.fdkId, uri = it.uri) },
+            changedResources = updatedDatasets.map { FdkIdAndUri(fdkId = it.fdkId, uri = it.uri) }
+        )
     }
 
     private fun DatasetModel.updateDataset(
         harvestDate: Calendar,
         fdkCatalogURI: String
-    ) {
+    ): DatasetMeta? {
         val dbMeta = datasetRepository.findByIdOrNull(resource.uri)
-        if (datasetHasChanges(dbMeta?.fdkId)) {
+        return if (datasetHasChanges(dbMeta?.fdkId)) {
             val modelMeta = mapToMetaDBO(harvestDate, fdkCatalogURI, dbMeta)
-            datasetRepository.save(modelMeta)
 
             turtleService.saveAsDataset(
                 model = harvestedDataset,
                 fdkId = modelMeta.fdkId,
                 withRecords = false
             )
-        }
+            datasetRepository.save(modelMeta)
+        } else null
     }
 
     private fun CatalogAndDatasetModels.mapToCatalogMeta(

@@ -5,6 +5,8 @@ import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.adapter.DatasetAd
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.configuration.ApplicationProperties
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.CatalogMeta
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.DatasetMeta
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.FdkIdAndUri
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.HarvestReport
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.repository.CatalogRepository
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.repository.DatasetRepository
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service.TurtleService
@@ -41,7 +43,7 @@ class HarvesterTest {
         whenever(valuesMock.datasetUri)
             .thenReturn("http://localhost:5000/datasets")
 
-        harvester.harvestDatasetCatalog(TEST_HARVEST_SOURCE_0, TEST_HARVEST_DATE)
+        val report = harvester.harvestDatasetCatalog(TEST_HARVEST_SOURCE_0, TEST_HARVEST_DATE)
 
         argumentCaptor<Model, String>().apply {
             verify(turtleService, times(1)).saveAsHarvestSource(first.capture(), second.capture())
@@ -73,6 +75,17 @@ class HarvesterTest {
             assertEquals(DATASET_DBO_0, firstValue)
         }
 
+        val expectedReport = HarvestReport(
+            id="harvest0",
+            url="http://localhost:5000/harvest0",
+            dataType="dataset",
+            harvestError=false,
+            timestamp=TEST_HARVEST_DATE.timeInMillis,
+            errorMessage=null,
+            changedCatalogs=listOf(FdkIdAndUri(fdkId="6e4237cc-98d6-3e7c-a892-8ac1f0ffb37f", uri="https://testdirektoratet.no/model/dataset-catalog/0"))
+        )
+
+        assertEquals(expectedReport, report)
     }
 
     @Test
@@ -83,7 +96,7 @@ class HarvesterTest {
         whenever(turtleService.getHarvestSource(TEST_HARVEST_SOURCE_0.url!!))
             .thenReturn(harvested)
 
-        harvester.harvestDatasetCatalog(TEST_HARVEST_SOURCE_0, TEST_HARVEST_DATE)
+        val report = harvester.harvestDatasetCatalog(TEST_HARVEST_SOURCE_0, TEST_HARVEST_DATE)
 
         argumentCaptor<Model, String>().apply {
             verify(turtleService, times(0)).saveAsHarvestSource(first.capture(), second.capture())
@@ -101,6 +114,17 @@ class HarvesterTest {
         argumentCaptor<DatasetMeta>().apply {
             verify(datasetRepository, times(0)).save(capture())
         }
+
+        val expectedReport = HarvestReport(
+            id="harvest0",
+            url="http://localhost:5000/harvest0",
+            dataType="dataset",
+            harvestError=false,
+            timestamp=TEST_HARVEST_DATE.timeInMillis,
+            errorMessage=null
+        )
+
+        assertEquals(expectedReport, report)
     }
 
     @Test
@@ -125,7 +149,7 @@ class HarvesterTest {
      whenever(turtleService.getDataset(DATASET_ID_0, false))
          .thenReturn(responseReader.readFile("parsed_dataset_0.ttl"))
 
-     harvester.harvestDatasetCatalog(TEST_HARVEST_SOURCE_0, NEW_TEST_HARVEST_DATE)
+     val report = harvester.harvestDatasetCatalog(TEST_HARVEST_SOURCE_0, NEW_TEST_HARVEST_DATE)
 
      argumentCaptor<Model, String>().apply {
          verify(turtleService, times(1)).saveAsHarvestSource(first.capture(), second.capture())
@@ -152,6 +176,18 @@ class HarvesterTest {
      argumentCaptor<Model, String, Boolean>().apply {
          verify(turtleService, times(0)).saveAsDataset(first.capture(), second.capture(), third.capture())
      }
+
+        val expectedReport = HarvestReport(
+            id="harvest0",
+            url="http://localhost:5000/harvest0",
+            dataType="dataset",
+            harvestError=false,
+            timestamp=NEW_TEST_HARVEST_DATE.timeInMillis,
+            errorMessage=null,
+            changedCatalogs=listOf(FdkIdAndUri(fdkId="6e4237cc-98d6-3e7c-a892-8ac1f0ffb37f", uri="https://testdirektoratet.no/model/dataset-catalog/0"))
+        )
+
+        assertEquals(expectedReport, report)
     }
 
     @Test
@@ -164,7 +200,7 @@ class HarvesterTest {
         whenever(valuesMock.datasetUri)
             .thenReturn("http://localhost:5000/datasets")
 
-        harvester.harvestDatasetCatalog(TEST_HARVEST_SOURCE_0, TEST_HARVEST_DATE)
+        val report = harvester.harvestDatasetCatalog(TEST_HARVEST_SOURCE_0, TEST_HARVEST_DATE)
 
         argumentCaptor<Model, String>().apply {
             verify(turtleService, times(0)).saveAsHarvestSource(first.capture(), second.capture())
@@ -182,6 +218,17 @@ class HarvesterTest {
         argumentCaptor<DatasetMeta>().apply {
             verify(datasetRepository, times(0)).save(capture())
         }
+
+        val expectedReport = HarvestReport(
+            id="harvest0",
+            url="http://localhost:5000/harvest0",
+            dataType="dataset",
+            harvestError=true,
+            timestamp=TEST_HARVEST_DATE.timeInMillis,
+            errorMessage="[line: 6, col: 86] Bad character in IRI (space): <https://testdirektoratet.no/whitespace/in-iri/err[space]...>"
+        )
+
+        assertEquals(expectedReport, report)
     }
 
 }
