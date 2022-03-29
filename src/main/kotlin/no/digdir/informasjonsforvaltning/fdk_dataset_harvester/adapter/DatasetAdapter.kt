@@ -15,7 +15,7 @@ private const val TEN_MINUTES = 600000
 @Service
 class DatasetAdapter {
 
-    fun getDatasets(source: HarvestDataSource): String? =
+    fun getDatasets(source: HarvestDataSource): String =
         try {
             val connection = URL(source.url).openConnection() as HttpURLConnection
             connection.setRequestProperty("Accept", source.acceptHeaderValue)
@@ -23,8 +23,9 @@ class DatasetAdapter {
             connection.readTimeout = TEN_MINUTES
 
             if (connection.responseCode != HttpStatus.OK.value()) {
-                LOGGER.error("Harvest from ${source.url} has failed", HarvestException(source.url ?: "undefined"))
-                null
+                val exception = HarvestException("Harvest failed for ${source.url}, status was ${connection.responseCode}")
+                LOGGER.error("Harvest from ${source.url} has failed", exception)
+                throw exception
             } else {
                 connection
                     .inputStream
@@ -34,7 +35,7 @@ class DatasetAdapter {
 
         } catch (ex: Exception) {
             LOGGER.error("Error when harvesting from ${source.url}", ex)
-            null
+            throw ex
         }
 
 }

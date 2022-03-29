@@ -1,6 +1,6 @@
 package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rabbit
 
-import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.UpdateSearchMessage
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.HarvestReport
 import org.slf4j.LoggerFactory
 import org.springframework.amqp.AmqpException
 import org.springframework.amqp.rabbit.core.RabbitTemplate
@@ -10,22 +10,19 @@ private val LOGGER = LoggerFactory.getLogger(RabbitMQPublisher::class.java)
 
 @Service
 class RabbitMQPublisher(private val template: RabbitTemplate) {
-    fun send(dbId: String?) {
+    fun send(reports: List<HarvestReport>) {
         try {
-            template.convertAndSend("harvests","datasets.harvester.UpdateSearchTrigger", UpdateSearchMessage(dbId))
-            template.convertAndSend("harvests","datasets.harvested", UpdateSearchMessage(dbId))
-            LOGGER.debug("Successfully sent UpdateSearchTrigger for $dbId")
+            template.convertAndSend("harvests","datasets.harvested", reports)
         } catch (e: AmqpException) {
-            LOGGER.error("Could not trigger search update", e)
+            LOGGER.error("Unable to send harvest completed message", e)
         }
     }
 
-    fun sendUpdateAssessmentsMessage() {
+    fun sendUpdateAssessmentsMessage(reports: List<HarvestReport>) {
         try {
-            template.convertAndSend("updates", "assessments.update", "")
-            LOGGER.debug("Successfully sent assessments.update message")
+            template.convertAndSend("updates", "assessments.update", reports)
         } catch (e: AmqpException) {
-            LOGGER.error("Could not trigger assessments update", e)
+            LOGGER.error("Unable to send assessments update message", e)
         }
     }
 }

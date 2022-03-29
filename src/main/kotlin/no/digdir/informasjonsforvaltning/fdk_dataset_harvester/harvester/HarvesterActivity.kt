@@ -1,12 +1,11 @@
 package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.harvester
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.adapter.HarvestAdminAdapter
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.HarvestAdminParameters
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.HarvestReport
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rabbit.RabbitMQPublisher
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service.UpdateService
 import org.slf4j.LoggerFactory
@@ -27,7 +26,6 @@ class HarvesterActivity(
 ): CoroutineScope by CoroutineScope(Dispatchers.Default) {
 
     private val activitySemaphore = Semaphore(1)
-    private val harvestSemaphore = Semaphore(5)
 
     @PostConstruct
     private fun fullHarvestOnStartup() = initiateHarvest(null)
@@ -36,33 +34,25 @@ class HarvesterActivity(
         if (params == null) LOGGER.debug("starting harvest of all datasets")
         else LOGGER.debug("starting harvest with parameters $params")
 
-        val harvest = launch {
+        launch {
             activitySemaphore.withPermit {
                 harvestAdminAdapter.getDataSources(params ?: HarvestAdminParameters())
                     .filter { it.dataType == DATASET_TYPE }
                     .filter { it.url != null }
-                    .forEach {
-                        launch {
-                            harvestSemaphore.withPermit {
-                                try {
-                                    harvester.harvestDatasetCatalog(it, Calendar.getInstance())
-                                } catch (exception: Exception) {
-                                    LOGGER.error("Harvest of ${it.url} failed", exception)
-                                }
-                            }
-                        }
-                    }
+                    .map { async { harvester.harvestDatasetCatalog(it, Calendar.getInstance()) } }
+                    .awaitAll()
+                    .filterNotNull()
+                    .also { updateService.updateMetaData() }
+                    .also {
+                        if (params != null) LOGGER.debug("completed harvest with parameters $params")
+                        else LOGGER.debug("completed full harvest") }
+                    .run { sendRabbitmessages() }
             }
         }
+    }
 
-        harvest.invokeOnCompletion {
-            updateService.updateMetaData()
-
-            if (params != null) LOGGER.debug("completed harvest with parameters $params")
-            else LOGGER.debug("completed full harvest")
-
-            publisher.sendUpdateAssessmentsMessage()
-            publisher.send(HARVEST_ALL_ID)
-        }
+    private fun List<HarvestReport>.sendRabbitmessages() {
+        publisher.sendUpdateAssessmentsMessage(this)
+        publisher.send(this)
     }
 }
