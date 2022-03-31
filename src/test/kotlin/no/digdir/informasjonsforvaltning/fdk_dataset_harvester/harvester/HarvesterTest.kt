@@ -15,6 +15,10 @@ import org.apache.jena.rdf.model.Model
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
+import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
 import java.util.*
 import kotlin.test.assertEquals
 
@@ -25,6 +29,7 @@ class HarvesterTest {
     private val valuesMock: ApplicationProperties = mock()
     private val turtleService: TurtleService = mock()
     private val adapter: DatasetAdapter = mock()
+    private val sdf: SimpleDateFormat = SimpleDateFormat("dd-MM-yyyy HH:mm:ss")
 
     private val harvester = DatasetHarvester(adapter, catalogRepository,
         datasetRepository, turtleService, valuesMock)
@@ -80,7 +85,7 @@ class HarvesterTest {
             url="http://localhost:5000/harvest0",
             dataType="dataset",
             harvestError=false,
-            timestamp=TEST_HARVEST_DATE.timeInMillis,
+            dateTime = sdf.format(TEST_HARVEST_DATE.time),
             errorMessage=null,
             changedCatalogs=listOf(FdkIdAndUri(fdkId="6e4237cc-98d6-3e7c-a892-8ac1f0ffb37f", uri="https://testdirektoratet.no/model/dataset-catalog/0"))
         )
@@ -120,7 +125,7 @@ class HarvesterTest {
             url="http://localhost:5000/harvest0",
             dataType="dataset",
             harvestError=false,
-            timestamp=TEST_HARVEST_DATE.timeInMillis,
+            dateTime = sdf.format(TEST_HARVEST_DATE.time),
             errorMessage=null
         )
 
@@ -182,7 +187,7 @@ class HarvesterTest {
             url="http://localhost:5000/harvest0",
             dataType="dataset",
             harvestError=false,
-            timestamp=NEW_TEST_HARVEST_DATE.timeInMillis,
+            dateTime = sdf.format(NEW_TEST_HARVEST_DATE.time),
             errorMessage=null,
             changedCatalogs=listOf(FdkIdAndUri(fdkId="6e4237cc-98d6-3e7c-a892-8ac1f0ffb37f", uri="https://testdirektoratet.no/model/dataset-catalog/0"))
         )
@@ -224,7 +229,7 @@ class HarvesterTest {
             url="http://localhost:5000/harvest0",
             dataType="dataset",
             harvestError=true,
-            timestamp=TEST_HARVEST_DATE.timeInMillis,
+            dateTime = sdf.format(TEST_HARVEST_DATE.time),
             errorMessage="[line: 6, col: 86] Bad character in IRI (space): <https://testdirektoratet.no/whitespace/in-iri/err[space]...>"
         )
 
