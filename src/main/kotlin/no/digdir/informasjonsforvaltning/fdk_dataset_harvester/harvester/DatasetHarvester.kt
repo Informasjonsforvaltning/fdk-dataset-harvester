@@ -12,17 +12,11 @@ import org.apache.jena.riot.Lang
 import org.slf4j.LoggerFactory
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
 import java.util.*
 import java.text.SimpleDateFormat
 
-
-
-
 private val LOGGER = LoggerFactory.getLogger(DatasetHarvester::class.java)
-private val sdf: SimpleDateFormat = SimpleDateFormat("dd-MM-yyyy HH:mm:ss")
+private val sdf: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z")
 
 @Service
 class DatasetHarvester(
@@ -49,7 +43,8 @@ class DatasetHarvester(
                             url = source.url,
                             harvestError = true,
                             errorMessage = "Not able to harvest, no accept header supplied",
-                            dateTime = sdf.format(harvestDate.time)
+                            start = sdf.format(harvestDate.time),
+                            end = sdf.format(Date())
                         )
                     }
                     Lang.RDFNULL -> {
@@ -62,7 +57,8 @@ class DatasetHarvester(
                             url = source.url,
                             harvestError = true,
                             errorMessage = "Not able to harvest, no accept header supplied",
-                            dateTime = sdf.format(harvestDate.time)
+                            start = sdf.format(harvestDate.time),
+                            end = sdf.format(Date())
                         )
                     }
                     else -> updateIfChanged(
@@ -77,7 +73,8 @@ class DatasetHarvester(
                     url = source.url,
                     harvestError = true,
                     errorMessage = ex.message,
-                    dateTime = sdf.format(harvestDate.time)
+                    start = sdf.format(harvestDate.time),
+                    end = sdf.format(Date())
                 )
             }
         } else {
@@ -100,7 +97,8 @@ class DatasetHarvester(
                 id = sourceId,
                 url = sourceURL,
                 harvestError = false,
-                dateTime = sdf.format(harvestDate.time)
+                start = sdf.format(harvestDate.time),
+                end = sdf.format(Date())
             )
         } else {
             LOGGER.debug("Changes detected, saving data from $sourceURL, and updating FDK meta data")
@@ -139,7 +137,8 @@ class DatasetHarvester(
             id = sourceId,
             url = sourceURL,
             harvestError = false,
-            dateTime = sdf.format(harvestDate.time),
+            start = sdf.format(harvestDate.time),
+            end = sdf.format(Date()),
             changedCatalogs = updatedCatalogs.map { FdkIdAndUri(fdkId = it.fdkId, uri = it.uri) },
             changedResources = updatedDatasets.map { FdkIdAndUri(fdkId = it.fdkId, uri = it.uri) }
         )
