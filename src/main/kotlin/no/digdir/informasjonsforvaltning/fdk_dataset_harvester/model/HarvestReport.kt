@@ -8,8 +8,8 @@ data class HarvestReport(
     val url: String,
     val dataType: String = "dataset",
     val harvestError: Boolean,
-    val start: String,
-    val end: String,
+    val startTime: String,
+    val endTime: String,
     val errorMessage: String? = null,
     val changedCatalogs: List<FdkIdAndUri> = emptyList(),
     val changedResources: List<FdkIdAndUri> = emptyList()
