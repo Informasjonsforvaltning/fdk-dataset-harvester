@@ -43,8 +43,8 @@ class DatasetHarvester(
                             url = source.url,
                             harvestError = true,
                             errorMessage = "Not able to harvest, no accept header supplied",
-                            start = sdf.format(harvestDate.time),
-                            end = sdf.format(Date())
+                            startTime = sdf.format(harvestDate.time),
+                            endTime = sdf.format(Date())
                         )
                     }
                     Lang.RDFNULL -> {
@@ -57,8 +57,8 @@ class DatasetHarvester(
                             url = source.url,
                             harvestError = true,
                             errorMessage = "Not able to harvest, no accept header supplied",
-                            start = sdf.format(harvestDate.time),
-                            end = sdf.format(Date())
+                            startTime = sdf.format(harvestDate.time),
+                            endTime = sdf.format(Date())
                         )
                     }
                     else -> updateIfChanged(
@@ -73,8 +73,8 @@ class DatasetHarvester(
                     url = source.url,
                     harvestError = true,
                     errorMessage = ex.message,
-                    start = sdf.format(harvestDate.time),
-                    end = sdf.format(Date())
+                    startTime = sdf.format(harvestDate.time),
+                    endTime = sdf.format(Date())
                 )
             }
         } else {
@@ -97,8 +97,8 @@ class DatasetHarvester(
                 id = sourceId,
                 url = sourceURL,
                 harvestError = false,
-                start = sdf.format(harvestDate.time),
-                end = sdf.format(Date())
+                startTime = sdf.format(harvestDate.time),
+                endTime = sdf.format(Date())
             )
         } else {
             LOGGER.debug("Changes detected, saving data from $sourceURL, and updating FDK meta data")
@@ -137,8 +137,8 @@ class DatasetHarvester(
             id = sourceId,
             url = sourceURL,
             harvestError = false,
-            start = sdf.format(harvestDate.time),
-            end = sdf.format(Date()),
+            startTime = sdf.format(harvestDate.time),
+            endTime = sdf.format(Date()),
             changedCatalogs = updatedCatalogs.map { FdkIdAndUri(fdkId = it.fdkId, uri = it.uri) },
             changedResources = updatedDatasets.map { FdkIdAndUri(fdkId = it.fdkId, uri = it.uri) }
         )
