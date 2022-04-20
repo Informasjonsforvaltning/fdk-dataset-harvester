@@ -149,16 +149,17 @@ class DatasetHarvester(
         fdkCatalogURI: String
     ): DatasetMeta? {
         val dbMeta = datasetRepository.findByIdOrNull(resource.uri)
-        return if (datasetHasChanges(dbMeta?.fdkId)) {
-            val modelMeta = mapToMetaDBO(harvestDate, fdkCatalogURI, dbMeta)
+        if (datasetHasChanges(dbMeta?.fdkId)) {
+            val datasetMeta = mapToMetaDBO(harvestDate, fdkCatalogURI, dbMeta)
+            datasetRepository.save(datasetMeta)
 
             turtleService.saveAsDataset(
                 model = harvestedDataset,
-                fdkId = modelMeta.fdkId,
+                fdkId = datasetMeta.fdkId,
                 withRecords = false
             )
-            datasetRepository.save(modelMeta)
-        } else null
+            return datasetMeta
+        } else return null
     }
 
     private fun CatalogAndDatasetModels.mapToCatalogMeta(
