@@ -85,7 +85,8 @@ class HarvesterTest {
             startTime = sdf.format(TEST_HARVEST_DATE.time),
             endTime = report!!.endTime,
             errorMessage=null,
-            changedCatalogs=listOf(FdkIdAndUri(fdkId="6e4237cc-98d6-3e7c-a892-8ac1f0ffb37f", uri="https://testdirektoratet.no/model/dataset-catalog/0"))
+            changedCatalogs=listOf(FdkIdAndUri(fdkId="6e4237cc-98d6-3e7c-a892-8ac1f0ffb37f", uri="https://testdirektoratet.no/model/dataset-catalog/0")),
+            changedResources = listOf(FdkIdAndUri(fdkId="a1c680ca-62d7-34d5-aa4c-d39b5db033ae", uri="https://testdirektoratet.no/model/dataset/0"))
         )
 
         assertEquals(expectedReport, report)
