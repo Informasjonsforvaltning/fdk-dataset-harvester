@@ -15,7 +15,6 @@ import javax.annotation.PostConstruct
 
 private val LOGGER = LoggerFactory.getLogger(HarvesterActivity::class.java)
 private const val DATASET_TYPE = "dataset"
-private const val HARVEST_ALL_ID = "all"
 
 @Service
 class HarvesterActivity(
