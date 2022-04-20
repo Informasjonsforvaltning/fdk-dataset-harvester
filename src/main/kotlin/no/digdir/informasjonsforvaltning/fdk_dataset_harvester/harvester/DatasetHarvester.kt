@@ -14,9 +14,12 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.util.*
 import java.text.SimpleDateFormat
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 private val LOGGER = LoggerFactory.getLogger(DatasetHarvester::class.java)
-private val sdf: SimpleDateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z")
+private const val dateFormat: String = "yyyy-MM-dd HH:mm:ss Z"
 
 @Service
 class DatasetHarvester(
@@ -43,8 +46,8 @@ class DatasetHarvester(
                             url = source.url,
                             harvestError = true,
                             errorMessage = "Not able to harvest, no accept header supplied",
-                            startTime = sdf.format(harvestDate.time),
-                            endTime = sdf.format(Date())
+                            startTime = harvestDate.formatWithOsloTimeZone(),
+                            endTime = formatNowWithOsloTimeZone()
                         )
                     }
                     Lang.RDFNULL -> {
@@ -57,8 +60,8 @@ class DatasetHarvester(
                             url = source.url,
                             harvestError = true,
                             errorMessage = "Not able to harvest, no accept header supplied",
-                            startTime = sdf.format(harvestDate.time),
-                            endTime = sdf.format(Date())
+                            startTime = harvestDate.formatWithOsloTimeZone(),
+                            endTime = formatNowWithOsloTimeZone()
                         )
                     }
                     else -> updateIfChanged(
@@ -73,8 +76,8 @@ class DatasetHarvester(
                     url = source.url,
                     harvestError = true,
                     errorMessage = ex.message,
-                    startTime = sdf.format(harvestDate.time),
-                    endTime = sdf.format(Date())
+                    startTime = harvestDate.formatWithOsloTimeZone(),
+                    endTime = formatNowWithOsloTimeZone()
                 )
             }
         } else {
@@ -97,8 +100,8 @@ class DatasetHarvester(
                 id = sourceId,
                 url = sourceURL,
                 harvestError = false,
-                startTime = sdf.format(harvestDate.time),
-                endTime = sdf.format(Date())
+                startTime = harvestDate.formatWithOsloTimeZone(),
+                endTime = formatNowWithOsloTimeZone()
             )
         } else {
             LOGGER.debug("Changes detected, saving data from $sourceURL, and updating FDK meta data")
@@ -137,8 +140,8 @@ class DatasetHarvester(
             id = sourceId,
             url = sourceURL,
             harvestError = false,
-            startTime = sdf.format(harvestDate.time),
-            endTime = sdf.format(Date()),
+            startTime = harvestDate.formatWithOsloTimeZone(),
+            endTime = formatNowWithOsloTimeZone(),
             changedCatalogs = updatedCatalogs.map { FdkIdAndUri(fdkId = it.fdkId, uri = it.uri) },
             changedResources = updatedDatasets.map { FdkIdAndUri(fdkId = it.fdkId, uri = it.uri) }
         )
@@ -206,4 +209,12 @@ class DatasetHarvester(
     private fun DatasetModel.datasetHasChanges(fdkId: String?): Boolean =
         if (fdkId == null) true
         else harvestDiff(turtleService.getDataset(fdkId, withRecords = false))
+
+    private fun formatNowWithOsloTimeZone(): String =
+        ZonedDateTime.now(ZoneId.of("Europe/Oslo"))
+            .format(DateTimeFormatter.ofPattern(dateFormat))
+
+    private fun Calendar.formatWithOsloTimeZone(): String =
+        ZonedDateTime.from(toInstant().atZone(ZoneId.of("Europe/Oslo")))
+            .format(DateTimeFormatter.ofPattern(dateFormat))
 }
