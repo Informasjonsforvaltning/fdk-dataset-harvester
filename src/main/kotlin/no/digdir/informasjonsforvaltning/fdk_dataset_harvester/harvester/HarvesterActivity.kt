@@ -45,12 +45,12 @@ class HarvesterActivity(
                     .also {
                         if (params != null) LOGGER.debug("completed harvest with parameters $params")
                         else LOGGER.debug("completed full harvest") }
-                    .run { sendRabbitmessages() }
+                    .run { sendRabbitMessages() }
             }
         }
     }
 
-    private fun List<HarvestReport>.sendRabbitmessages() {
+    private fun List<HarvestReport>.sendRabbitMessages() {
         publisher.sendUpdateAssessmentsMessage(this)
         publisher.send(this)
     }
