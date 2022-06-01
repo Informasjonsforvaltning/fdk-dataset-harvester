@@ -28,7 +28,10 @@ fun extractCatalogs(harvested: Model, sourceURL: String): List<CatalogAndDataset
         .map { catalogResource ->
             val catalogDatasets: List<DatasetModel> = catalogResource.listProperties(DCAT.dataset)
                 .toList()
+                .filter { it.isResourceProperty() }
                 .map { it.resource }
+                .flatMap { it.extractDatasetsInSeries() }
+                .filter { it.isDataset() }
                 .filterBlankNodeCatalogsAndDatasets(sourceURL)
                 .map { it.extractDataset() }
 
@@ -107,9 +110,37 @@ private fun Model.resourceShouldBeAdded(resource: Resource): Boolean {
 
     return when {
         types.contains(DCAT.Dataset) -> false
+        types.contains(DCAT3.DatasetSeries) -> false
         !resource.isURIResource -> true
         containsTriple("<${resource.uri}>", "a", "?o") -> false
         else -> true
+    }
+}
+
+private fun Resource.extractDatasetsInSeries(): List<Resource> {
+    val types = listProperties(RDF.type)
+        .toList()
+        .map { it.`object` }
+
+    return if (types.contains(DCAT3.DatasetSeries)) {
+        val datasetsInSeries = model.listResourcesWithProperty(DCAT3.inSeries, this)
+            .toList()
+        datasetsInSeries.add(this)
+        datasetsInSeries
+    } else {
+        listOf(this)
+    }
+}
+
+private fun Resource.isDataset(): Boolean {
+    val types = listProperties(RDF.type)
+        .toList()
+        .map { it.`object` }
+
+    return when {
+        types.contains(DCAT.Dataset) -> true
+        types.contains(DCAT3.DatasetSeries) -> true
+        else -> false
     }
 }
 
