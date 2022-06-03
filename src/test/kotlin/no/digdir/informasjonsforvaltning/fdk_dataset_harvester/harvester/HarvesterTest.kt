@@ -101,22 +101,11 @@ class HarvesterTest {
 
         val report = harvester.harvestDatasetCatalog(TEST_HARVEST_SOURCE_0, TEST_HARVEST_DATE)
 
-        argumentCaptor<Model, String>().apply {
-            verify(turtleService, times(0)).saveAsHarvestSource(first.capture(), second.capture())
-        }
-        argumentCaptor<Model, String, Boolean>().apply {
-            verify(turtleService, times(0)).saveAsCatalog(first.capture(), second.capture(), third.capture())
-        }
-        argumentCaptor<Model, String, Boolean>().apply {
-            verify(turtleService, times(0)).saveAsDataset(first.capture(), second.capture(), third.capture())
-        }
-
-        argumentCaptor<CatalogMeta>().apply {
-            verify(catalogRepository, times(0)).save(capture())
-        }
-        argumentCaptor<DatasetMeta>().apply {
-            verify(datasetRepository, times(0)).save(capture())
-        }
+        verify(turtleService, times(0)).saveAsHarvestSource(any(), any())
+        verify(turtleService, times(0)).saveAsCatalog(any(), any(), any())
+        verify(turtleService, times(0)).saveAsDataset(any(), any(), any())
+        verify(catalogRepository, times(0)).save(any())
+        verify(datasetRepository, times(0)).save(any())
 
         val expectedReport = HarvestReport(
             id="harvest0",
@@ -166,9 +155,7 @@ class HarvesterTest {
          assertEquals(CATALOG_DBO_0.copy(modified = NEW_TEST_HARVEST_DATE.timeInMillis), firstValue)
      }
 
-     argumentCaptor<DatasetMeta>().apply {
-         verify(datasetRepository, times(0)).save(capture())
-     }
+     verify(datasetRepository, times(0)).save(any())
 
      argumentCaptor<Model, String, Boolean>().apply {
          verify(turtleService, times(1)).saveAsCatalog(first.capture(), second.capture(), third.capture())
@@ -177,9 +164,7 @@ class HarvesterTest {
          Assertions.assertEquals(listOf(false), third.allValues)
      }
 
-     argumentCaptor<Model, String, Boolean>().apply {
-         verify(turtleService, times(0)).saveAsDataset(first.capture(), second.capture(), third.capture())
-     }
+     verify(turtleService, times(0)).saveAsDataset(any(), any(), any())
 
         val expectedReport = HarvestReport(
             id="harvest0",
@@ -207,22 +192,11 @@ class HarvesterTest {
 
         val report = harvester.harvestDatasetCatalog(TEST_HARVEST_SOURCE_0, TEST_HARVEST_DATE)
 
-        argumentCaptor<Model, String>().apply {
-            verify(turtleService, times(0)).saveAsHarvestSource(first.capture(), second.capture())
-        }
-        argumentCaptor<Model, String, Boolean>().apply {
-            verify(turtleService, times(0)).saveAsCatalog(first.capture(), second.capture(), third.capture())
-        }
-        argumentCaptor<Model, String, Boolean>().apply {
-            verify(turtleService, times(0)).saveAsDataset(first.capture(), second.capture(), third.capture())
-        }
-
-        argumentCaptor<CatalogMeta>().apply {
-            verify(catalogRepository, times(0)).save(capture())
-        }
-        argumentCaptor<DatasetMeta>().apply {
-            verify(datasetRepository, times(0)).save(capture())
-        }
+        verify(turtleService, times(0)).saveAsHarvestSource(any(), any())
+        verify(turtleService, times(0)).saveAsCatalog(any(), any(), any())
+        verify(turtleService, times(0)).saveAsDataset(any(), any(), any())
+        verify(catalogRepository, times(0)).save(any())
+        verify(datasetRepository, times(0)).save(any())
 
         val expectedReport = HarvestReport(
             id="harvest0",
@@ -262,17 +236,9 @@ class HarvesterTest {
             Assertions.assertEquals(listOf(false), third.allValues)
         }
 
-        argumentCaptor<CatalogMeta>().apply {
-            verify(catalogRepository, times(1)).save(capture())
-        }
-
-        argumentCaptor<Model, String, Boolean>().apply {
-            verify(turtleService, times(4)).saveAsDataset(first.capture(), second.capture(), third.capture())
-        }
-
-        argumentCaptor<DatasetMeta>().apply {
-            verify(datasetRepository, times(4)).save(capture())
-        }
+        verify(catalogRepository, times(1)).save(any())
+        verify(turtleService, times(4)).saveAsDataset(any(), any(), any())
+        verify(datasetRepository, times(4)).save(any())
 
         val expectedReport = HarvestReport(
             id="harvest4",
