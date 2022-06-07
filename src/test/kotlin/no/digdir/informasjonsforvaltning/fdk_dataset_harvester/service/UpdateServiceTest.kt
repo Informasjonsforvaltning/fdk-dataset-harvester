@@ -2,6 +2,8 @@ package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service
 
 import com.nhaarman.mockitokotlin2.*
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.configuration.ApplicationProperties
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.CatalogMeta
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.DatasetMeta
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.repository.CatalogRepository
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.repository.DatasetRepository
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.*
@@ -63,6 +65,57 @@ class UpdateServiceTest {
                 verify(turtleService, times(1)).saveAsCatalog(first.capture(), second.capture(), third.capture())
                 assertTrue(first.firstValue.isIsomorphicWith(expectedCatalog))
                 assertEquals(CATALOG_ID_0, second.firstValue)
+                assertEquals(listOf(true), third.allValues)
+            }
+        }
+
+        @Test
+        fun catalogRecordsIsCreatedForDatasetSeries() {
+            val catalogMeta = CatalogMeta(
+                uri = "http://example.org/EUCatalog",
+                fdkId = "catalog-id",
+                issued = TEST_HARVEST_DATE.timeInMillis,
+                modified = TEST_HARVEST_DATE.timeInMillis
+            )
+            val datasetMeta = DatasetMeta(
+                uri = "http://example.org/budget",
+                fdkId = "dataset-series-id",
+                isPartOf = "http://localhost:5000/catalogs/catalog-id",
+                issued = TEST_HARVEST_DATE.timeInMillis,
+                modified = TEST_HARVEST_DATE.timeInMillis
+            )
+            whenever(catalogRepository.findAll())
+                .thenReturn(listOf(catalogMeta))
+            whenever(datasetRepository.findAll())
+                .thenReturn(listOf(datasetMeta))
+            whenever(datasetRepository.findAllByIsPartOf("http://localhost:5000/catalogs/${catalogMeta.fdkId}"))
+                .thenReturn(listOf(datasetMeta))
+            whenever(turtleService.getCatalog(catalogMeta.fdkId, false))
+                .thenReturn(responseReader.readFile("parsed_catalog_with_series.ttl"))
+            whenever(turtleService.getDataset(datasetMeta.fdkId, false))
+                .thenReturn(responseReader.readFile("parsed_dataset_series.ttl"))
+
+            whenever(valuesMock.catalogUri)
+                .thenReturn("http://localhost:5000/catalogs")
+            whenever(valuesMock.datasetUri)
+                .thenReturn("http://localhost:5000/datasets")
+
+            updateService.updateMetaData()
+
+            val expectedDataset = responseReader.parseFile("dataset_series.ttl", "TURTLE")
+            val expectedCatalog = responseReader.parseFile("catalog_with_series.ttl", "TURTLE")
+
+            argumentCaptor<Model, String, Boolean>().apply {
+                verify(turtleService, times(1)).saveAsDataset(first.capture(), second.capture(), third.capture())
+                assertTrue(first.firstValue.isIsomorphicWith(expectedDataset))
+                assertEquals(listOf(datasetMeta.fdkId), second.allValues)
+                assertEquals(listOf(true), third.allValues)
+            }
+
+            argumentCaptor<Model, String, Boolean>().apply {
+                verify(turtleService, times(1)).saveAsCatalog(first.capture(), second.capture(), third.capture())
+                assertTrue(first.firstValue.isIsomorphicWith(expectedCatalog))
+                assertEquals(catalogMeta.fdkId, second.firstValue)
                 assertEquals(listOf(true), third.allValues)
             }
         }

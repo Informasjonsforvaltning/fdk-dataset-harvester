@@ -63,7 +63,9 @@ class UpdateService(
                     var catalogMeta = catalog.createMetaModel()
 
                     datasetRepository.findAllByIsPartOf(catalogURI)
-                        .filter { it.modelContainsDataService(catalogNoRecords) }
+                        .filter {
+                            it.modelContainsDataset(catalogNoRecords)
+                        }
                         .forEach { dataService ->
                             val serviceMetaModel = dataService.createMetaModel()
                             catalogMeta = catalogMeta.union(serviceMetaModel)
@@ -113,7 +115,8 @@ class UpdateService(
         return metaModel
     }
 
-    private fun DatasetMeta.modelContainsDataService(model: Model): Boolean =
+    private fun DatasetMeta.modelContainsDataset(model: Model): Boolean =
         model.containsTriple("<${uri}>", "a", "<${DCAT.Dataset.uri}>")
+            || model.containsTriple("<${uri}>", "a", "<${DCAT3.DatasetSeries.uri}>")
 
 }
