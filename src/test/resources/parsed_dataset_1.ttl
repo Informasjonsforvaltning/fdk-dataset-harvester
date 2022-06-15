@@ -19,22 +19,26 @@
         dct:temporal              <https://testdirektoratet.no/model/periodoftime/1> ;
         dct:title                 "Dataset 0"@nb ;
         dcat:contactPoint         <https://testdirektoratet.no/model/contact/1> ;
-        dcat:distribution         [ a               dcat:Distribution ;
-                                    dct:format      "CSV JSON JSONP YAML XML" ;
-                                    dct:license     <https://data.norge.no/nlod/no> ;
-                                    dct:title       "Test distribution 2" ;
-                                    dcat:accessURL  <http://testdirektoratet.no/data/test/2>
-                                  ] ;
-        dcat:distribution         [ a               dcat:Distribution ;
-                                    dct:format      "CSV JSON JSONP YAML XML" ;
-                                    dct:license     <https://data.norge.no/nlod/no> ;
-                                    dct:title       "Test distribution 1" ;
-                                    dcat:accessURL  <http://testdirektoratet.no/data/test/1>
-                                  ] ;
+        dcat:distribution         <https://testdirektoratet.no/model/dataset/1/distribution/2> ;
+        dcat:distribution         <https://testdirektoratet.no/model/dataset/1/distribution/1> ;
         dcat:endpointDescription  <https://testdirektoratet.no/openapi/dataset/1.yaml> ;
         dcat:keyword              "test" , "fest" ;
         dcat:theme                <http://publications.europa.eu/resource/authority/data-theme/GOVE> , <http://publications.europa.eu/resource/authority/data-theme/TECH> ;
         foaf:page                 <https://testdirektoratet.no> .
+
+<https://testdirektoratet.no/model/dataset/1/distribution/2>
+    a               dcat:Distribution ;
+    dct:format      "CSV JSON JSONP YAML XML" ;
+    dct:license     <https://data.norge.no/nlod/no> ;
+    dct:title       "Test distribution 2" ;
+    dcat:accessURL  <http://testdirektoratet.no/data/test/2> .
+
+<https://testdirektoratet.no/model/dataset/1/distribution/1>
+    a               dcat:Distribution ;
+    dct:format      "CSV JSON JSONP YAML XML" ;
+    dct:license     <https://data.norge.no/nlod/no> ;
+    dct:title       "Test distribution 1" ;
+    dcat:accessURL  <http://testdirektoratet.no/data/test/1> .
 
 <https://testdirektoratet.no/model/periodoftime/1>
         a               dct:PeriodOfTime ;
