@@ -7,6 +7,7 @@ import org.apache.jena.rdf.model.ModelFactory
 import org.apache.jena.rdf.model.Resource
 import org.apache.jena.rdf.model.Statement
 import org.apache.jena.riot.Lang
+import org.apache.jena.util.ResourceUtils
 import org.apache.jena.vocabulary.DCAT
 import org.apache.jena.vocabulary.RDF
 import org.slf4j.LoggerFactory
@@ -20,6 +21,13 @@ fun CatalogAndDatasetModels.harvestDiff(dbNoRecords: String?): Boolean =
 fun DatasetModel.harvestDiff(dbNoRecords: String?): Boolean =
     if (dbNoRecords == null) true
     else !harvestedDataset.isIsomorphicWith(parseRDFResponse(dbNoRecords, Lang.TURTLE, null))
+
+private fun Model.skolemizeBlankNodes(baseURI: String): Model {
+    listSubjects().toList()
+        .filter { it.isAnon }
+        .forEach { ResourceUtils.renameResource(it, "$baseURI/.well-known/skolem/${it.id}") }
+    return this
+}
 
 fun extractCatalogs(harvested: Model, sourceURL: String): List<CatalogAndDatasetModels> =
     harvested.listResourcesWithProperty(RDF.type, DCAT.Catalog)
@@ -41,6 +49,8 @@ fun extractCatalogs(harvested: Model, sourceURL: String): List<CatalogAndDataset
             catalogResource.listProperties()
                 .toList()
                 .forEach { catalogModelWithoutDatasets.addCatalogProperties(it) }
+
+            catalogModelWithoutDatasets.skolemizeBlankNodes(catalogResource.uri)
 
             var datasetsUnion = ModelFactory.createDefaultModel()
             catalogDatasets.forEach { datasetsUnion = datasetsUnion.union(it.harvestedDataset) }
@@ -81,7 +91,9 @@ fun Resource.extractDataset(): DatasetModel {
     listProperties().toList()
         .filter { it.isResourceProperty() }
         .forEach {
-            datasetModel = datasetModel.recursiveAddNonDatasetResource(it.resource, 10)
+            datasetModel = datasetModel
+                .recursiveAddNonDatasetResource(it.resource, 10)
+                .skolemizeBlankNodes(uri)
         }
 
     return DatasetModel(resource = this, harvestedDataset = datasetModel)

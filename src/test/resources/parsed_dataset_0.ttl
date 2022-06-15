@@ -20,10 +20,12 @@
 
 <http://example.com/92b5e4f7-dbbd-482c-b242-990a3628d395>
         a                            dcatapi:DataDistributionService ;
-        dcatapi:endpointDescription  [ a           foaf:Document , skos:Concept ;
-                                       dct:source  "84caab4b-b004-4a97-9b92-7bf335cf50d2"
-                                     ] ;
+        dcatapi:endpointDescription  <http://example.com/92b5e4f7-dbbd-482c-b242-990a3628d395#endpointDescription> ;
         dct:description              "Search API"@nb .
+
+<http://example.com/92b5e4f7-dbbd-482c-b242-990a3628d395#endpointDescription>
+    a           foaf:Document , skos:Concept ;
+    dct:source  "84caab4b-b004-4a97-9b92-7bf335cf50d2" .
 
 <https://testdirektoratet.no/model/dataset/0>
         a                         dcat:Dataset ;
@@ -32,16 +34,20 @@
         dct:identifier            "adb4cf00-31c8-460c-9563-55f204cf8221" ;
         dct:issued                "2019-03-22T13:11:16.546902"^^xsd:dateTime ;
         dct:language              <http://publications.europa.eu/resource/authority/language/NOR> ;
-        dct:temporal              [ a               dct:PeriodOfTime ;
-                                    dcat:startDate  "2019-04-02T00:00:00"^^xsd:dateTime
-                                  ] ;
+        dct:temporal              <https://testdirektoratet.no/model/dataset/0#temporal> ;
         dct:title                 "Dataset 0"@nb ;
-        dcat:contactPoint         [ a                          vcard:Organization ;
-                                    vcard:hasOrganizationName  "Testdirektoratet"@nb ;
-                                    vcard:hasURL               <https://testdirektoratet.no>
-                                  ] ;
+        dcat:contactPoint         <https://testdirektoratet.no/model/dataset/0#contact> ;
         dcat:distribution         <https://testdirektoratet.no/model/distribution/0> ;
         dcat:endpointDescription  <https://testdirektoratet.no/openapi/dataset/0.yaml> ;
         dcat:keyword              "fest" , "test" ;
         dcat:theme                <http://publications.europa.eu/resource/authority/data-theme/TECH> , <http://publications.europa.eu/resource/authority/data-theme/GOVE> ;
         foaf:page                 <https://testdirektoratet.no> .
+
+<https://testdirektoratet.no/model/dataset/0#temporal>
+    a               dct:PeriodOfTime ;
+    dcat:startDate  "2019-04-02T00:00:00"^^xsd:dateTime .
+
+<https://testdirektoratet.no/model/dataset/0#contact>
+    a                          vcard:Organization ;
+    vcard:hasOrganizationName  "Testdirektoratet"@nb ;
+    vcard:hasURL               <https://testdirektoratet.no> .

@@ -19,10 +19,12 @@
 
 <http://example.com/7f6c0278-a1cb-4f19-85b3-9fdfc63d7e5b>
         a                            dcatapi:DataDistributionService ;
-        dcatapi:endpointDescription  [ a           skos:Concept , foaf:Document ;
-                                       dct:source  "202dcc3b-433c-4a4d-a9b3-6580b759105b"
-                                     ] ;
+        dcatapi:endpointDescription  <http://example.com/7f6c0278-a1cb-4f19-85b3-9fdfc63d7e5b#endpointDescription> ;
         dct:description              "Åpne Data fra Enhetsregisteret - API Dokumentasjon"@nb .
+
+<http://example.com/7f6c0278-a1cb-4f19-85b3-9fdfc63d7e5b#endpointDescription>
+    a           skos:Concept , foaf:Document ;
+    dct:source  "202dcc3b-433c-4a4d-a9b3-6580b759105b" .
 
 <http://brreg.no/catalogs/910258028/datasets/993649c4-fd9d-4f49-906a-7ed0ab23cb70>
         a                 dcat:Dataset ;
@@ -36,10 +38,12 @@
 
 <http://example.com/d1680560-9aa8-4409-a10e-b43309663ff9>
         a                            dcatapi:DataDistributionService ;
-        dcatapi:endpointDescription  [ a           skos:Concept , foaf:Document ;
-                                       dct:source  "748bf1e8-909a-460f-9e25-d9b8536184e9"
-                                     ] ;
+        dcatapi:endpointDescription  <http://example.com/d1680560-9aa8-4409-a10e-b43309663ff9#endpointDescription> ;
         dct:description              "Åpne Data fra Enhetsregisteret - API Dokumentasjon"@nb .
+
+<http://example.com/d1680560-9aa8-4409-a10e-b43309663ff9#endpointDescription>
+    a           skos:Concept , foaf:Document ;
+    dct:source  "748bf1e8-909a-460f-9e25-d9b8536184e9" .
 
 <https://data.brreg.no/enhetsregisteret/api/enheter/910258028>
         a               foaf:Agent ;
@@ -48,17 +52,21 @@
 
 <http://example.com/68873e71-a123-4ce1-a4bb-c033a9aa074f>
         a                            dcatapi:DataDistributionService ;
-        dcatapi:endpointDescription  [ a           skos:Concept , foaf:Document ;
-                                       dct:source  "0670b703-e230-42ec-967e-27fe11ed3a69"
-                                     ] ;
+        dcatapi:endpointDescription  <http://example.com/68873e71-a123-4ce1-a4bb-c033a9aa074f#endpointDescription> ;
         dct:description              "Åpne Data fra Enhetsregisteret - API Dokumentasjon"@nb .
+
+<http://example.com/68873e71-a123-4ce1-a4bb-c033a9aa074f#endpointDescription>
+    a           skos:Concept , foaf:Document ;
+    dct:source  "0670b703-e230-42ec-967e-27fe11ed3a69" .
 
 <http://example.com/e497e71f-c4b4-4c23-b010-9609da299a69>
         a                            dcatapi:DataDistributionService ;
-        dcatapi:endpointDescription  [ a           skos:Concept , foaf:Document ;
-                                       dct:source  "386b6e06-d964-4c24-80e2-b28f1ab7c437"
-                                     ] ;
+        dcatapi:endpointDescription  <http://example.com/e497e71f-c4b4-4c23-b010-9609da299a69#endpointDescription> ;
         dct:description              "Åpne Data fra Enhetsregisteret - API Dokumentasjon"@nb .
+
+<http://example.com/e497e71f-c4b4-4c23-b010-9609da299a69#endpointDescription>
+    a           skos:Concept , foaf:Document ;
+    dct:source  "386b6e06-d964-4c24-80e2-b28f1ab7c437" .
 
 <https://fellesdatakatalog.brreg.no/api/concepts/db0bcd83-7784-49ae-8fe0-b3c6052cc3ef>
         a                skos:Concept ;
@@ -69,17 +77,11 @@
 
 <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837>
         a                         dcat:Dataset ;
-        dcatno:informationModel   [ a               dct:Standard , skos:Concept ;
-                                    dct:source      "https://vg.no" ;
-                                    skos:prefLabel  "VG"@nb
-                                  ] ;
+        dcatno:informationModel   <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837#informationModel> ;
         dcatno:objective          "Det finnes ikke noe formål."@nb ;
         dct:accessRights          <http://publications.europa.eu/resource/authority/access-right/PUBLIC> ;
         dct:accrualPeriodicity    <http://publications.europa.eu/resource/authority/frequency/MONTHLY_3> ;
-        dct:conformsTo            [ a               dct:Standard , skos:Concept ;
-                                    dct:source      "https://vg.no" ;
-                                    skos:prefLabel  "VG"@nb
-                                  ] ;
+        dct:conformsTo            <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837#conformsTo> ;
         dct:description           "Dette er en hyllest av Rune Rudberg."@nb ;
         dct:isPartOf              <http://brreg.no/catalogs/910258028/datasets/993649c4-fd9d-4f49-906a-7ed0ab23cb70> ;
         dct:issued                "2019-11-27T01:00:00"^^xsd:dateTime ;
@@ -88,63 +90,118 @@
         dct:publisher             <https://data.brreg.no/enhetsregisteret/api/enheter/910258028> ;
         dct:spatial               <https://data.geonorge.no/administrativeEnheter/fylke/id/173159> ;
         dct:subject               <https://fellesdatakatalog.brreg.no/api/concepts/db0bcd83-7784-49ae-8fe0-b3c6052cc3ef> ;
-        dct:temporal              [ a                              dct:PeriodOfTime ;
-                                    <http://schema.org/endDate>    "2024-11-13"^^xsd:date ;
-                                    <http://schema.org/startDate>  "2019-11-27"^^xsd:date
-                                  ] ;
+        dct:temporal              <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837#temporal> ;
         dct:title                 "Ut mot havet"@nb ;
         dct:type                  "Tesauri" ;
-        dcat:contactPoint         [ a                        vcard:Organization ;
-                                    vcard:organization-unit  "Rune"
-                                  ] ;
-        dcat:distribution         [ a                      dcat:Distribution ;
-                                    dcatapi:accessService  <http://example.com/e497e71f-c4b4-4c23-b010-9609da299a69>
-                                  ] ;
-        dcat:distribution         [ a                dcat:Distribution ;
-                                    dct:conformsTo   [ a               dct:Standard , skos:Concept ;
-                                                       dct:source      "https://vg.no" ;
-                                                       skos:prefLabel  "VG"@nb
-                                                     ] ;
-                                    dct:description  "Dette er en"@nb ;
-                                    dct:format       "application/json" ;
-                                    dct:license      [ a               dct:LicenseDocument , skos:Concept ;
-                                                       dct:source      "http://data.norge.no/nlod/" ;
-                                                       skos:prefLabel  "Norsk lisens for offentlige data"@no , "Norwegian Licence for Open Government Data"@en
-                                                     ] ;
-                                    dcat:accessURL   <https://vg.no> ;
-                                    foaf:page        [ a           foaf:Document , skos:Concept ;
-                                                       dct:source  "https://vg.no"
-                                                     ]
-                                  ] ;
-        dcat:distribution         [ a                      dcat:Distribution ;
-                                    dcatapi:accessService  <http://example.com/68873e71-a123-4ce1-a4bb-c033a9aa074f>
-                                  ] ;
-        dcat:distribution         [ a                      dcat:Distribution ;
-                                    dcatapi:accessService  <http://example.com/d1680560-9aa8-4409-a10e-b43309663ff9>
-                                  ] ;
-        dcat:distribution         [ a                      dcat:Distribution ;
-                                    dcatapi:accessService  <http://example.com/7f6c0278-a1cb-4f19-85b3-9fdfc63d7e5b>
-                                  ] ;
+        dcat:contactPoint         <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837#contact> ;
+        dcat:distribution         <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/distribution/0> ;
+        dcat:distribution         <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/distribution/1> ;
+        dcat:distribution         <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/distribution/2> ;
+        dcat:distribution         <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/distribution/3> ;
+        dcat:distribution         <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/distribution/4> ;
         dcat:keyword              "hav"@nb ;
         dcat:landingPage          <https://www.vg.no> ;
         dcat:theme                <https://psi.norge.no/los/tema/trafikk-og-transport> , <https://psi.norge.no/los/ord/vegnett> ;
-        dqv:hasQualityAnnotation  [ a                dqv:QualityAnnotation ;
-                                    dqv:inDimension  <http://iso.org/25012/2008/dataquality/Currentness> ;
-                                    prov:hasBody     [ rdf:value  "Nei"@nb ]
-                                  ] ;
-        dqv:hasQualityAnnotation  [ a                dqv:QualityAnnotation ;
-                                    dqv:inDimension  <http://iso.org/25012/2008/dataquality/Relevance> ;
-                                    prov:hasBody     [ rdf:value  "Nei"@nb ]
-                                  ] ;
-        dqv:hasQualityAnnotation  [ a                dqv:QualityAnnotation ;
-                                    dqv:inDimension  <http://iso.org/25012/2008/dataquality/Completeness> ;
-                                    prov:hasBody     [ rdf:value  "Nei"@nb ]
-                                  ] ;
-        dqv:hasQualityAnnotation  [ a                dqv:QualityAnnotation ;
-                                    dqv:inDimension  <http://iso.org/25012/2008/dataquality/Accuracy> ;
-                                    prov:hasBody     [ rdf:value  "Nei"@nb ]
-                                  ] ;
-        dqv:hasQualityAnnotation  [ a                dqv:QualityAnnotation ;
-                                    dqv:inDimension  <http://iso.org/25012/2008/dataquality/Availability> ;
-                                    prov:hasBody     [ rdf:value  "Nei"@nb ]
-                                  ] .
+        dqv:hasQualityAnnotation  <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/QualityAnnotation/0> ;
+        dqv:hasQualityAnnotation  <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/QualityAnnotation/1> ;
+        dqv:hasQualityAnnotation  <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/QualityAnnotation/2> ;
+        dqv:hasQualityAnnotation  <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/QualityAnnotation/3> ;
+        dqv:hasQualityAnnotation  <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/QualityAnnotation/4> .
+
+<http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837#informationModel>
+    a               dct:Standard , skos:Concept ;
+    dct:source      "https://vg.no" ;
+    skos:prefLabel  "VG"@nb .
+
+<http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837#conformsTo>
+    a               dct:Standard , skos:Concept ;
+    dct:source      "https://vg.no" ;
+    skos:prefLabel  "VG"@nb .
+
+<http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837#temporal>
+    a                              dct:PeriodOfTime ;
+    <http://schema.org/endDate>    "2024-11-13"^^xsd:date ;
+    <http://schema.org/startDate>  "2019-11-27"^^xsd:date .
+
+<http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837#contact>
+    a                        vcard:Organization ;
+    vcard:organization-unit  "Rune" .
+
+<http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/distribution/0>
+    a                      dcat:Distribution ;
+    dcatapi:accessService  <http://example.com/e497e71f-c4b4-4c23-b010-9609da299a69> .
+
+<http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/distribution/1>
+    a                dcat:Distribution ;
+    dct:conformsTo   <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/distribution/1#conformsTo> ;
+    dct:description  "Dette er en"@nb ;
+    dct:format       "application/json" ;
+    dct:license      <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/distribution/1#license> ;
+    dcat:accessURL   <https://vg.no> ;
+    foaf:page        <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/distribution/1#page> .
+
+<http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/distribution/1#conformsTo>
+    a               dct:Standard , skos:Concept ;
+    dct:source      "https://vg.no" ;
+    skos:prefLabel  "VG"@nb .
+
+<http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/distribution/1#license>
+    a               dct:LicenseDocument , skos:Concept ;
+    dct:source      "http://data.norge.no/nlod/" ;
+    skos:prefLabel  "Norsk lisens for offentlige data"@no , "Norwegian Licence for Open Government Data"@en .
+
+<http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/distribution/1#page>
+    a           foaf:Document , skos:Concept ;
+    dct:source  "https://vg.no" .
+
+<http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/distribution/2>
+    a                      dcat:Distribution ;
+    dcatapi:accessService  <http://example.com/68873e71-a123-4ce1-a4bb-c033a9aa074f> .
+
+<http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/distribution/3>
+    a                      dcat:Distribution ;
+    dcatapi:accessService  <http://example.com/d1680560-9aa8-4409-a10e-b43309663ff9> .
+
+<http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/distribution/4>
+    a                      dcat:Distribution ;
+    dcatapi:accessService  <http://example.com/7f6c0278-a1cb-4f19-85b3-9fdfc63d7e5b> .
+
+<http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/QualityAnnotation/0>
+    a                dqv:QualityAnnotation ;
+    dqv:inDimension  <http://iso.org/25012/2008/dataquality/Currentness> ;
+    prov:hasBody     <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/QualityAnnotation/0#body> .
+
+<http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/QualityAnnotation/0#body>
+    rdf:value  "Nei"@nb .
+
+<http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/QualityAnnotation/1>
+    a                dqv:QualityAnnotation ;
+    dqv:inDimension  <http://iso.org/25012/2008/dataquality/Relevance> ;
+    prov:hasBody     <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/QualityAnnotation/1#body> .
+
+<http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/QualityAnnotation/1#body>
+    rdf:value  "Nei"@nb .
+
+<http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/QualityAnnotation/2>
+    a                dqv:QualityAnnotation ;
+    dqv:inDimension  <http://iso.org/25012/2008/dataquality/Completeness> ;
+    prov:hasBody     <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/QualityAnnotation/2#body> .
+
+<http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/QualityAnnotation/2#body>
+    rdf:value  "Nei"@nb .
+
+<http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/QualityAnnotation/3>
+    a                dqv:QualityAnnotation ;
+    dqv:inDimension  <http://iso.org/25012/2008/dataquality/Accuracy> ;
+    prov:hasBody     <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/QualityAnnotation/3#body> .
+
+<http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/QualityAnnotation/3#body>
+    rdf:value  "Nei"@nb .
+
+<http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/QualityAnnotation/4>
+    a                dqv:QualityAnnotation ;
+    dqv:inDimension  <http://iso.org/25012/2008/dataquality/Availability> ;
+    prov:hasBody     <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/QualityAnnotation/4#body> .
+
+<http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/QualityAnnotation/4#body>
+    rdf:value  "Nei"@nb .
