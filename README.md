@@ -2,7 +2,7 @@
 
 ## Requirements
 - maven
-- java 15
+- java 17
 - docker
 - docker-compose
 
@@ -12,13 +12,23 @@ mvn verify
 ```
 
 ## Run locally
+### docker-compose
 ```
-docker-compose up -d
-mvn spring-boot:run -Dspring.profiles.active=develop
+docker-compose up -d --build
+```
+
+Then in the terminal e.g.
+```
+% curl http://localhost:8081/catalogs
+```
+### maven
+```
+docker-compose up -d rabbitmq
+docker-compose up -d mongodb
+mvn spring-boot:run -Dspring-boot.run.arguments="--spring.profiles.active=develop"
 ```
 
 Then in another terminal e.g.
 ```
 % curl http://localhost:8080/catalogs
-% curl http://localhost:8080/datasets
 ```

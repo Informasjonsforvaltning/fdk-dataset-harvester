@@ -47,7 +47,7 @@ spring:
     password: admin
   data.mongodb.uri: mongodb://admin:admin@localhost:27017/datasetHarvester?authSource=admin&authMechanism=SCRAM-SHA-1
 application:
-  harvestAdminRootUrl: https://new-admin.staging.fellesdatakatalog.digdir.no
+  harvestAdminRootUrl: https://admin-api.staging.fellesdatakatalog.digdir.no
 
 ---
 spring:
