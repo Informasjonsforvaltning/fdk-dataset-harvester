@@ -1,0 +1,18 @@
+@prefix dct:   <http://purl.org/dc/terms/> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+@prefix dcat:  <http://www.w3.org/ns/dcat#> .
+
+<https://testdirektoratet.no/model/blank-catalog/0>
+    a              dcat:Catalog ;
+    dct:publisher  [ a               foaf:Agent ;
+                     dct:identifier  "123456789" ;
+                     foaf:name       "Blanke" ] ;
+    dct:title      "Datasettkatalog for Testdirektoratet"@nb ;
+    dcat:dataset   <https://testdirektoratet.no/model/blank-dataset/0> .
+
+<https://testdirektoratet.no/model/blank-dataset/0>
+    a               dcat:Dataset ;
+    dct:temporal    [ a               dct:PeriodOfTime ;
+                      dcat:startDate  "2019-04-02T00:00:00" ;
+                      dcat:endDate    "2022-06-06T00:00:00" ] .
