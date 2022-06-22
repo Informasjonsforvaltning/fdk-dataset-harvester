@@ -43,7 +43,7 @@ class HarvesterTest {
         whenever(valuesMock.datasetUri)
             .thenReturn("http://localhost:5000/datasets")
 
-        val report = harvester.harvestDatasetCatalog(TEST_HARVEST_SOURCE_0, TEST_HARVEST_DATE)
+        val report = harvester.harvestDatasetCatalog(TEST_HARVEST_SOURCE_0, TEST_HARVEST_DATE, false)
 
         argumentCaptor<Model, String>().apply {
             verify(turtleService, times(1)).saveAsHarvestSource(first.capture(), second.capture())
@@ -98,7 +98,7 @@ class HarvesterTest {
         whenever(turtleService.getHarvestSource(TEST_HARVEST_SOURCE_0.url!!))
             .thenReturn(harvested)
 
-        val report = harvester.harvestDatasetCatalog(TEST_HARVEST_SOURCE_0, TEST_HARVEST_DATE)
+        val report = harvester.harvestDatasetCatalog(TEST_HARVEST_SOURCE_0, TEST_HARVEST_DATE, false)
 
         verify(turtleService, times(0)).saveAsHarvestSource(any(), any())
         verify(turtleService, times(0)).saveAsCatalog(any(), any(), any())
@@ -114,6 +114,37 @@ class HarvesterTest {
             startTime = "2020-03-12 12:52:16 +0100",
             endTime = report!!.endTime,
             errorMessage=null
+        )
+
+        assertEquals(expectedReport, report)
+    }
+
+    @Test
+    fun noChangesIgnoredWhenForceUpdateIsTrue() {
+        val harvested = responseReader.readFile("harvest_response_0.ttl")
+        whenever(adapter.getDatasets(TEST_HARVEST_SOURCE_0))
+            .thenReturn(harvested)
+        whenever(turtleService.getHarvestSource(TEST_HARVEST_SOURCE_0.url!!))
+            .thenReturn(harvested)
+
+        val report = harvester.harvestDatasetCatalog(TEST_HARVEST_SOURCE_0, TEST_HARVEST_DATE, true)
+
+        verify(turtleService, times(1)).saveAsHarvestSource(any(), any())
+        verify(turtleService, times(1)).saveAsCatalog(any(), any(), any())
+        verify(turtleService, times(1)).saveAsDataset(any(), any(), any())
+        verify(catalogRepository, times(1)).save(any())
+        verify(datasetRepository, times(1)).save(any())
+
+        val expectedReport = HarvestReport(
+            id="harvest0",
+            url="http://localhost:5000/harvest0",
+            dataType="dataset",
+            harvestError=false,
+            startTime = "2020-03-12 12:52:16 +0100",
+            endTime = report!!.endTime,
+            errorMessage=null,
+            changedCatalogs=listOf(FdkIdAndUri(fdkId="6e4237cc-98d6-3e7c-a892-8ac1f0ffb37f", uri="https://testdirektoratet.no/model/dataset-catalog/0")),
+            changedResources = listOf(FdkIdAndUri(fdkId="a1c680ca-62d7-34d5-aa4c-d39b5db033ae", uri="https://testdirektoratet.no/model/dataset/0"))
         )
 
         assertEquals(expectedReport, report)
@@ -141,7 +172,7 @@ class HarvesterTest {
      whenever(turtleService.getDataset(DATASET_ID_0, false))
          .thenReturn(responseReader.readFile("parsed_dataset_0.ttl"))
 
-     val report = harvester.harvestDatasetCatalog(TEST_HARVEST_SOURCE_0, NEW_TEST_HARVEST_DATE)
+     val report = harvester.harvestDatasetCatalog(TEST_HARVEST_SOURCE_0, NEW_TEST_HARVEST_DATE, false)
 
      argumentCaptor<Model, String>().apply {
          verify(turtleService, times(1)).saveAsHarvestSource(first.capture(), second.capture())
@@ -189,7 +220,7 @@ class HarvesterTest {
         whenever(valuesMock.datasetUri)
             .thenReturn("http://localhost:5000/datasets")
 
-        val report = harvester.harvestDatasetCatalog(TEST_HARVEST_SOURCE_0, TEST_HARVEST_DATE)
+        val report = harvester.harvestDatasetCatalog(TEST_HARVEST_SOURCE_0, TEST_HARVEST_DATE, false)
 
         verify(turtleService, times(0)).saveAsHarvestSource(any(), any())
         verify(turtleService, times(0)).saveAsCatalog(any(), any(), any())
@@ -220,7 +251,7 @@ class HarvesterTest {
         whenever(valuesMock.datasetUri)
             .thenReturn("http://localhost:5000/datasets")
 
-        val report = harvester.harvestDatasetCatalog(TEST_HARVEST_SOURCE_4, TEST_HARVEST_DATE)
+        val report = harvester.harvestDatasetCatalog(TEST_HARVEST_SOURCE_4, TEST_HARVEST_DATE, false)
 
         argumentCaptor<Model, String>().apply {
             verify(turtleService, times(1)).saveAsHarvestSource(first.capture(), second.capture())

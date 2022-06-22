@@ -27,24 +27,24 @@ class HarvesterActivity(
     private val activitySemaphore = Semaphore(1)
 
     @PostConstruct
-    private fun fullHarvestOnStartup() = initiateHarvest(null)
+    private fun fullHarvestOnStartup() = initiateHarvest(HarvestAdminParameters(null, null, null), false)
 
-    fun initiateHarvest(params: HarvestAdminParameters?) {
-        if (params == null) LOGGER.debug("starting harvest of all datasets")
-        else LOGGER.debug("starting harvest with parameters $params")
+    fun initiateHarvest(params: HarvestAdminParameters, forceUpdate: Boolean) {
+        if (params.harvestAllDatasets()) LOGGER.debug("starting harvest of all datasets, force update: $forceUpdate")
+        else LOGGER.debug("starting harvest with parameters $params, force update: $forceUpdate")
 
         launch {
             activitySemaphore.withPermit {
-                harvestAdminAdapter.getDataSources(params ?: HarvestAdminParameters())
+                harvestAdminAdapter.getDataSources(params)
                     .filter { it.dataType == DATASET_TYPE }
                     .filter { it.url != null }
-                    .map { async { harvester.harvestDatasetCatalog(it, Calendar.getInstance()) } }
+                    .map { async { harvester.harvestDatasetCatalog(it, Calendar.getInstance(), forceUpdate) } }
                     .awaitAll()
                     .filterNotNull()
                     .also { updateService.updateMetaData() }
                     .also {
-                        if (params != null) LOGGER.debug("completed harvest with parameters $params")
-                        else LOGGER.debug("completed full harvest") }
+                        if (params.harvestAllDatasets()) LOGGER.debug("completed harvest with parameters $params, forced update: $forceUpdate")
+                        else LOGGER.debug("completed full harvest, forced update: $forceUpdate") }
                     .run { sendRabbitMessages() }
             }
         }

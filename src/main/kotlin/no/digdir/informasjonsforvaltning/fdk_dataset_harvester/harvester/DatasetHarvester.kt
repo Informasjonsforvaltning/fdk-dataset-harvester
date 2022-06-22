@@ -29,7 +29,7 @@ class DatasetHarvester(
     private val applicationProperties: ApplicationProperties
 ) {
 
-    fun harvestDatasetCatalog(source: HarvestDataSource, harvestDate: Calendar): HarvestReport? =
+    fun harvestDatasetCatalog(source: HarvestDataSource, harvestDate: Calendar, forceUpdate: Boolean): HarvestReport? =
         if (source.id != null && source.url != null) {
             try {
                 LOGGER.debug("Starting harvest of ${source.url}")
@@ -65,7 +65,7 @@ class DatasetHarvester(
                     }
                     else -> updateIfChanged(
                         parseRDFResponse(adapter.getDatasets(source), jenaWriterType, source.url),
-                        source.id, source.url, harvestDate
+                        source.id, source.url, harvestDate, forceUpdate
                     )
                 }
             } catch (ex: Exception) {
@@ -88,12 +88,13 @@ class DatasetHarvester(
         harvested: Model,
         sourceId: String,
         sourceURL: String,
-        harvestDate: Calendar
+        harvestDate: Calendar,
+        forceUpdate: Boolean
     ): HarvestReport {
         val dbData = turtleService.getHarvestSource(sourceURL)
             ?.let { parseRDFResponse(it, Lang.TURTLE, null) }
 
-        return if (dbData != null && harvested.isIsomorphicWith(dbData)) {
+        return if (!forceUpdate && dbData != null && harvested.isIsomorphicWith(dbData)) {
             LOGGER.info("No changes from last harvest of $sourceURL")
             HarvestReport(
                 id = sourceId,
@@ -103,19 +104,25 @@ class DatasetHarvester(
                 endTime = formatNowWithOsloTimeZone()
             )
         } else {
-            LOGGER.debug("Changes detected, saving data from $sourceURL, and updating FDK meta data")
+            LOGGER.debug("Saving data from $sourceURL, and updating FDK meta data")
             turtleService.saveAsHarvestSource(harvested, sourceURL)
 
-            updateDB(harvested, harvestDate, sourceId, sourceURL)
+            updateDB(harvested, harvestDate, sourceId, sourceURL, forceUpdate)
         }
     }
 
-    private fun updateDB(harvested: Model, harvestDate: Calendar, sourceId: String, sourceURL: String): HarvestReport {
+    private fun updateDB(
+        harvested: Model,
+        harvestDate: Calendar,
+        sourceId: String,
+        sourceURL: String,
+        forceUpdate: Boolean
+    ): HarvestReport {
         val updatedCatalogs = mutableListOf<CatalogMeta>()
         val updatedDatasets = mutableListOf<DatasetMeta>()
         extractCatalogs(harvested, sourceURL)
             .map { Pair(it, catalogRepository.findByIdOrNull(it.resource.uri)) }
-            .filter { it.first.catalogHasChanges(it.second?.fdkId) }
+            .filter { forceUpdate || it.first.catalogHasChanges(it.second?.fdkId) }
             .forEach {
                 val updatedCatalogMeta = it.first.mapToCatalogMeta(harvestDate, it.second)
                 catalogRepository.save(updatedCatalogMeta)
@@ -130,7 +137,7 @@ class DatasetHarvester(
                 val fdkUri = "${applicationProperties.catalogUri}/${updatedCatalogMeta.fdkId}"
 
                 it.first.datasets.forEach { dataset ->
-                    dataset.updateDataset(harvestDate, fdkUri)
+                    dataset.updateDataset(harvestDate, fdkUri, forceUpdate)
                         ?.let { datasetMeta -> updatedDatasets.add(datasetMeta) }
                 }
             }
@@ -148,10 +155,11 @@ class DatasetHarvester(
 
     private fun DatasetModel.updateDataset(
         harvestDate: Calendar,
-        fdkCatalogURI: String
+        fdkCatalogURI: String,
+        forceUpdate: Boolean
     ): DatasetMeta? {
         val dbMeta = datasetRepository.findByIdOrNull(resource.uri)
-        if (datasetHasChanges(dbMeta?.fdkId)) {
+        return if (forceUpdate || datasetHasChanges(dbMeta?.fdkId)) {
             val datasetMeta = mapToMetaDBO(harvestDate, fdkCatalogURI, dbMeta)
             datasetRepository.save(datasetMeta)
 
@@ -160,8 +168,8 @@ class DatasetHarvester(
                 fdkId = datasetMeta.fdkId,
                 withRecords = false
             )
-            return datasetMeta
-        } else return null
+            datasetMeta
+        } else null
     }
 
     private fun CatalogAndDatasetModels.mapToCatalogMeta(
