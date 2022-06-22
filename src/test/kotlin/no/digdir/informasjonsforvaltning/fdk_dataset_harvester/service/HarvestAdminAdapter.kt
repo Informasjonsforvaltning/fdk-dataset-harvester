@@ -44,7 +44,7 @@ class HarvestAdminAdapterTest {
             whenever(valuesMock.harvestAdminRootUrl)
                 .thenReturn("http://www.example.com")
 
-            val url = adapter.urlWithParameters(HarvestAdminParameters())
+            val url = adapter.urlWithParameters(HarvestAdminParameters(null, null, null))
 
             assertEquals(URL("http://www.example.com/datasources?dataType=dataset"), url)
         }
@@ -58,7 +58,7 @@ class HarvestAdminAdapterTest {
                 HarvestAdminParameters(
                     publisherId = "123456789",
                     dataSourceType = "DCAT-AP-NO",
-                    dataType = "dataset"
+                    dataSourceId = null
                 )
             )
 
