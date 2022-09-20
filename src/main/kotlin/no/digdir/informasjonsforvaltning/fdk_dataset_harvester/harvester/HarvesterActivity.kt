@@ -1,6 +1,10 @@
 package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.harvester
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.adapter.HarvestAdminAdapter
@@ -10,7 +14,7 @@ import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rabbit.RabbitMQPu
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service.UpdateService
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
-import java.util.*
+import java.util.Calendar
 import javax.annotation.PostConstruct
 
 private val LOGGER = LoggerFactory.getLogger(HarvesterActivity::class.java)
@@ -34,18 +38,23 @@ class HarvesterActivity(
         else LOGGER.debug("starting harvest with parameters $params, force update: $forceUpdate")
 
         launch {
-            activitySemaphore.withPermit {
-                harvestAdminAdapter.getDataSources(params)
-                    .filter { it.dataType == DATASET_TYPE }
-                    .filter { it.url != null }
-                    .map { async { harvester.harvestDatasetCatalog(it, Calendar.getInstance(), forceUpdate) } }
-                    .awaitAll()
-                    .filterNotNull()
-                    .also { updateService.updateMetaData() }
-                    .also {
-                        if (params.harvestAllDatasets()) LOGGER.debug("completed harvest with parameters $params, forced update: $forceUpdate")
-                        else LOGGER.debug("completed full harvest, forced update: $forceUpdate") }
-                    .run { sendRabbitMessages() }
+            try {
+                activitySemaphore.withPermit {
+                    harvestAdminAdapter.getDataSources(params)
+                        .filter { it.dataType == DATASET_TYPE }
+                        .filter { it.url != null }
+                        .map { async { harvester.harvestDatasetCatalog(it, Calendar.getInstance(), forceUpdate) } }
+                        .awaitAll()
+                        .filterNotNull()
+                        .also { updateService.updateMetaData() }
+                        .also {
+                            if (params.harvestAllDatasets()) LOGGER.debug("completed harvest with parameters $params, forced update: $forceUpdate")
+                            else LOGGER.debug("completed full harvest, forced update: $forceUpdate")
+                        }
+                        .run { sendRabbitMessages() }
+                }
+            } catch(ex: Exception) {
+                LOGGER.error("harvest failure", ex)
             }
         }
     }
