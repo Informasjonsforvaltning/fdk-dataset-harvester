@@ -288,5 +288,42 @@ class HarvesterTest {
 
         assertEquals(expectedReport, report)
     }
+    @Test
+    fun removedDatasetsUpdatedAndAddedToReport() {
+        val harvested = responseReader.readFile("harvest_response_0_old_dataset_removed.ttl")
+        whenever(adapter.getDatasets(TEST_HARVEST_SOURCE_0))
+            .thenReturn(harvested)
+        whenever(turtleService.getHarvestSource(TEST_HARVEST_SOURCE_0.url!!))
+            .thenReturn(responseReader.readFile("harvest_response_0.ttl"))
+        whenever(datasetRepository.findAllByIsPartOf("http://localhost:5000/catalogs/6e4237cc-98d6-3e7c-a892-8ac1f0ffb37f"))
+            .thenReturn(listOf(DATASET_DBO_0))
+
+        whenever(valuesMock.catalogUri)
+            .thenReturn("http://localhost:5000/catalogs")
+        whenever(valuesMock.datasetUri)
+            .thenReturn("http://localhost:5000/datasets")
+
+        val report = harvester.harvestDatasetCatalog(TEST_HARVEST_SOURCE_0, TEST_HARVEST_DATE, false)
+
+        argumentCaptor<List<DatasetMeta>>().apply {
+            verify(datasetRepository, times(1)).saveAll(capture())
+            assertEquals(listOf(DATASET_DBO_0.copy(removed = true)), firstValue)
+        }
+
+        val expectedReport = HarvestReport(
+            id="harvest0",
+            url="http://localhost:5000/harvest0",
+            dataType="dataset",
+            harvestError=false,
+            startTime = "2020-03-12 12:52:16 +0100",
+            endTime = report!!.endTime,
+            errorMessage=null,
+            changedCatalogs=listOf(FdkIdAndUri(fdkId="6e4237cc-98d6-3e7c-a892-8ac1f0ffb37f", uri="https://testdirektoratet.no/model/dataset-catalog/0")),
+            changedResources=listOf(FdkIdAndUri(fdkId="b834f720-2827-3d68-b5de-1f28d4af5be6", uri="https://testdirektoratet.no/model/dataset/new")),
+            removedResources = listOf(FdkIdAndUri(fdkId="a1c680ca-62d7-34d5-aa4c-d39b5db033ae", uri="https://testdirektoratet.no/model/dataset/0"))
+        )
+
+        assertEquals(expectedReport, report)
+    }
 
 }

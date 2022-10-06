@@ -120,6 +120,7 @@ class DatasetHarvester(
     ): HarvestReport {
         val updatedCatalogs = mutableListOf<CatalogMeta>()
         val updatedDatasets = mutableListOf<DatasetMeta>()
+        val removedDatasets = mutableListOf<DatasetMeta>()
         extractCatalogs(harvested, sourceURL)
             .map { Pair(it, catalogRepository.findByIdOrNull(it.resource.uri)) }
             .filter { forceUpdate || it.first.catalogHasChanges(it.second?.fdkId) }
@@ -140,7 +141,17 @@ class DatasetHarvester(
                     dataset.updateDataset(harvestDate, fdkUri, forceUpdate)
                         ?.let { datasetMeta -> updatedDatasets.add(datasetMeta) }
                 }
+
+                removedDatasets.addAll(
+                    getDatasetsRemovedThisHarvest(
+                        fdkUri,
+                        it.first.datasets.map { dataset -> dataset.resource.uri }
+                    )
+                )
             }
+
+        removedDatasets.map { it.copy(removed = true) }.run { datasetRepository.saveAll(this) }
+
         LOGGER.debug("Harvest of $sourceURL completed")
         return HarvestReport(
             id = sourceId,
@@ -149,7 +160,8 @@ class DatasetHarvester(
             startTime = harvestDate.formatWithOsloTimeZone(),
             endTime = formatNowWithOsloTimeZone(),
             changedCatalogs = updatedCatalogs.map { FdkIdAndUri(fdkId = it.fdkId, uri = it.uri) },
-            changedResources = updatedDatasets.map { FdkIdAndUri(fdkId = it.fdkId, uri = it.uri) }
+            changedResources = updatedDatasets.map { FdkIdAndUri(fdkId = it.fdkId, uri = it.uri) },
+            removedResources = removedDatasets.map { FdkIdAndUri(fdkId = it.fdkId, uri = it.uri) }
         )
     }
 
@@ -204,6 +216,7 @@ class DatasetHarvester(
             uri = resource.uri,
             fdkId = fdkId,
             isPartOf = catalogURI,
+            removed = false,
             issued = issued.timeInMillis,
             modified = harvestDate.timeInMillis
         )
@@ -224,4 +237,8 @@ class DatasetHarvester(
     private fun Calendar.formatWithOsloTimeZone(): String =
         ZonedDateTime.from(toInstant().atZone(ZoneId.of("Europe/Oslo")))
             .format(DateTimeFormatter.ofPattern(dateFormat))
+
+    private fun getDatasetsRemovedThisHarvest(catalog: String, datasets: List<String>): List<DatasetMeta> =
+        datasetRepository.findAllByIsPartOf(catalog)
+            .filter { !it.removed && !datasets.contains(it.uri) }
 }
