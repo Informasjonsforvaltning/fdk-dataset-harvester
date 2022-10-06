@@ -1,0 +1,18 @@
+@prefix dct:   <http://purl.org/dc/terms/> .
+@prefix xsd:   <http://www.w3.org/2001/XMLSchema#> .
+@prefix vcard: <http://www.w3.org/2006/vcard/ns#> .
+@prefix dcat:  <http://www.w3.org/ns/dcat#> .
+@prefix foaf:  <http://xmlns.com/foaf/0.1/> .
+@prefix skos:  <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcatapi: <http://dcat.no/dcatapi/> .
+
+<https://testdirektoratet.no/model/dataset/new>
+        a                         dcat:Dataset ;
+        dct:identifier            "new" ;
+        dct:title                 "New dataset"@en .
+
+<https://testdirektoratet.no/model/dataset-catalog/0>
+        a              dcat:Catalog ;
+        dct:publisher  <https://organization-catalogue.fellesdatakatalog.brreg.no/organizations/123456789> ;
+        dct:title      "Datasettkatalog for Testdirektoratet"@nb ;
+        dcat:dataset   <https://testdirektoratet.no/model/dataset/new> .
