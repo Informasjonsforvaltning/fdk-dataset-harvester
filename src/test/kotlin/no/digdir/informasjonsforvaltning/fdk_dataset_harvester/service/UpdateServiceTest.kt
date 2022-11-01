@@ -1,6 +1,5 @@
 package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service
 
-import com.nhaarman.mockitokotlin2.*
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.configuration.ApplicationProperties
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.CatalogMeta
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.DatasetMeta
@@ -13,6 +12,11 @@ import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.argumentCaptor
+import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
+import org.mockito.kotlin.whenever
 
 @Tag("unit")
 class UpdateServiceTest {

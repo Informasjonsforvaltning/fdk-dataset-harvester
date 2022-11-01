@@ -1,6 +1,5 @@
 package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.harvester
 
-import com.nhaarman.mockitokotlin2.*
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.adapter.DatasetAdapter
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.configuration.ApplicationProperties
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.CatalogMeta
@@ -15,6 +14,7 @@ import org.apache.jena.rdf.model.Model
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
+import org.mockito.kotlin.*
 import java.util.*
 import kotlin.test.assertEquals
 
