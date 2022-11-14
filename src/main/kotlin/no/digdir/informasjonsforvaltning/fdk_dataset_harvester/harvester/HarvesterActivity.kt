@@ -60,7 +60,6 @@ class HarvesterActivity(
     }
 
     private fun List<HarvestReport>.sendRabbitMessages() {
-        publisher.sendUpdateAssessmentsMessage(this)
         publisher.send(this)
         LOGGER.debug("Successfully sent harvest completed message")
     }
