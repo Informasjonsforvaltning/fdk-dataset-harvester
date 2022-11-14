@@ -17,12 +17,4 @@ class RabbitMQPublisher(private val template: RabbitTemplate) {
             LOGGER.error("Unable to send harvest completed message", e)
         }
     }
-
-    fun sendUpdateAssessmentsMessage(reports: List<HarvestReport>) {
-        try {
-            template.convertAndSend("updates", "assessments.update", reports)
-        } catch (e: AmqpException) {
-            LOGGER.error("Unable to send assessments update message", e)
-        }
-    }
 }
