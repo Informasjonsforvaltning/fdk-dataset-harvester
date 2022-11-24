@@ -1,0 +1,177 @@
+@prefix adms:    <http://www.w3.org/ns/adms#> .
+@prefix dcat:    <http://www.w3.org/ns/dcat#> .
+@prefix dcatapi: <http://dcat.no/dcatapi/> .
+@prefix dcatno:  <http://difi.no/dcatno#> .
+@prefix dct:     <http://purl.org/dc/terms/> .
+@prefix dqv:     <http://www.w3.org/ns/dqvNS#> .
+@prefix foaf:    <http://xmlns.com/foaf/0.1/> .
+@prefix prov:    <http://www.w3.org/ns/prov#> .
+@prefix rdf:     <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix skos:    <http://www.w3.org/2004/02/skos/core#> .
+@prefix vcard:   <http://www.w3.org/2006/vcard/ns#> .
+@prefix xsd:     <http://www.w3.org/2001/XMLSchema#> .
+
+<http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/dc179fc0-f90f-3972-8d1f-399d6d4b0494>
+        rdf:type               dcat:Distribution ;
+        dcatapi:accessService  <http://example.com/7f6c0278-a1cb-4f19-85b3-9fdfc63d7e5b> .
+
+<http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/a569c2b7-bf7b-34b8-be83-211695695ec0>
+        rdf:type    skos:Concept , foaf:Document ;
+        dct:source  "202dcc3b-433c-4a4d-a9b3-6580b759105b" .
+
+<http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/6c9d70f2-9189-367b-af46-431e6ab17831>
+        rdf:type         dqv:QualityAnnotation ;
+        dqv:inDimension  <http://iso.org/25012/2008/dataquality/Completeness> ;
+        prov:hasBody     <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/c9be3cc9-60c0-3fe7-80f1-a33533386631> .
+
+<http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/6e6445e7-54c8-3b15-997e-6094c32f69e8>
+        rdf:type    skos:Concept , foaf:Document ;
+        dct:source  "0670b703-e230-42ec-967e-27fe11ed3a69" .
+
+<http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/00016983-38b9-3e07-874c-b8b0381716cc>
+        rdf:type         dqv:QualityAnnotation ;
+        dqv:inDimension  <http://iso.org/25012/2008/dataquality/Accuracy> ;
+        prov:hasBody     <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/c9be3cc9-60c0-3fe7-80f1-a33533386631> .
+
+<http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/e817a69d-8390-358a-a4c7-d7f24a2e12aa>
+        rdf:type         dqv:QualityAnnotation ;
+        dqv:inDimension  <http://iso.org/25012/2008/dataquality/Currentness> ;
+        prov:hasBody     <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/c9be3cc9-60c0-3fe7-80f1-a33533386631> .
+
+<http://dataset-catalogue:8080/catalogs/910244132>
+        rdf:type       dcat:Catalog ;
+        dct:publisher  <https://data.brreg.no/enhetsregisteret/api/enheter/910244132> ;
+        dct:title      "Datakatalog for RAMSUND OG ROGNAN REVISJON"@nb ;
+        dcat:dataset   <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837> , <http://brreg.no/catalogs/910258028/datasets/993649c4-fd9d-4f49-906a-7ed0ab23cb70> .
+
+<http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/32cd399a-6a81-3535-a54d-4e4bf47ee516>
+        rdf:type        dct:LicenseDocument , skos:Concept ;
+        dct:source      "http://data.norge.no/nlod/" ;
+        skos:prefLabel  "Norsk lisens for offentlige data"@no , "Norwegian Licence for Open Government Data"@en .
+
+<http://example.com/7f6c0278-a1cb-4f19-85b3-9fdfc63d7e5b>
+        rdf:type                     dcatapi:DataDistributionService ;
+        dcatapi:endpointDescription  <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/a569c2b7-bf7b-34b8-be83-211695695ec0> ;
+        dct:description              "Åpne Data fra Enhetsregisteret - API Dokumentasjon"@nb .
+
+<http://brreg.no/catalogs/910258028/datasets/993649c4-fd9d-4f49-906a-7ed0ab23cb70>
+        rdf:type          dcat:Dataset ;
+        dct:accessRights  <http://publications.europa.eu/resource/authority/access-right/PUBLIC> ;
+        dct:description   "Når testdirektøren er på fest, danser..."@nb ;
+        dct:language      <http://publications.europa.eu/resource/authority/language/ENG> , <http://publications.europa.eu/resource/authority/language/NOR> , <http://publications.europa.eu/resource/authority/language/SMI> ;
+        dct:publisher     <https://data.brreg.no/enhetsregisteret/api/enheter/910258028> ;
+        dct:subject       <https://fellesdatakatalog.brreg.no/api/concepts/893bdea3-609a-4fff-b24a-c66bc99c28ad> ;
+        dct:title         "Prodtest uten Sindre"@nb ;
+        dcat:theme        <https://psi.norge.no/los/tema/skatt-og-avgift> .
+
+<http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/7e744ec4-1953-34b5-a4f2-798dacd67261>
+        rdf:type               dcat:Distribution ;
+        dcatapi:accessService  <http://example.com/68873e71-a123-4ce1-a4bb-c033a9aa074f> .
+
+<http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/7ceca578-a3fc-3149-a660-50ee324b8731>
+        rdf:type               dcat:Distribution ;
+        dcatapi:accessService  <http://example.com/d1680560-9aa8-4409-a10e-b43309663ff9> .
+
+<http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/9d09b5d6-ed32-38a6-95be-5c25fb0fe10a>
+        rdf:type    skos:Concept , foaf:Document ;
+        dct:source  "386b6e06-d964-4c24-80e2-b28f1ab7c437" .
+
+<http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/25d810e4-64cb-3168-857f-9f79e39a7705>
+        rdf:type         dqv:QualityAnnotation ;
+        dqv:inDimension  <http://iso.org/25012/2008/dataquality/Relevance> ;
+        prov:hasBody     <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/c9be3cc9-60c0-3fe7-80f1-a33533386631> .
+
+<http://example.com/d1680560-9aa8-4409-a10e-b43309663ff9>
+        rdf:type                     dcatapi:DataDistributionService ;
+        dcatapi:endpointDescription  <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/40658fc7-e74e-3a9f-9b91-d9bcd078a64c> ;
+        dct:description              "Åpne Data fra Enhetsregisteret - API Dokumentasjon"@nb .
+
+<http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/82289911-d2d0-32ee-a8c8-f263f4699fef>
+        rdf:type         dcat:Distribution ;
+        dct:conformsTo   <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/4e245b1d-0bbb-3a58-8c50-453c6801a49f> ;
+        dct:description  "Dette er en"@nb ;
+        dct:format       "application/json" ;
+        dct:license      <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/32cd399a-6a81-3535-a54d-4e4bf47ee516> ;
+        dcat:accessURL   <https://vg.no> ;
+        foaf:page        <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/80455d69-3353-32d9-a8b5-fa281ce9ab87> .
+
+<http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/4e245b1d-0bbb-3a58-8c50-453c6801a49f>
+        rdf:type        dct:Standard , skos:Concept ;
+        dct:source      "https://vg.no" ;
+        skos:prefLabel  "VG"@nb .
+
+<http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/40658fc7-e74e-3a9f-9b91-d9bcd078a64c>
+        rdf:type    skos:Concept , foaf:Document ;
+        dct:source  "748bf1e8-909a-460f-9e25-d9b8536184e9" .
+
+<https://data.brreg.no/enhetsregisteret/api/enheter/910258028>
+        rdf:type        foaf:Agent ;
+        dct:identifier  "910258028" ;
+        foaf:name       "LILAND OG ERDAL REVISJON" .
+
+<http://example.com/68873e71-a123-4ce1-a4bb-c033a9aa074f>
+        rdf:type                     dcatapi:DataDistributionService ;
+        dcatapi:endpointDescription  <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/6e6445e7-54c8-3b15-997e-6094c32f69e8> ;
+        dct:description              "Åpne Data fra Enhetsregisteret - API Dokumentasjon"@nb .
+
+<http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/d2db1db0-be52-309e-ac6d-bf0ae7c8b07c>
+        rdf:type                 vcard:Organization ;
+        vcard:organization-unit  "Rune" .
+
+<http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/894d97a2-4b24-3f63-9813-d64f4ef6f387>
+        rdf:type               dcat:Distribution ;
+        dcatapi:accessService  <http://example.com/e497e71f-c4b4-4c23-b010-9609da299a69> .
+
+<http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/5aa18c32-df6b-32af-8bf9-5a41e0796937>
+        rdf:type         dqv:QualityAnnotation ;
+        dqv:inDimension  <http://iso.org/25012/2008/dataquality/Availability> ;
+        prov:hasBody     <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/c9be3cc9-60c0-3fe7-80f1-a33533386631> .
+
+<http://example.com/e497e71f-c4b4-4c23-b010-9609da299a69>
+        rdf:type                     dcatapi:DataDistributionService ;
+        dcatapi:endpointDescription  <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/9d09b5d6-ed32-38a6-95be-5c25fb0fe10a> ;
+        dct:description              "Åpne Data fra Enhetsregisteret - API Dokumentasjon"@nb .
+
+<http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/d60f2877-a431-3430-9779-dfda8ac180de>
+        rdf:type                       dct:PeriodOfTime ;
+        <http://schema.org/endDate>    "2024-11-13"^^xsd:date ;
+        <http://schema.org/startDate>  "2019-11-27"^^xsd:date .
+
+<https://fellesdatakatalog.brreg.no/api/concepts/db0bcd83-7784-49ae-8fe0-b3c6052cc3ef>
+        rdf:type         skos:Concept ;
+        dct:identifier   "https://registrering-begrep-api.it1.fellesdatakatalog.brreg.no/910258028/3609b02d-72c5-47e0-a6b8-df0a503cf190" ;
+        skos:altLabel    "stabilisator"@nb ;
+        skos:definition  "en stabilisator på midten"@nb ;
+        skos:prefLabel   "midtbaneanker"@nb .
+
+<http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/c9be3cc9-60c0-3fe7-80f1-a33533386631>
+        rdf:value  "Nei"@nb .
+
+<http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837>
+        rdf:type                  dcat:Dataset ;
+        dcatno:informationModel   <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/4e245b1d-0bbb-3a58-8c50-453c6801a49f> ;
+        dcatno:objective          "Det finnes ikke noe formål."@nb ;
+        dct:accessRights          <http://publications.europa.eu/resource/authority/access-right/PUBLIC> ;
+        dct:accrualPeriodicity    <http://publications.europa.eu/resource/authority/frequency/MONTHLY_3> ;
+        dct:conformsTo            <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/4e245b1d-0bbb-3a58-8c50-453c6801a49f> ;
+        dct:description           "Dette er en hyllest av Rune Rudberg."@nb ;
+        dct:isPartOf              <http://brreg.no/catalogs/910258028/datasets/993649c4-fd9d-4f49-906a-7ed0ab23cb70> ;
+        dct:issued                "2019-11-27T01:00:00"^^xsd:dateTime ;
+        dct:modified              "2019-11-27"^^xsd:date ;
+        dct:provenance            <http://data.brreg.no/datakatalog/provinens/tredjepart> ;
+        dct:publisher             <https://data.brreg.no/enhetsregisteret/api/enheter/910258028> ;
+        dct:spatial               <https://data.geonorge.no/administrativeEnheter/fylke/id/173159> ;
+        dct:subject               <https://fellesdatakatalog.brreg.no/api/concepts/db0bcd83-7784-49ae-8fe0-b3c6052cc3ef> ;
+        dct:temporal              <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/d60f2877-a431-3430-9779-dfda8ac180de> ;
+        dct:title                 "Ut mot havet"@nb ;
+        dct:type                  "Tesauri" ;
+        dcat:contactPoint         <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/d2db1db0-be52-309e-ac6d-bf0ae7c8b07c> ;
+        dcat:distribution         <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/7ceca578-a3fc-3149-a660-50ee324b8731> , <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/7e744ec4-1953-34b5-a4f2-798dacd67261> , <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/dc179fc0-f90f-3972-8d1f-399d6d4b0494> , <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/894d97a2-4b24-3f63-9813-d64f4ef6f387> , <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/82289911-d2d0-32ee-a8c8-f263f4699fef> ;
+        dcat:keyword              "hav"@nb ;
+        dcat:landingPage          <https://www.vg.no> ;
+        dcat:theme                <https://psi.norge.no/los/tema/trafikk-og-transport> , <https://psi.norge.no/los/ord/vegnett> ;
+        dqv:hasQualityAnnotation  <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/5aa18c32-df6b-32af-8bf9-5a41e0796937> , <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/6c9d70f2-9189-367b-af46-431e6ab17831> , <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/25d810e4-64cb-3168-857f-9f79e39a7705> , <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/e817a69d-8390-358a-a4c7-d7f24a2e12aa> , <http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/00016983-38b9-3e07-874c-b8b0381716cc> .
+
+<http://brreg.no/catalogs/910258028/datasets/efceee29-c7c9-4a2b-8bac-5994ff9db837/.well-known/skolem/80455d69-3353-32d9-a8b5-fa281ce9ab87>
+        rdf:type    foaf:Document , skos:Concept ;
+        dct:source  "https://vg.no" .

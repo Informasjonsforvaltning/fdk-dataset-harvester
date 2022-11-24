@@ -1,0 +1,41 @@
+@prefix cpsv:   <http://purl.org/vocab/cpsv#> .
+@prefix cpsvno: <https://data.norge.no/vocabulary/cpsvno#> .
+@prefix dcat:   <http://www.w3.org/ns/dcat#> .
+@prefix dct:    <http://purl.org/dc/terms/> .
+@prefix eli:    <http://data.europa.eu/eli/ontology#> .
+@prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos:   <http://www.w3.org/2004/02/skos/core#> .
+
+<https://test.no/catalogs/910258028/datasets/nested>
+        rdf:type      dcat:Dataset ;
+        dct:title     "Nested blank nodes"@en ;
+        cpsv:follows  <https://test.no/catalogs/910258028/datasets/nested/.well-known/skolem/91c00fd8-ad83-3244-a4fe-32ad3a25488b> , <https://test.no/catalogs/910258028/datasets/nested/.well-known/skolem/79df6dae-c4c8-3713-84e9-bfeb74a247a1> , <https://test.no/catalogs/910258028/datasets/nested/.well-known/skolem/f0ef239f-29b6-33d9-8591-b6ffcdb22ba1> .
+
+<https://test.no/catalogs/910258028/datasets/nested/.well-known/skolem/f0ef239f-29b6-33d9-8591-b6ffcdb22ba1>
+        rdf:type         cpsv:Rule ;
+        dct:type         cpsvno:ruleForDataProcessing ;
+        cpsv:implements  <https://test.no/catalogs/910258028/datasets/nested/.well-known/skolem/0de4b576-374e-34b6-9d6d-b31ca8e95b2b> .
+
+<https://test.no/catalogs/910258028/datasets/nested/.well-known/skolem/79df6dae-c4c8-3713-84e9-bfeb74a247a1>
+        rdf:type         cpsv:Rule ;
+        dct:type         cpsvno:ruleForNonDisclosure ;
+        cpsv:implements  <https://test.no/catalogs/910258028/datasets/nested/.well-known/skolem/0de4b576-374e-34b6-9d6d-b31ca8e95b2b> .
+
+<https://test.no/catalog>
+        rdf:type      dcat:Catalog ;
+        dcat:dataset  <https://test.no/catalogs/910258028/datasets/nested> .
+
+<https://test.no/catalogs/910258028/datasets/nested/.well-known/skolem/91c00fd8-ad83-3244-a4fe-32ad3a25488b>
+        rdf:type         cpsv:Rule ;
+        dct:type         cpsvno:ruleForDisclosure ;
+        cpsv:implements  <https://test.no/catalogs/910258028/datasets/nested/.well-known/skolem/0de4b576-374e-34b6-9d6d-b31ca8e95b2b> .
+
+<https://test.no/catalogs/910258028/datasets/nested/.well-known/skolem/0de4b576-374e-34b6-9d6d-b31ca8e95b2b>
+        rdf:type      eli:LegalResource ;
+        rdfs:seeAlso  <https://lovdata.no/dokument/NL/lov/1915-08-13-5> ;
+        dct:type      <https://test.no/catalogs/910258028/datasets/nested/.well-known/skolem/717091bc-d3ae-3918-aa3c-65a59a35c612> .
+
+<https://test.no/catalogs/910258028/datasets/nested/.well-known/skolem/717091bc-d3ae-3918-aa3c-65a59a35c612>
+        rdf:type        skos:Concept ;
+        skos:prefLabel  "test"@nb .

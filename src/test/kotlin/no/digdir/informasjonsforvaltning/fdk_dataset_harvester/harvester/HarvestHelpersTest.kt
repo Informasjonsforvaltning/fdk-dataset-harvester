@@ -20,9 +20,9 @@ class HarvestHelpersTest {
     @Test
     fun extractedCatalogEqualsHarvestedCatalog() {
 
-        val expected = responseReader.parseFile("harvest_response_3.ttl", "TURTLE")
+        val expected = responseReader.parseFile("parsed_catalog_3.ttl", "TURTLE")
 
-        val catalog = extractCatalogs(expected, "test-url").first()
+        val catalog = extractCatalogs(responseReader.parseFile("harvest_response_3.ttl", "TURTLE"), "test-url").first()
 
         assert(catalog.harvestedCatalog.isIsomorphicWith(expected))
     }
@@ -66,6 +66,29 @@ class HarvestHelpersTest {
         assertTrue(blankPeriod.uri.contains("https://testdirektoratet.no/model/blank-dataset/0"))
         assertTrue(blankPeriod.hasLiteral(DCAT.startDate, "2019-04-02T00:00:00"))
         assertTrue(blankPeriod.hasLiteral(DCAT.endDate, "2022-06-06T00:00:00"))
+    }
+
+
+
+    @Test
+    fun `Will skolemize nested blank nodes correctly`() {
+        val nested = responseReader.parseFile("nested_blank_nodes.ttl", "TURTLE")
+        val expected = responseReader.parseFile("nested_blank_nodes_serialized.ttl", "TURTLE")
+
+        val extraction_0 = extractCatalogs(nested, "https://example.com")
+        assertTrue(expected.isIsomorphicWith(extraction_0.first().harvestedCatalog))
+
+        val extraction_1 = extractCatalogs(nested, "https://example.com")
+        assertTrue(expected.isIsomorphicWith(extraction_1.first().harvestedCatalog))
+
+        val extraction_2 = extractCatalogs(nested, "https://example.com")
+        assertTrue(expected.isIsomorphicWith(extraction_2.first().harvestedCatalog))
+
+        val extraction_3 = extractCatalogs(nested, "https://example.com")
+        assertTrue(expected.isIsomorphicWith(extraction_3.first().harvestedCatalog))
+
+        val extraction_4 = extractCatalogs(nested, "https://example.com")
+        assertTrue(expected.isIsomorphicWith(extraction_4.first().harvestedCatalog))
     }
 
 }
