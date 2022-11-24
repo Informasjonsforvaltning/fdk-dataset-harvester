@@ -71,8 +71,8 @@ fun Statement.isResourceProperty(): Boolean =
         false
     }
 
-fun createIdFromUri(uri: String): String =
-    UUID.nameUUIDFromBytes(uri.toByteArray())
+fun createIdFromString(idBase: String): String =
+    UUID.nameUUIDFromBytes(idBase.toByteArray())
         .toString()
 
 

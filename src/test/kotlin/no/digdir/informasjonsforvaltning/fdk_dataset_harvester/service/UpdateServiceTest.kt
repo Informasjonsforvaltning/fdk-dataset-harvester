@@ -142,7 +142,7 @@ class UpdateServiceTest {
             whenever(turtleService.getCatalog(CATALOG_ID_0, false))
                 .thenReturn(responseReader.readFile("catalog_0_no_records.ttl"))
             whenever(turtleService.getCatalog(CATALOG_ID_1, false))
-                .thenReturn(responseReader.readFile("harvest_response_1.ttl"))
+                .thenReturn(responseReader.readFile("catalog_1_no_records.ttl"))
 
             updateService.updateUnionModels()
 

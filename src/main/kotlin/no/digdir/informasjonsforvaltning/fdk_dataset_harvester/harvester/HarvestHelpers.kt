@@ -22,12 +22,31 @@ fun DatasetModel.harvestDiff(dbNoRecords: String?): Boolean =
     if (dbNoRecords == null) true
     else !harvestedDataset.isIsomorphicWith(parseRDFResponse(dbNoRecords, Lang.TURTLE, null))
 
-private fun Model.skolemizeBlankNodes(baseURI: String): Model {
-    listSubjects().toList()
-        .filter { it.isAnon }
-        .forEach { ResourceUtils.renameResource(it, "$baseURI/.well-known/skolem/${it.id}") }
-    return this
+private fun Model.recursiveBlankNodeSkolem(baseURI: String): Model {
+    val anonSubjects = listSubjects().toList().filter { it.isAnon }
+    if (anonSubjects.isEmpty()) return this
+    else {
+        anonSubjects
+            .filter { it.doesNotContainAnon() }
+            .forEach { ResourceUtils.renameResource(it, "$baseURI/.well-known/skolem/${it.createSkolemID()}") }
+        return this.recursiveBlankNodeSkolem(baseURI)
+    }
 }
+
+private fun Resource.doesNotContainAnon(): Boolean =
+    listProperties().toList()
+        .filter { it.isResourceProperty() }
+        .none { it.resource.isAnon }
+
+private fun Resource.createSkolemID(): String =
+    createIdFromString(
+        listProperties().toModel()
+            .createRDFResponse(Lang.N3)
+            .replace("\\s".toRegex(), "")
+            .toCharArray()
+            .sorted()
+            .toString()
+    )
 
 fun extractCatalogs(harvested: Model, sourceURL: String): List<CatalogAndDatasetModels> =
     harvested.listResourcesWithProperty(RDF.type, DCAT.Catalog)
@@ -50,7 +69,7 @@ fun extractCatalogs(harvested: Model, sourceURL: String): List<CatalogAndDataset
                 .toList()
                 .forEach { catalogModelWithoutDatasets.addCatalogProperties(it) }
 
-            catalogModelWithoutDatasets.skolemizeBlankNodes(catalogResource.uri)
+            catalogModelWithoutDatasets.recursiveBlankNodeSkolem(catalogResource.uri)
 
             var datasetsUnion = ModelFactory.createDefaultModel()
             catalogDatasets.forEach { datasetsUnion = datasetsUnion.union(it.harvestedDataset) }
@@ -93,10 +112,9 @@ fun Resource.extractDataset(): DatasetModel {
         .forEach {
             datasetModel = datasetModel
                 .recursiveAddNonDatasetResource(it.resource, 10)
-                .skolemizeBlankNodes(uri)
         }
 
-    return DatasetModel(resource = this, harvestedDataset = datasetModel)
+    return DatasetModel(resource = this, harvestedDataset = datasetModel.recursiveBlankNodeSkolem(uri))
 }
 
 private fun Model.recursiveAddNonDatasetResource(resource: Resource, recursiveCount: Int): Model {

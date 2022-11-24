@@ -83,7 +83,7 @@ val CATALOG_1_TURTLE = TurtleDBO(
 
 val CATALOG_1_TURTLE_NO_RECORDS = TurtleDBO(
     id = catalogTurtleID(CATALOG_ID_1, false),
-    turtle = gzip(responseReader.readFile("harvest_response_1.ttl"))
+    turtle = gzip(responseReader.readFile("catalog_1_no_records.ttl"))
 )
 
 val DATASET_1_TURTLE = TurtleDBO(

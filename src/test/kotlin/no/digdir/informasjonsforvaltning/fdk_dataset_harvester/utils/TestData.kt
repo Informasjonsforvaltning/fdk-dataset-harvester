@@ -1,7 +1,7 @@
 package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils
 
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.HarvestDataSource
-import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.createIdFromUri
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.createIdFromString
 import org.testcontainers.shaded.com.google.common.collect.ImmutableMap
 import java.util.Calendar
 import java.util.TimeZone
@@ -59,5 +59,5 @@ val ERROR_HARVEST_SOURCE = HarvestDataSource(
     dataSourceType = "DCAT-AP-NO"
 )
 
-val TEST_HARVEST_SOURCE_ID_0 = createIdFromUri("$WIREMOCK_TEST_URI/harvest0")
-val TEST_HARVEST_SOURCE_ID_1 = createIdFromUri("$WIREMOCK_TEST_URI/harvest1")
+val TEST_HARVEST_SOURCE_ID_0 = createIdFromString("$WIREMOCK_TEST_URI/harvest0")
+val TEST_HARVEST_SOURCE_ID_1 = createIdFromString("$WIREMOCK_TEST_URI/harvest1")

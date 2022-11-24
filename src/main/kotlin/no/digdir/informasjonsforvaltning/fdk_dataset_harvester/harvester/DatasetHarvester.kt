@@ -125,17 +125,21 @@ class DatasetHarvester(
             .map { Pair(it, catalogRepository.findByIdOrNull(it.resource.uri)) }
             .filter { forceUpdate || it.first.catalogHasChanges(it.second?.fdkId) }
             .forEach {
-                val updatedCatalogMeta = it.first.mapToCatalogMeta(harvestDate, it.second)
-                catalogRepository.save(updatedCatalogMeta)
-                updatedCatalogs.add(updatedCatalogMeta)
+                val dbMeta = catalogRepository.findByIdOrNull(it.second?.uri)
+                val catalogMeta = if (dbMeta == null || it.first.catalogHasChanges(it.second?.fdkId)) {
+                    val updatedCatalogMeta = it.first.mapToCatalogMeta(harvestDate, it.second)
+                    catalogRepository.save(updatedCatalogMeta)
+                    updatedCatalogs.add(updatedCatalogMeta)
+                    updatedCatalogMeta
+                } else dbMeta
 
                 turtleService.saveAsCatalog(
                     model = it.first.harvestedCatalog,
-                    fdkId = updatedCatalogMeta.fdkId,
+                    fdkId = catalogMeta.fdkId,
                     withRecords = false
                 )
 
-                val fdkUri = "${applicationProperties.catalogUri}/${updatedCatalogMeta.fdkId}"
+                val fdkUri = "${applicationProperties.catalogUri}/${catalogMeta.fdkId}"
 
                 it.first.datasets.forEach { dataset ->
                     dataset.updateDataset(harvestDate, fdkUri, forceUpdate)
@@ -171,17 +175,28 @@ class DatasetHarvester(
         forceUpdate: Boolean
     ): DatasetMeta? {
         val dbMeta = datasetRepository.findByIdOrNull(resource.uri)
-        return if (forceUpdate || datasetHasChanges(dbMeta?.fdkId)) {
-            val datasetMeta = mapToMetaDBO(harvestDate, fdkCatalogURI, dbMeta)
-            datasetRepository.save(datasetMeta)
+        return when {
+            dbMeta == null || datasetHasChanges(dbMeta.fdkId) -> {
+                val datasetMeta = mapToMetaDBO(harvestDate, fdkCatalogURI, dbMeta)
+                datasetRepository.save(datasetMeta)
 
-            turtleService.saveAsDataset(
-                model = harvestedDataset,
-                fdkId = datasetMeta.fdkId,
-                withRecords = false
-            )
-            datasetMeta
-        } else null
+                turtleService.saveAsDataset(
+                    model = harvestedDataset,
+                    fdkId = datasetMeta.fdkId,
+                    withRecords = false
+                )
+                datasetMeta
+            }
+            forceUpdate -> {
+                turtleService.saveAsDataset(
+                    model = harvestedDataset,
+                    fdkId = dbMeta.fdkId,
+                    withRecords = false
+                )
+                dbMeta
+            }
+            else -> null
+        }
     }
 
     private fun CatalogAndDatasetModels.mapToCatalogMeta(
@@ -189,7 +204,7 @@ class DatasetHarvester(
         dbMeta: CatalogMeta?
     ): CatalogMeta {
         val catalogURI = resource.uri
-        val fdkId = dbMeta?.fdkId ?: createIdFromUri(catalogURI)
+        val fdkId = dbMeta?.fdkId ?: createIdFromString(catalogURI)
         val issued = dbMeta?.issued
             ?.let { timestamp -> calendarFromTimestamp(timestamp) }
             ?: harvestDate
@@ -207,7 +222,7 @@ class DatasetHarvester(
         catalogURI: String,
         dbMeta: DatasetMeta?
     ): DatasetMeta {
-        val fdkId = dbMeta?.fdkId ?: createIdFromUri(resource.uri)
+        val fdkId = dbMeta?.fdkId ?: createIdFromString(resource.uri)
         val issued: Calendar = dbMeta?.issued
             ?.let { timestamp -> calendarFromTimestamp(timestamp) }
             ?: harvestDate

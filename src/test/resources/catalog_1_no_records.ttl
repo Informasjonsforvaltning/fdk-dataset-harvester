@@ -10,37 +10,6 @@
 @prefix foaf:  <http://xmlns.com/foaf/0.1/> .
 @prefix dcatapi: <http://dcat.no/dcatapi/> .
 
-<https://testdirektoratet.no/model/dataset/0>
-        a                         dcat:Dataset ;
-        dct:accessRights          <http://publications.europa.eu/resource/authority/access-right/PUBLIC> ;
-        dct:description           "Description of dataset 0"@nb ;
-        dct:identifier            "adb4cf00-31c8-460c-9563-55f204cf8221" ;
-        dct:issued                "2019-03-22T13:11:16.546902"^^xsd:dateTime ;
-        dct:language              <http://publications.europa.eu/resource/authority/language/NOR> ;
-        dct:temporal              <https://testdirektoratet.no/model/dataset/0/.well-known/skolem/5ee51b2f-2cdc-30d2-b479-125a5609a408> ;
-        dct:title                 "Dataset 0"@nb ;
-        dcat:contactPoint         <https://testdirektoratet.no/model/dataset/0/.well-known/skolem/1342edac-e739-327d-a48f-23dad61eb032> ;
-        dcat:distribution         <https://testdirektoratet.no/model/distribution/0> ;
-        dcat:endpointDescription  <https://testdirektoratet.no/openapi/dataset/0.yaml> ;
-        dcat:keyword              "fest" , "test" ;
-        dcat:theme                <http://publications.europa.eu/resource/authority/data-theme/TECH> , <http://publications.europa.eu/resource/authority/data-theme/GOVE> ;
-        foaf:page                 <https://testdirektoratet.no> .
-
-<https://testdirektoratet.no/model/dataset/0/.well-known/skolem/5ee51b2f-2cdc-30d2-b479-125a5609a408>
-    a               dct:PeriodOfTime ;
-    dcat:startDate  "2019-04-02T00:00:00"^^xsd:dateTime .
-
-<https://testdirektoratet.no/model/dataset/0/.well-known/skolem/1342edac-e739-327d-a48f-23dad61eb032>
-    a                          vcard:Organization ;
-    vcard:hasOrganizationName  "Testdirektoratet"@nb ;
-    vcard:hasURL               <https://testdirektoratet.no> .
-
-<https://testdirektoratet.no/model/dataset-catalog/0>
-        a              dcat:Catalog ;
-        dct:publisher  <https://organization-catalogue.fellesdatakatalog.brreg.no/organizations/123456789> ;
-        dct:title      "Datasettkatalog for Testdirektoratet"@nb ;
-        dcat:dataset   <https://testdirektoratet.no/model/dataset/0> .
-
 <https://testdirektoratet.no/model/dataset/1>
         a                         dcat:Dataset ;
         dct:accessRights          <http://publications.europa.eu/resource/authority/access-right/PUBLIC> ;
@@ -75,23 +44,6 @@
 <https://testdirektoratet.no/model/periodoftime/1>
         a               dct:PeriodOfTime ;
         dcat:startDate  "2019-04-02T00:00:00"^^xsd:dateTime .
-
-<https://testdirektoratet.no/model/distribution/0>
-        a               dcat:Distribution ;
-        dct:format      "CSV JSON JSONP YAML XML" ;
-        dct:license     <https://data.norge.no/nlod/no> ;
-        dct:title       "Test distribution" ;
-        dcat:accessURL  <http://testdirektoratet.no/data/test/fest> ;
-        dcatapi:accessService  <https://testdirektoratet.no/model/dataset/0/.well-known/skolem/3427ba3d-1b01-3137-944c-58bedb8f2c6e> .
-
-<https://testdirektoratet.no/model/dataset/0/.well-known/skolem/3427ba3d-1b01-3137-944c-58bedb8f2c6e>
-        a                            dcatapi:DataDistributionService ;
-        dcatapi:endpointDescription  <https://testdirektoratet.no/model/dataset/0/.well-known/skolem/ed073684-b784-33b0-b96e-0791c737ee59> ;
-        dct:description              "Search API"@nb .
-
-<https://testdirektoratet.no/model/dataset/0/.well-known/skolem/ed073684-b784-33b0-b96e-0791c737ee59>
-    a           foaf:Document , skos:Concept ;
-    dct:source  "84caab4b-b004-4a97-9b92-7bf335cf50d2" .
 
 <https://testdirektoratet.no/model/contact/1>
         a                          vcard:Organization ;
