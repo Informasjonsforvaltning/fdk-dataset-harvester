@@ -125,9 +125,9 @@ class DatasetHarvester(
             .map { Pair(it, catalogRepository.findByIdOrNull(it.resource.uri)) }
             .filter { forceUpdate || it.first.catalogHasChanges(it.second?.fdkId) }
             .forEach {
-                val dbMeta = catalogRepository.findByIdOrNull(it.second?.uri)
-                val catalogMeta = if (dbMeta == null || it.first.catalogHasChanges(it.second?.fdkId)) {
-                    val updatedCatalogMeta = it.first.mapToCatalogMeta(harvestDate, it.second)
+                val dbMeta = it.second
+                val catalogMeta = if (dbMeta == null || it.first.catalogHasChanges(dbMeta.fdkId)) {
+                    val updatedCatalogMeta = it.first.mapToCatalogMeta(harvestDate, dbMeta)
                     catalogRepository.save(updatedCatalogMeta)
                     updatedCatalogs.add(updatedCatalogMeta)
                     updatedCatalogMeta
