@@ -46,6 +46,11 @@ val UNION_DATA = TurtleDBO(
     turtle = gzip(responseReader.readFile("all_catalogs.ttl"))
 )
 
+val UNION_DATA_NO_RECORDS = TurtleDBO(
+    id = catalogTurtleID(UNION_ID, false),
+    turtle = gzip(responseReader.readFile("all_catalogs_no_records.ttl"))
+)
+
 val HARVEST_DBO_0 = TurtleDBO(
     id = TEST_HARVEST_SOURCE_0.url!!,
     turtle = gzip(responseReader.readFile("harvest_response_0.ttl"))
@@ -99,6 +104,7 @@ val DATASET_1_TURTLE_NO_RECORDS = TurtleDBO(
 fun turtleDBPopulation(): List<Document> =
     listOf(
         UNION_DATA,
+        UNION_DATA_NO_RECORDS,
         HARVEST_DBO_0,
         HARVEST_DBO_1,
         CATALOG_0_TURTLE,
