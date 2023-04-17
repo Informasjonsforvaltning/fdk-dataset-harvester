@@ -76,7 +76,7 @@ fun authorizedPost(port: Int, endpoint: String, token: String?, headers: Map<Str
 
 private fun isOK(response: Int?): Boolean = HttpStatus.resolve(response ?: 0)?.is2xxSuccessful ?: false
 
-fun populateDB() {
+fun resetDB() {
     val connectionString = ConnectionString("mongodb://${MONGO_USER}:${MONGO_PASSWORD}@localhost:${mongoContainer.getMappedPort(MONGO_PORT)}/datasetHarvester?authSource=admin&authMechanism=SCRAM-SHA-1")
     val pojoCodecRegistry = CodecRegistries.fromRegistries(MongoClientSettings.getDefaultCodecRegistry(), CodecRegistries.fromProviders(PojoCodecProvider.builder().automatic(true).build()))
 
@@ -84,12 +84,15 @@ fun populateDB() {
     val mongoDatabase = client.getDatabase("datasetHarvester").withCodecRegistry(pojoCodecRegistry)
 
     val miscCollection = mongoDatabase.getCollection("turtle")
+    miscCollection.deleteMany(org.bson.Document())
     miscCollection.insertMany(turtleDBPopulation())
 
     val catalogCollection = mongoDatabase.getCollection("catalogMeta")
+    catalogCollection.deleteMany(org.bson.Document())
     catalogCollection.insertMany(catalogDBPopulation())
 
     val datasetCollection = mongoDatabase.getCollection("datasetMeta")
+    datasetCollection.deleteMany(org.bson.Document())
     datasetCollection.insertMany(datasetDBPopulation())
 
     client.close()
