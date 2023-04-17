@@ -36,6 +36,7 @@ class UpdateTest: ApiTestContext() {
 
     @Test
     fun noChangesWhenRunOnCorrectMeta() {
+        resetDB()
         val all = apiGet(port, "/catalogs", "text/turtle")
         val catalog = apiGet(port, "/catalogs/$CATALOG_ID_0", "text/turtle")
         val dataservice = apiGet(port, "/datasets/$DATASET_ID_0", "text/turtle")
