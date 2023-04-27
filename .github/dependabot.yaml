@@ -7,7 +7,7 @@ updates:
     schedule:
       interval: "weekly"
 
-  # Maintain dependencies for npm
+  # Maintain dependencies for maven
   - package-ecosystem: "maven"
     directory: "/"
     schedule:
