@@ -30,11 +30,11 @@ class UpdateService(
         catalogRepository.findAll()
             .forEach {
                 turtleService.getCatalog(it.fdkId, withRecords = true)
-                    ?.let { turtle -> parseRDFResponse(turtle, Lang.TURTLE, null) }
+                    ?.let { turtle -> parseRDFResponse(turtle, Lang.TURTLE) }
                     ?.run { catalogUnion = catalogUnion.union(this) }
 
                 turtleService.getCatalog(it.fdkId, withRecords = false)
-                    ?.let { turtle -> parseRDFResponse(turtle, Lang.TURTLE, null) }
+                    ?.let { turtle -> parseRDFResponse(turtle, Lang.TURTLE) }
                     ?.run { noRecordsUnion = noRecordsUnion.union(this) }
             }
 
@@ -48,7 +48,7 @@ class UpdateService(
                 val datasetMeta = dataset.createMetaModel()
 
                 turtleService.getDataset(dataset.fdkId, withRecords = false)
-                    ?.let { conceptNoRecords -> parseRDFResponse(conceptNoRecords, Lang.TURTLE, null) }
+                    ?.let { conceptNoRecords -> parseRDFResponse(conceptNoRecords, Lang.TURTLE) }
                     ?.let { conceptModelNoRecords -> datasetMeta.union(conceptModelNoRecords) }
                     ?.run { turtleService.saveAsDataset(this, fdkId = dataset.fdkId, withRecords = true) }
             }
@@ -56,7 +56,7 @@ class UpdateService(
         catalogRepository.findAll()
             .forEach { catalog ->
                 val catalogNoRecords = turtleService.getCatalog(catalog.fdkId, withRecords = false)
-                    ?.let { parseRDFResponse(it, Lang.TURTLE, null) }
+                    ?.let { parseRDFResponse(it, Lang.TURTLE) }
 
                 if (catalogNoRecords != null) {
                     val catalogURI = "${applicationProperties.catalogUri}/${catalog.fdkId}"

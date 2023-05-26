@@ -64,7 +64,7 @@ class DatasetHarvester(
                         )
                     }
                     else -> updateIfChanged(
-                        parseRDFResponse(adapter.getDatasets(source), jenaWriterType, source.url),
+                        parseRDFResponse(adapter.getDatasets(source), jenaWriterType),
                         source.id, source.url, harvestDate, forceUpdate
                     )
                 }
@@ -92,7 +92,7 @@ class DatasetHarvester(
         forceUpdate: Boolean
     ): HarvestReport {
         val dbData = turtleService.getHarvestSource(sourceURL)
-            ?.let { parseRDFResponse(it, Lang.TURTLE, null) }
+            ?.let { parseRDFResponse(it, Lang.TURTLE) }
 
         return if (!forceUpdate && dbData != null && harvested.isIsomorphicWith(dbData)) {
             LOGGER.info("No changes from last harvest of $sourceURL")
