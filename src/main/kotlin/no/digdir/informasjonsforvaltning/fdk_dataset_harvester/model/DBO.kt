@@ -1,6 +1,6 @@
 package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model
 
-import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.parseRDFResponse
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.safeParseRDF
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service.ungzip
 import org.apache.jena.riot.Lang
 import org.springframework.data.annotation.Id
@@ -60,8 +60,8 @@ data class TurtleDBO(
 }
 
 private fun zippedModelsAreIsomorphic(zip0: String, zip1: String): Boolean {
-    val model0 = parseRDFResponse(ungzip(zip0), Lang.TURTLE)
-    val model1 = parseRDFResponse(ungzip(zip1), Lang.TURTLE)
+    val model0 = safeParseRDF(ungzip(zip0), Lang.TURTLE)
+    val model1 = safeParseRDF(ungzip(zip1), Lang.TURTLE)
 
     return model0.isIsomorphicWith(model1)
 }
