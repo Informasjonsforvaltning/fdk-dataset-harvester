@@ -14,7 +14,7 @@ class DatasetService(
         turtleService.getCatalogUnion(withRecords)
             ?.let {
                 if (returnType == Lang.TURTLE) it
-                else parseRDFResponse(it, Lang.TURTLE).createRDFResponse(returnType)
+                else parseRDF(it, Lang.TURTLE).createRDFResponse(returnType)
             }
             ?: ModelFactory.createDefaultModel().createRDFResponse(returnType)
 
@@ -22,14 +22,14 @@ class DatasetService(
         turtleService.getDataset(id, withRecords)
             ?.let {
                 if (returnType == Lang.TURTLE) it
-                else parseRDFResponse(it, Lang.TURTLE).createRDFResponse(returnType)
+                else parseRDF(it, Lang.TURTLE).createRDFResponse(returnType)
             }
 
     fun getDatasetCatalog(id: String, returnType: Lang, withRecords: Boolean): String? =
         turtleService.getCatalog(id, withRecords)
             ?.let {
                 if (returnType == Lang.TURTLE) it
-                else parseRDFResponse(it, Lang.TURTLE).createRDFResponse(returnType)
+                else parseRDF(it, Lang.TURTLE).createRDFResponse(returnType)
             }
 
 }
