@@ -64,7 +64,7 @@ class DatasetHarvester(
                         )
                     }
                     else -> updateIfChanged(
-                        parseRDFResponse(adapter.getDatasets(source), jenaWriterType),
+                        parseRDF(adapter.getDatasets(source), jenaWriterType),
                         source.id, source.url, harvestDate, forceUpdate
                     )
                 }

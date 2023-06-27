@@ -29,7 +29,7 @@ class RDFUtilsTest {
     fun rdfModelParser() {
         val rdfBody: String = javaClass.classLoader.getResourceAsStream("all_catalogs.ttl")!!.reader().readText()
 
-        val parsedRDFModel = parseRDFResponse(rdfBody, Lang.TURTLE)
+        val parsedRDFModel = parseRDF(rdfBody, Lang.TURTLE)
 
         val expected = responseReader.parseFile("all_catalogs.ttl", "TURTLE")
 
@@ -46,7 +46,7 @@ class RDFUtilsTest {
                 dcat:accessURL       <ftp://test.com/~Test/vegnett/ruteplan_esri> .
         """.trimIndent()
         assertThrows<IRIException> {
-            parseRDFResponse(invalidAsXML, Lang.TURTLE)
+            parseRDF(invalidAsXML, Lang.TURTLE)
         }
     }
 }
