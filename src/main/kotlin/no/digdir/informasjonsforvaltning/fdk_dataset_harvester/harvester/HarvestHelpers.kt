@@ -97,7 +97,7 @@ private fun List<Resource>.filterBlankNodeCatalogsAndDatasets(sourceURL: String)
 private fun Model.addCatalogProperties(property: Statement): Model =
     when {
         property.predicate != DCAT.dataset && property.isResourceProperty() ->
-            add(property).recursiveAddNonDatasetResource(property.resource, 5)
+            add(property).recursiveAddNonDatasetResource(property.resource)
         property.predicate != DCAT.dataset -> add(property)
         property.isResourceProperty() && property.resource.isURIResource -> add(property)
         else -> this
@@ -109,22 +109,18 @@ fun Resource.extractDataset(): DatasetModel {
 
     listProperties().toList()
         .filter { it.isResourceProperty() }
-        .forEach { datasetModel.recursiveAddNonDatasetResource(it.resource, 10) }
+        .forEach { datasetModel.recursiveAddNonDatasetResource(it.resource) }
 
     return DatasetModel(resource = this, harvestedDataset = datasetModel.recursiveBlankNodeSkolem(uri))
 }
 
-private fun Model.recursiveAddNonDatasetResource(resource: Resource, recursiveCount: Int): Model {
-    val newCount = recursiveCount - 1
-
+private fun Model.recursiveAddNonDatasetResource(resource: Resource): Model {
     if (resourceShouldBeAdded(resource)) {
         add(resource.listProperties())
 
-        if (newCount > 0) {
-            resource.listProperties().toList()
-                .filter { it.isResourceProperty() }
-                .forEach { recursiveAddNonDatasetResource(it.resource, newCount) }
-        }
+        resource.listProperties().toList()
+            .filter { it.isResourceProperty() }
+            .forEach { recursiveAddNonDatasetResource(it.resource) }
     }
 
     return this
