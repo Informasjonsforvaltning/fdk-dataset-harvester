@@ -71,8 +71,8 @@ fun extractCatalogs(harvested: Model, sourceURL: String): List<CatalogAndDataset
 
             catalogModelWithoutDatasets.recursiveBlankNodeSkolem(catalogResource.uri)
 
-            var datasetsUnion = ModelFactory.createDefaultModel()
-            catalogDatasets.forEach { datasetsUnion = datasetsUnion.union(it.harvestedDataset) }
+            val datasetsUnion = ModelFactory.createDefaultModel()
+            catalogDatasets.forEach { datasetsUnion.add(it.harvestedDataset) }
 
             CatalogAndDatasetModels(
                 resource = catalogResource,
@@ -104,15 +104,12 @@ private fun Model.addCatalogProperties(property: Statement): Model =
     }
 
 fun Resource.extractDataset(): DatasetModel {
-    var datasetModel = listProperties().toModel()
-    datasetModel = datasetModel.setNsPrefixes(model.nsPrefixMap)
+    val datasetModel = listProperties().toModel()
+    datasetModel.setNsPrefixes(model.nsPrefixMap)
 
     listProperties().toList()
         .filter { it.isResourceProperty() }
-        .forEach {
-            datasetModel = datasetModel
-                .recursiveAddNonDatasetResource(it.resource, 10)
-        }
+        .forEach { datasetModel.recursiveAddNonDatasetResource(it.resource, 10) }
 
     return DatasetModel(resource = this, harvestedDataset = datasetModel.recursiveBlankNodeSkolem(uri))
 }
