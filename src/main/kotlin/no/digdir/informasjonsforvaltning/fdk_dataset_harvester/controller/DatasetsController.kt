@@ -10,8 +10,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
 
-private val LOGGER = LoggerFactory.getLogger(DatasetsController::class.java)
-
 @Controller
 @CrossOrigin
 @RequestMapping(
@@ -27,7 +25,6 @@ open class DatasetsController(private val datasetService: DatasetService) {
         @PathVariable id: String,
         @RequestParam(value = "catalogrecords", required = false) catalogRecords: Boolean = false
     ): ResponseEntity<String> {
-        LOGGER.info("get Dataset with id $id")
         val returnType = jenaTypeFromAcceptHeader(accept)
 
         return if (returnType == Lang.RDFNULL) ResponseEntity(HttpStatus.NOT_ACCEPTABLE)
