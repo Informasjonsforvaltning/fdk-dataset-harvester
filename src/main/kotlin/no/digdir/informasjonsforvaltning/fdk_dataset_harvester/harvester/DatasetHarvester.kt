@@ -129,9 +129,9 @@ class DatasetHarvester(
                 val catalogMeta = if (dbMeta == null || it.first.catalogHasChanges(dbMeta.fdkId)) {
                     val updatedCatalogMeta = it.first.mapToCatalogMeta(harvestDate, dbMeta)
                     catalogRepository.save(updatedCatalogMeta)
-                    updatedCatalogs.add(updatedCatalogMeta)
                     updatedCatalogMeta
                 } else dbMeta
+                updatedCatalogs.add(catalogMeta)
 
                 turtleService.saveAsCatalog(
                     model = it.first.harvestedCatalog,
