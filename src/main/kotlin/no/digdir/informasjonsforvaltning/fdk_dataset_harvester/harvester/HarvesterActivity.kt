@@ -1,5 +1,6 @@
 package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.harvester
 
+import io.micrometer.core.instrument.Metrics
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -11,12 +12,15 @@ import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.adapter.HarvestAd
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.HarvestAdminParameters
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.HarvestReport
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rabbit.RabbitMQPublisher
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.parseRDF
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service.UpdateService
 import org.slf4j.LoggerFactory
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
 import java.util.Calendar
+import kotlin.time.measureTimedValue
+import kotlin.time.toJavaDuration
 
 private val LOGGER = LoggerFactory.getLogger(HarvesterActivity::class.java)
 private const val DATASET_TYPE = "dataset"
@@ -45,13 +49,40 @@ class HarvesterActivity(
                     harvestAdminAdapter.getDataSources(params)
                         .filter { it.dataType == DATASET_TYPE }
                         .filter { it.url != null }
-                        .map { async { harvester.harvestDatasetCatalog(it, Calendar.getInstance(), forceUpdate) } }
+                        .map { async {
+                            val harvestDate = Calendar.getInstance()
+                            val (report, timeElapsed) = measureTimedValue {
+                                harvester.harvestDatasetCatalog(it, harvestDate, forceUpdate)
+                            }
+                            Metrics.counter("harvest_count",
+                                    "status", if (report?.harvestError == false) { "success" }  else { "error" },
+                                    "type", "dataset",
+                                    "force_update", "$forceUpdate",
+                                    "datasource_id", it.id
+                            ).increment()
+                            if (report?.harvestError == false) {
+                                Metrics.counter("harvest_changed_resources_count",
+                                        "type", "dataset",
+                                        "force_update", "$forceUpdate",
+                                        "datasource_id", it.id
+                                ).increment(report.changedResources.size.toDouble())
+                                Metrics.counter("harvest_removed_resources_count",
+                                        "type", "dataset",
+                                        "force_update", "$forceUpdate",
+                                        "datasource_id", it.id
+                                ).increment(report.removedResources.size.toDouble())
+                                Metrics.timer("harvest_time",
+                                        "type", "dataset",
+                                        "force_update", "$forceUpdate",
+                                        "datasource_id", it.id).record(timeElapsed.toJavaDuration())
+                            }
+                            report
+                        } }
                         .awaitAll()
                         .filterNotNull()
                         .also { updateService.updateMetaData() }
                         .also {
-                            if (params.harvestAllDatasets()) LOGGER.debug("completed harvest with parameters $params, forced update: $forceUpdate")
-                            else LOGGER.debug("completed full harvest, forced update: $forceUpdate")
+                            LOGGER.debug("completed harvest with parameters $params, forced update: $forceUpdate")
                         }
                         .run { sendRabbitMessages() }
                 }
