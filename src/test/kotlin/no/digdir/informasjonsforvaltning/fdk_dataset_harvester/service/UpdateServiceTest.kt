@@ -37,7 +37,7 @@ class UpdateServiceTest {
                 .thenReturn(listOf(CATALOG_DBO_0))
             whenever(datasetRepository.findAll())
                 .thenReturn(listOf(DATASET_DBO_0, DATASET_DBO_1))
-            whenever(datasetRepository.findAllByIsPartOf("http://localhost:5000/catalogs/$CATALOG_ID_0"))
+            whenever(datasetRepository.findAllByIsPartOf("http://localhost:5050/catalogs/$CATALOG_ID_0"))
                 .thenReturn(listOf(DATASET_DBO_0, DATASET_DBO_1))
             whenever(turtleService.getCatalog(CATALOG_ID_0, false))
                 .thenReturn(responseReader.readFile("catalog_0_no_records.ttl"))
@@ -47,9 +47,9 @@ class UpdateServiceTest {
                 .thenReturn(responseReader.readFile("parsed_dataset_1.ttl"))
 
             whenever(valuesMock.catalogUri)
-                .thenReturn("http://localhost:5000/catalogs")
+                .thenReturn("http://localhost:5050/catalogs")
             whenever(valuesMock.datasetUri)
-                .thenReturn("http://localhost:5000/datasets")
+                .thenReturn("http://localhost:5050/datasets")
 
             updateService.updateMetaData()
 
@@ -84,7 +84,7 @@ class UpdateServiceTest {
             val datasetMeta = DatasetMeta(
                 uri = "http://example.org/budget",
                 fdkId = "dataset-series-id",
-                isPartOf = "http://localhost:5000/catalogs/catalog-id",
+                isPartOf = "http://localhost:5050/catalogs/catalog-id",
                 issued = TEST_HARVEST_DATE.timeInMillis,
                 modified = TEST_HARVEST_DATE.timeInMillis
             )
@@ -92,7 +92,7 @@ class UpdateServiceTest {
                 .thenReturn(listOf(catalogMeta))
             whenever(datasetRepository.findAll())
                 .thenReturn(listOf(datasetMeta))
-            whenever(datasetRepository.findAllByIsPartOf("http://localhost:5000/catalogs/${catalogMeta.fdkId}"))
+            whenever(datasetRepository.findAllByIsPartOf("http://localhost:5050/catalogs/${catalogMeta.fdkId}"))
                 .thenReturn(listOf(datasetMeta))
             whenever(turtleService.getCatalog(catalogMeta.fdkId, false))
                 .thenReturn(responseReader.readFile("parsed_catalog_with_series.ttl"))
@@ -100,9 +100,9 @@ class UpdateServiceTest {
                 .thenReturn(responseReader.readFile("parsed_dataset_series.ttl"))
 
             whenever(valuesMock.catalogUri)
-                .thenReturn("http://localhost:5000/catalogs")
+                .thenReturn("http://localhost:5050/catalogs")
             whenever(valuesMock.datasetUri)
-                .thenReturn("http://localhost:5000/datasets")
+                .thenReturn("http://localhost:5050/datasets")
 
             updateService.updateMetaData()
 

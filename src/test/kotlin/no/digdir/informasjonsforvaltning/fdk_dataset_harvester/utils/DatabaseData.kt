@@ -21,7 +21,7 @@ val CATALOG_DBO_0 = CatalogMeta(
 val DATASET_DBO_0 = DatasetMeta(
     uri = "https://testdirektoratet.no/model/dataset/0",
     fdkId = DATASET_ID_0,
-    isPartOf = "http://localhost:5000/catalogs/6e4237cc-98d6-3e7c-a892-8ac1f0ffb37f",
+    isPartOf = "http://localhost:5050/catalogs/6e4237cc-98d6-3e7c-a892-8ac1f0ffb37f",
     issued = TEST_HARVEST_DATE.timeInMillis,
     modified = TEST_HARVEST_DATE.timeInMillis
 )
@@ -36,7 +36,7 @@ val CATALOG_DBO_1 = CatalogMeta(
 val DATASET_DBO_1 = DatasetMeta(
     uri = "https://testdirektoratet.no/model/dataset/1",
     fdkId = DATASET_ID_1,
-    isPartOf = "http://localhost:5000/catalogs/6f0a37af-a9c1-38bc-b343-bd025b43b5e8",
+    isPartOf = "http://localhost:5050/catalogs/6f0a37af-a9c1-38bc-b343-bd025b43b5e8",
     issued = TEST_HARVEST_DATE.timeInMillis,
     modified = TEST_HARVEST_DATE.timeInMillis
 )

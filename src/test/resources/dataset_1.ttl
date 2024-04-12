@@ -41,12 +41,12 @@
     dct:title       "Test distribution 2" ;
     dcat:accessURL  <http://testdirektoratet.no/data/test/2> .
 
-<http://localhost:5000/datasets/4667277a-9d27-32c1-aed5-612fa601f393>
+<http://localhost:5050/datasets/4667277a-9d27-32c1-aed5-612fa601f393>
         a                  dcat:CatalogRecord ;
         dct:identifier     "4667277a-9d27-32c1-aed5-612fa601f393" ;
         dct:issued         "2020-03-12T11:52:16.122Z"^^xsd:dateTime ;
         dct:modified       "2020-03-12T11:52:16.122Z"^^xsd:dateTime ;
-        dct:isPartOf       <http://localhost:5000/catalogs/6f0a37af-a9c1-38bc-b343-bd025b43b5e8> ;
+        dct:isPartOf       <http://localhost:5050/catalogs/6f0a37af-a9c1-38bc-b343-bd025b43b5e8> ;
         foaf:primaryTopic  <https://testdirektoratet.no/model/dataset/1> .
 
 <https://testdirektoratet.no/model/periodoftime/1>
