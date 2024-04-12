@@ -13,17 +13,17 @@ ex:budget a dcat:DatasetSeries ;
     dcat:first ex:budget-2018 ;
     dcat:last ex:budget-2020 .
 
-<http://localhost:5000/catalogs/catalog-id>
+<http://localhost:5050/catalogs/catalog-id>
         a                  dcat:CatalogRecord ;
         dct:identifier     "catalog-id" ;
         dct:issued         "2020-03-12T11:52:16.122Z"^^xsd:dateTime ;
         dct:modified       "2020-03-12T11:52:16.122Z"^^xsd:dateTime ;
         foaf:primaryTopic  ex:EUCatalog .
 
-<http://localhost:5000/datasets/dataset-series-id>
+<http://localhost:5050/datasets/dataset-series-id>
         a                  dcat:CatalogRecord ;
         dct:identifier     "dataset-series-id" ;
         dct:issued         "2020-03-12T11:52:16.122Z"^^xsd:dateTime ;
         dct:modified       "2020-03-12T11:52:16.122Z"^^xsd:dateTime ;
-        dct:isPartOf       <http://localhost:5000/catalogs/catalog-id> ;
+        dct:isPartOf       <http://localhost:5050/catalogs/catalog-id> ;
         foaf:primaryTopic  ex:budget .
