@@ -57,3 +57,16 @@
         a                          vcard:Organization ;
         vcard:hasOrganizationName  "Testdirektoratet"@nb ;
         vcard:hasURL               <https://testdirektoratet.no> .
+
+<http://localhost:5050/catalogs/6f0a37af-a9c1-38bc-b343-bd025b43b5e8>
+        a                  dcat:CatalogRecord ;
+        dct:identifier     "6f0a37af-a9c1-38bc-b343-bd025b43b5e8" ;
+        dct:issued         "2020-03-12T11:52:16.122Z"^^xsd:dateTime ;
+        dct:modified       "2020-03-12T11:52:16.122Z"^^xsd:dateTime ;
+        foaf:primaryTopic  <https://testdirektoratet.no/model/dataset-catalog/1> .
+
+<https://testdirektoratet.no/model/dataset-catalog/1>
+        a              dcat:Catalog ;
+        dct:publisher  <https://organization-catalogue.fellesdatakatalog.brreg.no/organizations/123456789> ;
+        dct:title      "Datasettkatalog 1 for Testdirektoratet"@nb ;
+        dcat:dataset   <https://testdirektoratet.no/model/dataset/1> .

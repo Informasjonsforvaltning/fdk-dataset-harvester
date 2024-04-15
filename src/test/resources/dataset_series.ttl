@@ -16,3 +16,14 @@ ex:budget a dcat:DatasetSeries ;
         dct:modified       "2020-03-12T11:52:16.122Z"^^xsd:dateTime ;
         dct:isPartOf       <http://localhost:5050/catalogs/catalog-id> ;
         foaf:primaryTopic  ex:budget .
+
+ex:EUCatalog a dcat:Catalog ;
+    dct:title "European Data Catalog"@en ;
+    dcat:dataset ex:budget  .
+
+<http://localhost:5050/catalogs/catalog-id>
+        a                  dcat:CatalogRecord ;
+        dct:identifier     "catalog-id" ;
+        dct:issued         "2020-03-12T11:52:16.122Z"^^xsd:dateTime ;
+        dct:modified       "2020-03-12T11:52:16.122Z"^^xsd:dateTime ;
+        foaf:primaryTopic  ex:EUCatalog .

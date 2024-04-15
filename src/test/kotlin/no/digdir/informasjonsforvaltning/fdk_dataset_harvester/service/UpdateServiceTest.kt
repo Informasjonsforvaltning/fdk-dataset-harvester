@@ -35,16 +35,12 @@ class UpdateServiceTest {
         fun catalogRecordsIsRecreatedFromMetaDBO() {
             whenever(catalogRepository.findAll())
                 .thenReturn(listOf(CATALOG_DBO_0))
-            whenever(datasetRepository.findAll())
-                .thenReturn(listOf(DATASET_DBO_0, DATASET_DBO_1))
             whenever(datasetRepository.findAllByIsPartOf("http://localhost:5050/catalogs/$CATALOG_ID_0"))
-                .thenReturn(listOf(DATASET_DBO_0, DATASET_DBO_1))
+                .thenReturn(listOf(DATASET_DBO_0))
             whenever(turtleService.getCatalog(CATALOG_ID_0, false))
                 .thenReturn(responseReader.readFile("catalog_0_no_records.ttl"))
             whenever(turtleService.getDataset(DATASET_ID_0, false))
                 .thenReturn(responseReader.readFile("parsed_dataset_0.ttl"))
-            whenever(turtleService.getDataset(DATASET_ID_1, false))
-                .thenReturn(responseReader.readFile("parsed_dataset_1.ttl"))
 
             whenever(valuesMock.catalogUri)
                 .thenReturn("http://localhost:5050/catalogs")
@@ -55,14 +51,12 @@ class UpdateServiceTest {
 
             val expectedCatalog = responseReader.parseFile("catalog_0.ttl", "TURTLE")
             val expectedDataset0 = responseReader.parseFile("dataset_0.ttl", "TURTLE")
-            val expectedDataset1 = responseReader.parseFile("dataset_1.ttl", "TURTLE")
 
             argumentCaptor<Model, String, Boolean>().apply {
-                verify(turtleService, times(2)).saveAsDataset(first.capture(), second.capture(), third.capture())
+                verify(turtleService, times(1)).saveAsDataset(first.capture(), second.capture(), third.capture())
                 assertTrue(first.firstValue.isIsomorphicWith(expectedDataset0))
-                assertTrue(first.secondValue.isIsomorphicWith(expectedDataset1))
-                assertEquals(listOf(DATASET_ID_0, DATASET_ID_1), second.allValues)
-                assertEquals(listOf(true, true), third.allValues)
+                assertEquals(listOf(DATASET_ID_0), second.allValues)
+                assertEquals(listOf(true), third.allValues)
             }
 
             argumentCaptor<Model, String, Boolean>().apply {

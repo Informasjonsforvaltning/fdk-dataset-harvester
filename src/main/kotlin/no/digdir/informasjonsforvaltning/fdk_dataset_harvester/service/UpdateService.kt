@@ -1,6 +1,7 @@
 package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service
 
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.configuration.ApplicationProperties
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.harvester.extractCatalogModel
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.CatalogMeta
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.DatasetMeta
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.*
@@ -43,16 +44,6 @@ class UpdateService(
     }
 
     fun updateMetaData() {
-        datasetRepository.findAll()
-            .forEach { dataset ->
-                val datasetMeta = dataset.createMetaModel()
-
-                turtleService.getDataset(dataset.fdkId, withRecords = false)
-                    ?.let { conceptNoRecords -> safeParseRDF(conceptNoRecords, Lang.TURTLE) }
-                    ?.let { conceptModelNoRecords -> datasetMeta.union(conceptModelNoRecords) }
-                    ?.run { turtleService.saveAsDataset(this, fdkId = dataset.fdkId, withRecords = true) }
-            }
-
         catalogRepository.findAll()
             .forEach { catalog ->
                 val catalogNoRecords = turtleService.getCatalog(catalog.fdkId, withRecords = false)
@@ -61,14 +52,24 @@ class UpdateService(
                 if (catalogNoRecords != null) {
                     val catalogURI = "${applicationProperties.catalogUri}/${catalog.fdkId}"
                     val catalogMeta = catalog.createMetaModel()
+                    val completeMetaModel = ModelFactory.createDefaultModel()
+                    completeMetaModel.add(catalogMeta)
+
+                    val catalogTriples = catalogNoRecords.getResource(catalog.uri)
+                        .extractCatalogModel()
+                    catalogTriples.add(catalogMeta)
 
                     datasetRepository.findAllByIsPartOf(catalogURI)
-                        .filter {
-                            it.modelContainsDataset(catalogNoRecords)
-                        }
-                        .forEach { dataService ->
-                            val serviceMetaModel = dataService.createMetaModel()
-                            catalogMeta.add(serviceMetaModel)
+                        .filter { it.modelContainsDataset(catalogNoRecords) }
+                        .forEach { dataset ->
+                            val datasetMeta = dataset.createMetaModel()
+                            catalogMeta.add(datasetMeta)
+
+                            turtleService.getDataset(dataset.fdkId, withRecords = false)
+                                ?.let { datasetNoRecords -> safeParseRDF(datasetNoRecords, Lang.TURTLE) }
+                                ?.let { datasetModelNoRecords -> datasetMeta.union(datasetModelNoRecords) }
+                                ?.let { datasetModel -> catalogTriples.union(datasetModel) }
+                                ?.run { turtleService.saveAsDataset(this, fdkId = dataset.fdkId, withRecords = true) }
                         }
 
                     turtleService.saveAsCatalog(
