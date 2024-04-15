@@ -62,12 +62,7 @@ fun extractCatalogs(harvested: Model, sourceURL: String): List<CatalogAndDataset
                 .filterBlankNodeCatalogsAndDatasets(sourceURL)
                 .map { it.extractDataset() }
 
-            val catalogModelWithoutDatasets = ModelFactory.createDefaultModel()
-            catalogModelWithoutDatasets.setNsPrefixes(harvested.nsPrefixMap)
-
-            catalogResource.listProperties()
-                .toList()
-                .forEach { catalogModelWithoutDatasets.addCatalogProperties(it) }
+            val catalogModelWithoutDatasets = catalogResource.extractCatalogModel()
 
             catalogModelWithoutDatasets.recursiveBlankNodeSkolem(catalogResource.uri)
 
@@ -81,6 +76,15 @@ fun extractCatalogs(harvested: Model, sourceURL: String): List<CatalogAndDataset
                 datasets = catalogDatasets
             )
         }
+
+fun Resource.extractCatalogModel(): Model {
+    val catalogModelWithoutServices = ModelFactory.createDefaultModel()
+    catalogModelWithoutServices.setNsPrefixes(model.nsPrefixMap)
+    listProperties()
+        .toList()
+        .forEach { catalogModelWithoutServices.addCatalogProperties(it) }
+    return catalogModelWithoutServices
+}
 
 private fun List<Resource>.filterBlankNodeCatalogsAndDatasets(sourceURL: String): List<Resource> =
     filter {
