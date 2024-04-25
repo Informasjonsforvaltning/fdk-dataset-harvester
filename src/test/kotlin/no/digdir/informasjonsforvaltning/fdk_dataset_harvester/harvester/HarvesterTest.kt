@@ -281,8 +281,8 @@ class HarvesterTest {
             changedCatalogs=listOf(FdkIdAndUri(fdkId= CATALOG_ID_4, uri="http://example.org/EUCatalog")),
             changedResources = listOf(
                 FdkIdAndUri(fdkId="f1e8443d-910f-3838-87e3-2b5e7ee307a6", uri="http://example.org/budget-2020"),
-                FdkIdAndUri(fdkId="51704c08-c174-393d-add5-348d3b304aeb", uri="http://example.org/budget-2019"),
                 FdkIdAndUri(fdkId="ca883493-7848-3116-8e1a-2b2e610a0fc1", uri="http://example.org/budget-2018"),
+                FdkIdAndUri(fdkId="51704c08-c174-393d-add5-348d3b304aeb", uri="http://example.org/budget-2019"),
                 FdkIdAndUri(fdkId="ad115f63-9edc-30dc-ab81-f6866e0631ea", uri="http://example.org/budget"))
         )
 
