@@ -7,7 +7,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import java.io.BufferedReader
 import java.net.HttpURLConnection
-import java.net.URL
+import java.net.URI
 
 private val LOGGER = LoggerFactory.getLogger(DatasetAdapter::class.java)
 private const val TEN_MINUTES = 600000
@@ -16,7 +16,7 @@ private const val TEN_MINUTES = 600000
 class DatasetAdapter {
 
     fun getDatasets(source: HarvestDataSource): String {
-        val connection = URL(source.url).openConnection() as HttpURLConnection
+        val connection = URI(source.url).toURL().openConnection() as HttpURLConnection
         connection.setRequestProperty("Accept", source.acceptHeaderValue)
         connection.connectTimeout = TEN_MINUTES
         connection.readTimeout = TEN_MINUTES
