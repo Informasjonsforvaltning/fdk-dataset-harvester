@@ -13,7 +13,7 @@ fun startMockServer() {
         mockserver.stubFor(get(urlEqualTo("/ping"))
             .willReturn(aResponse().withStatus(200))
         )
-        mockserver.stubFor(get(urlEqualTo("/datasources?dataType=dataset"))
+        mockserver.stubFor(get(urlEqualTo("/internal/datasources?dataType=dataset"))
             .willReturn(okJson(jacksonObjectMapper().writeValueAsString(
                 listOf(TEST_HARVEST_SOURCE_0, TEST_HARVEST_SOURCE_1, ERROR_HARVEST_SOURCE))))
         )

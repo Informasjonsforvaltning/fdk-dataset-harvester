@@ -6,5 +6,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties
 data class ApplicationProperties(
     val datasetUri: String,
     val catalogUri: String,
-    val harvestAdminRootUrl: String
+    val harvestAdminRootUrl: String,
+    val harvestAdminApiKey: String
 )

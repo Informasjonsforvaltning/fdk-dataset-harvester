@@ -10,6 +10,7 @@ application:
   datasetUri: ${FDK_DATASET_HARVESTER_URI:https://datasets.staging.fellesdatakatalog.digdir.no}/datasets
   catalogUri: ${FDK_DATASET_HARVESTER_URI:https://datasets.staging.fellesdatakatalog.digdir.no}/catalogs
   harvestAdminRootUrl: ${HARVEST_ADMIN_ROOT_URL:http://new-harvest-admin:8080}
+  harvestAdminApiKey: ${ADMIN_API_KEY}
 spring:
   security.oauth2.resourceserver.jwt:
     jwk-set-uri: ${SSO_HOST:https://sso.staging.fellesdatakatalog.digdir.no}/auth/realms/fdk/protocol/openid-connect/certs
@@ -43,6 +44,7 @@ spring:
   data.mongodb.uri: mongodb://admin:admin@localhost:27017/datasetHarvester?authSource=admin&authMechanism=SCRAM-SHA-1
 application:
   harvestAdminRootUrl: https://admin-api.staging.fellesdatakatalog.digdir.no
+  harvestAdminApiKey: test-key
 
 ---
 spring:
@@ -59,3 +61,4 @@ application:
   harvestAdminRootUrl: http://localhost:5050
   datasetUri: http://localhost:5050/datasets
   catalogUri: http://localhost:5050/catalogs
+  harvestAdminApiKey: test-key
