@@ -326,4 +326,46 @@ class HarvesterTest {
         assertEquals(expectedReport, report)
     }
 
+    @Test
+    fun earlierRemovedDatasetsWithNoChangesAddedToReport() {
+        val harvested = responseReader.readFile("harvest_response_0.ttl")
+        whenever(adapter.getDatasets(TEST_HARVEST_SOURCE_0))
+            .thenReturn(harvested)
+        whenever(turtleService.getHarvestSource(TEST_HARVEST_SOURCE_0.url!!))
+            .thenReturn(responseReader.readFile("harvest_response_0_old_dataset_removed.ttl"))
+        whenever(datasetRepository.findById("https://testdirektoratet.no/model/dataset/0"))
+            .thenReturn(Optional.of(DATASET_DBO_0.copy(removed = true)))
+        whenever(datasetRepository.findAllByIsPartOf("http://localhost:5050/catalogs/6e4237cc-98d6-3e7c-a892-8ac1f0ffb37f"))
+            .thenReturn(listOf(DATASET_DBO_0.copy(removed = true)))
+        whenever(turtleService.getDataset(DATASET_ID_0, withRecords = false))
+            .thenReturn(responseReader.readFile("parsed_dataset_0.ttl"))
+
+        whenever(valuesMock.catalogUri)
+            .thenReturn("http://localhost:5050/catalogs")
+        whenever(valuesMock.datasetUri)
+            .thenReturn("http://localhost:5050/datasets")
+
+        val report = harvester.harvestDatasetCatalog(TEST_HARVEST_SOURCE_0, TEST_HARVEST_DATE, false)
+
+        argumentCaptor<DatasetMeta>().apply {
+            verify(datasetRepository, times(1)).save(capture())
+            assertEquals(DATASET_DBO_0, firstValue)
+        }
+
+        val expectedReport = HarvestReport(
+            id="harvest0",
+            url="http://localhost:5050/harvest0",
+            dataType="dataset",
+            harvestError=false,
+            startTime = "2020-03-12 12:52:16 +0100",
+            endTime = report!!.endTime,
+            errorMessage=null,
+            changedCatalogs=listOf(FdkIdAndUri(fdkId="6e4237cc-98d6-3e7c-a892-8ac1f0ffb37f", uri="https://testdirektoratet.no/model/dataset-catalog/0")),
+            changedResources=listOf(FdkIdAndUri(fdkId="a1c680ca-62d7-34d5-aa4c-d39b5db033ae", uri="https://testdirektoratet.no/model/dataset/0")),
+            removedResources = emptyList()
+        )
+
+        assertEquals(expectedReport, report)
+    }
+
 }
