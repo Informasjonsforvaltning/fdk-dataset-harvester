@@ -176,7 +176,7 @@ class DatasetHarvester(
     ): DatasetMeta? {
         val dbMeta = datasetRepository.findByIdOrNull(resource.uri)
         return when {
-            dbMeta == null || datasetHasChanges(dbMeta.fdkId) -> {
+            dbMeta == null || dbMeta.removed || datasetHasChanges(dbMeta.fdkId) -> {
                 val datasetMeta = mapToMetaDBO(harvestDate, fdkCatalogURI, dbMeta)
                 datasetRepository.save(datasetMeta)
 
