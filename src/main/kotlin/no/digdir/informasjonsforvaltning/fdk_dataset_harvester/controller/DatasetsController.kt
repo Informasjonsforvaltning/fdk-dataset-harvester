@@ -2,11 +2,14 @@ package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.controller
 
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.jenaTypeFromAcceptHeader
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service.DatasetService
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service.EndpointPermissions
 import org.apache.jena.riot.Lang
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.annotation.AuthenticationPrincipal
+import org.springframework.security.oauth2.jwt.Jwt
 import org.springframework.stereotype.Controller
 import org.springframework.web.bind.annotation.*
 
@@ -17,7 +20,10 @@ import org.springframework.web.bind.annotation.*
     produces = ["text/turtle", "text/n3", "application/rdf+json", "application/ld+json", "application/rdf+xml",
         "application/n-triples", "application/n-quads", "application/trig", "application/trix"]
 )
-open class DatasetsController(private val datasetService: DatasetService) {
+open class DatasetsController(
+    private val datasetService: DatasetService,
+    private val endpointPermissions: EndpointPermissions
+) {
 
     @GetMapping("/{id}")
     fun getDatasetById(
@@ -34,4 +40,14 @@ open class DatasetsController(private val datasetService: DatasetService) {
                 ?: ResponseEntity(HttpStatus.NOT_FOUND)
         }
     }
+
+    @DeleteMapping("/{id}")
+    fun removeDatasetById(
+        @AuthenticationPrincipal jwt: Jwt,
+        @PathVariable id: String
+    ): ResponseEntity<Void> =
+    if (endpointPermissions.hasAdminPermission(jwt)) {
+        datasetService.removeDataset(id)
+        ResponseEntity(HttpStatus.NO_CONTENT)
+    } else ResponseEntity(HttpStatus.FORBIDDEN)
 }

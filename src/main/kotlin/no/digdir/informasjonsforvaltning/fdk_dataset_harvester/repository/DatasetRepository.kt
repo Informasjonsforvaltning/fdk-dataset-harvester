@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository
 @Repository
 interface DatasetRepository : MongoRepository<DatasetMeta, String> {
     fun findAllByIsPartOf(isPartOf: String): List<DatasetMeta>
+    fun findAllByFdkId(fdkId: String): List<DatasetMeta>
 }
