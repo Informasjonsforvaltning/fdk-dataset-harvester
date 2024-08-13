@@ -1,19 +1,32 @@
 package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service
 
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.DatasetMeta
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.FdkIdAndUri
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.HarvestReport
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rabbit.RabbitMQPublisher
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.repository.DatasetRepository
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.*
 import org.apache.jena.riot.Lang
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
+import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
+import org.springframework.web.server.ResponseStatusException
+import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @Tag("unit")
 class DatasetServiceTest {
+    private val repository: DatasetRepository = mock()
+    private val publisher: RabbitMQPublisher = mock()
     private val turtleService: TurtleService = mock()
-    private val datasetService = DatasetService(turtleService)
+    private val datasetService = DatasetService(repository, publisher, turtleService)
 
     private val responseReader = TestResponseReader()
 
@@ -115,6 +128,60 @@ class DatasetServiceTest {
 
             assertTrue(expectedWithRecords.isIsomorphicWith(responseReader.parseResponse(responseTurtle!!, "TURTLE")))
             assertTrue(expectedNoRecords.isIsomorphicWith(responseReader.parseResponse(responseRDFXML!!, "RDF/XML")))
+        }
+
+    }
+
+    @Nested
+    internal inner class RemoveDatasetById {
+
+        @Test
+        fun throwsResponseStatusExceptionWhenNoMetaFoundInDB() {
+            whenever(repository.findAllByFdkId("123"))
+                .thenReturn(emptyList())
+
+            assertThrows<ResponseStatusException> { datasetService.removeDataset("123") }
+        }
+
+        @Test
+        fun throwsExceptionWhenNoNonRemovedMetaFoundInDB() {
+            whenever(repository.findAllByFdkId(DATASET_ID_0))
+                .thenReturn(listOf(DATASET_DBO_0.copy(removed = true)))
+
+            assertThrows<ResponseStatusException> { datasetService.removeDataset(DATASET_ID_0) }
+        }
+
+        @Test
+        fun updatesMetaAndSendsRabbitReportWhenMetaIsFound() {
+            whenever(repository.findAllByFdkId(DATASET_DBO_0.fdkId))
+                .thenReturn(listOf(DATASET_DBO_0))
+
+            datasetService.removeDataset(DATASET_DBO_0.fdkId)
+
+            argumentCaptor<List<DatasetMeta>>().apply {
+                verify(repository, times(1)).saveAll(capture())
+                assertEquals(listOf(DATASET_DBO_0.copy(removed = true)), firstValue)
+            }
+
+            val expectedReport = HarvestReport(
+                id = "manual-delete-$DATASET_ID_0",
+                url = DATASET_DBO_0.uri,
+                harvestError = false,
+                startTime = "startTime",
+                endTime = "endTime",
+                removedResources = listOf(FdkIdAndUri(DATASET_DBO_0.fdkId, DATASET_DBO_0.uri))
+            )
+            argumentCaptor<List<HarvestReport>>().apply {
+                verify(publisher, times(1)).send(capture())
+
+                assertEquals(
+                    listOf(expectedReport.copy(
+                        startTime = firstValue.first().startTime,
+                        endTime = firstValue.first().endTime
+                    )),
+                    firstValue
+                )
+            }
         }
 
     }
