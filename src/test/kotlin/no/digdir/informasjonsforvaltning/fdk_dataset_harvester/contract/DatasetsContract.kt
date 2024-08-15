@@ -1,6 +1,10 @@
 package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.contract
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.DuplicateIRI
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.ApiTestContext
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.DATASET_DBO_0
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.DATASET_DBO_1
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.DATASET_ID_0
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.TestResponseReader
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.apiGet
@@ -15,6 +19,7 @@ import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.test.context.ContextConfiguration
 import kotlin.test.assertTrue
@@ -28,6 +33,7 @@ import kotlin.test.assertTrue
 @Tag("contract")
 class DatasetsContract : ApiTestContext() {
     private val responseReader = TestResponseReader()
+    private val mapper = jacksonObjectMapper()
 
     @Test
     fun getDatasetNoRecords() {
@@ -62,7 +68,7 @@ class DatasetsContract : ApiTestContext() {
 
         @Test
         fun unauthorizedForNoToken() {
-            val response = authorizedRequest(port, "/datasets/$DATASET_ID_0", null, "DELETE")
+            val response = authorizedRequest(port, "/datasets/$DATASET_ID_0", null, HttpMethod.DELETE)
             assertEquals(HttpStatus.UNAUTHORIZED.value(), response["status"])
         }
 
@@ -72,7 +78,7 @@ class DatasetsContract : ApiTestContext() {
                 port,
                 "/datasets/$DATASET_ID_0",
                 JwtToken(Access.ORG_WRITE).toString(),
-                "DELETE"
+                HttpMethod.DELETE
             )
             assertEquals(HttpStatus.FORBIDDEN.value(), response["status"])
         }
@@ -80,7 +86,7 @@ class DatasetsContract : ApiTestContext() {
         @Test
         fun notFoundWhenIdNotInDB() {
             val response =
-                authorizedRequest(port, "/datasets/123", JwtToken(Access.ROOT).toString(), "DELETE")
+                authorizedRequest(port, "/datasets/123", JwtToken(Access.ROOT).toString(), HttpMethod.DELETE)
             assertEquals(HttpStatus.NOT_FOUND.value(), response["status"])
         }
 
@@ -90,9 +96,66 @@ class DatasetsContract : ApiTestContext() {
                 port,
                 "/datasets/$DATASET_ID_0",
                 JwtToken(Access.ROOT).toString(),
-                "DELETE"
+                HttpMethod.DELETE
             )
             assertEquals(HttpStatus.NO_CONTENT.value(), response["status"])
+        }
+    }
+
+    @Nested
+    internal inner class RemoveDuplicates {
+
+        @Test
+        fun unauthorizedForNoToken() {
+            val body = listOf(DuplicateIRI(iriToRemove = DATASET_DBO_0.uri, iriToRetain = DATASET_DBO_1.uri))
+            val response = authorizedRequest(
+                port,
+                "/datasets/duplicates",
+                null,
+                HttpMethod.POST,
+                mapper.writeValueAsString(body)
+            )
+            assertEquals(HttpStatus.UNAUTHORIZED.value(), response["status"])
+        }
+
+        @Test
+        fun forbiddenWithNonSysAdminRole() {
+            val body = listOf(DuplicateIRI(iriToRemove = DATASET_DBO_0.uri, iriToRetain = DATASET_DBO_1.uri))
+            val response = authorizedRequest(
+                port,
+                "/datasets/duplicates",
+                JwtToken(Access.ORG_WRITE).toString(),
+                HttpMethod.POST,
+                mapper.writeValueAsString(body)
+            )
+            assertEquals(HttpStatus.FORBIDDEN.value(), response["status"])
+        }
+
+        @Test
+        fun badRequestWhenRemoveIRINotInDB() {
+            val body = listOf(DuplicateIRI(iriToRemove = "https://123.no", iriToRetain = DATASET_DBO_1.uri))
+            val response =
+                authorizedRequest(
+                    port,
+                    "/datasets/duplicates",
+                    JwtToken(Access.ROOT).toString(),
+                    HttpMethod.POST,
+                    mapper.writeValueAsString(body)
+                )
+            assertEquals(HttpStatus.BAD_REQUEST.value(), response["status"])
+        }
+
+        @Test
+        fun okWithSysAdminRole() {
+            val body = listOf(DuplicateIRI(iriToRemove = DATASET_DBO_0.uri, iriToRetain = DATASET_DBO_1.uri))
+            val response = authorizedRequest(
+                port,
+                "/datasets/duplicates",
+                JwtToken(Access.ROOT).toString(),
+                HttpMethod.POST,
+                mapper.writeValueAsString(body)
+            )
+            assertEquals(HttpStatus.OK.value(), response["status"])
         }
     }
 
