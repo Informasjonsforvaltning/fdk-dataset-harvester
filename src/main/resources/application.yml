@@ -6,6 +6,7 @@ logging:
   level.org.apache.jena.riot: ERROR
 server:
   port: 8080
+  error.include-message: always
 application:
   datasetUri: ${FDK_DATASET_HARVESTER_URI:https://datasets.staging.fellesdatakatalog.digdir.no}/datasets
   catalogUri: ${FDK_DATASET_HARVESTER_URI:https://datasets.staging.fellesdatakatalog.digdir.no}/catalogs

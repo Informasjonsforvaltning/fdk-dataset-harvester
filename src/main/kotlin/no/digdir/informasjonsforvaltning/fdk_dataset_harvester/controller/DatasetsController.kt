@@ -1,10 +1,10 @@
 package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.controller
 
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.DuplicateIRI
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.jenaTypeFromAcceptHeader
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service.DatasetService
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service.EndpointPermissions
 import org.apache.jena.riot.Lang
-import org.slf4j.LoggerFactory
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -50,4 +50,15 @@ open class DatasetsController(
         datasetService.removeDataset(id)
         ResponseEntity(HttpStatus.NO_CONTENT)
     } else ResponseEntity(HttpStatus.FORBIDDEN)
+
+    @PostMapping("/duplicates")
+    fun removeDuplicates(
+        @AuthenticationPrincipal jwt: Jwt,
+        @RequestBody duplicates: List<DuplicateIRI>
+    ): ResponseEntity<Void> =
+        if (endpointPermissions.hasAdminPermission(jwt)) {
+            datasetService.removeDuplicates(duplicates)
+            ResponseEntity(HttpStatus.OK)
+        } else ResponseEntity(HttpStatus.FORBIDDEN)
+
 }

@@ -12,7 +12,6 @@ import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.adapter.HarvestAd
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.HarvestAdminParameters
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.HarvestReport
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rabbit.RabbitMQPublisher
-import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.parseRDF
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service.UpdateService
 import org.slf4j.LoggerFactory
 import org.springframework.boot.context.event.ApplicationReadyEvent

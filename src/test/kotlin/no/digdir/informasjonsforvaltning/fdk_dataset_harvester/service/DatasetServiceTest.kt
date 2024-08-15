@@ -1,6 +1,7 @@
 package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service
 
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.DatasetMeta
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.DuplicateIRI
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.FdkIdAndUri
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.HarvestReport
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rabbit.RabbitMQPublisher
@@ -11,12 +12,14 @@ import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Tag
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.mockito.kotlin.any
 import org.mockito.kotlin.argumentCaptor
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 import org.springframework.web.server.ResponseStatusException
+import java.util.*
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -182,6 +185,154 @@ class DatasetServiceTest {
                     firstValue
                 )
             }
+        }
+
+    }
+
+    @Nested
+    internal inner class RemoveDuplicates {
+
+        @Test
+        fun throwsExceptionWhenRemoveIRINotFoundInDB() {
+            whenever(repository.findById("https://123.no"))
+                .thenReturn(Optional.empty())
+            whenever(repository.findById(DATASET_DBO_1.uri))
+                .thenReturn(Optional.of(DATASET_DBO_1))
+
+            val duplicateIRI = DuplicateIRI(
+                iriToRemove = "https://123.no",
+                iriToRetain = DATASET_DBO_1.uri
+            )
+            assertThrows<ResponseStatusException> { datasetService.removeDuplicates(listOf(duplicateIRI)) }
+        }
+
+        @Test
+        fun createsNewMetaWhenRetainIRINotFoundInDB() {
+            whenever(repository.findById(DATASET_DBO_0.uri))
+                .thenReturn(Optional.of(DATASET_DBO_0))
+            whenever(repository.findById(DATASET_DBO_1.uri))
+                .thenReturn(Optional.empty())
+
+            val duplicateIRI = DuplicateIRI(
+                iriToRemove = DATASET_DBO_0.uri,
+                iriToRetain = DATASET_DBO_1.uri
+            )
+            datasetService.removeDuplicates(listOf(duplicateIRI))
+
+            argumentCaptor<List<DatasetMeta>>().apply {
+                verify(repository, times(1)).saveAll(capture())
+                assertEquals(listOf(DATASET_DBO_0.copy(removed = true), DATASET_DBO_0.copy(uri = DATASET_DBO_1.uri)), firstValue)
+            }
+
+            verify(publisher, times(0)).send(any())
+        }
+
+        @Test
+        fun sendsRabbitReportWithRetainFdkIdWhenKeepingRemoveFdkId() {
+            whenever(repository.findById(DATASET_DBO_0.uri))
+                .thenReturn(Optional.of(DATASET_DBO_0))
+            whenever(repository.findById(DATASET_DBO_1.uri))
+                .thenReturn(Optional.of(DATASET_DBO_1))
+
+            val duplicateIRI = DuplicateIRI(
+                iriToRemove = DATASET_DBO_0.uri,
+                iriToRetain = DATASET_DBO_1.uri
+            )
+            datasetService.removeDuplicates(listOf(duplicateIRI))
+
+            argumentCaptor<List<DatasetMeta>>().apply {
+                verify(repository, times(1)).saveAll(capture())
+                assertEquals(listOf(
+                    DATASET_DBO_0.copy(removed = true),
+                    DATASET_DBO_0.copy(uri = DATASET_DBO_1.uri, isPartOf = DATASET_DBO_1.isPartOf)
+                ), firstValue)
+            }
+
+            val expectedReport = HarvestReport(
+                id = "duplicate-delete",
+                url = "https://fellesdatakatalog.digdir.no/duplicates",
+                harvestError = false,
+                startTime = "startTime",
+                endTime = "endTime",
+                removedResources = listOf(FdkIdAndUri(DATASET_DBO_1.fdkId, DATASET_DBO_1.uri))
+            )
+            argumentCaptor<List<HarvestReport>>().apply {
+                verify(publisher, times(1)).send(capture())
+
+                assertEquals(
+                    listOf(expectedReport.copy(
+                        startTime = firstValue.first().startTime,
+                        endTime = firstValue.first().endTime
+                    )),
+                    firstValue
+                )
+            }
+        }
+
+        @Test
+        fun sendsRabbitReportWithRemoveFdkIdWhenNotKeepingRemoveFdkId() {
+            whenever(repository.findById(DATASET_DBO_0.uri))
+                .thenReturn(Optional.of(DATASET_DBO_0))
+            whenever(repository.findById(DATASET_DBO_1.uri))
+                .thenReturn(Optional.of(DATASET_DBO_1))
+
+            val duplicateIRI = DuplicateIRI(
+                iriToRemove = DATASET_DBO_1.uri,
+                iriToRetain = DATASET_DBO_0.uri,
+                keepRemovedFdkId = false
+            )
+            datasetService.removeDuplicates(listOf(duplicateIRI))
+
+            argumentCaptor<List<DatasetMeta>>().apply {
+                verify(repository, times(1)).saveAll(capture())
+                assertEquals(listOf(
+                    DATASET_DBO_1.copy(removed = true),
+                    DATASET_DBO_0
+                ), firstValue)
+            }
+
+            val expectedReport = HarvestReport(
+                id = "duplicate-delete",
+                url = "https://fellesdatakatalog.digdir.no/duplicates",
+                harvestError = false,
+                startTime = "startTime",
+                endTime = "endTime",
+                removedResources = listOf(FdkIdAndUri(DATASET_DBO_1.fdkId, DATASET_DBO_1.uri))
+            )
+            argumentCaptor<List<HarvestReport>>().apply {
+                verify(publisher, times(1)).send(capture())
+
+                assertEquals(
+                    listOf(expectedReport.copy(
+                        startTime = firstValue.first().startTime,
+                        endTime = firstValue.first().endTime
+                    )),
+                    firstValue
+                )
+            }
+        }
+
+        @Test
+        fun throwsExceptionWhenTryingToReportAlreadyRemovedAsRemoved() {
+            whenever(repository.findById(DATASET_DBO_0.uri))
+                .thenReturn(Optional.of(DATASET_DBO_0.copy(removed = true)))
+            whenever(repository.findById(DATASET_DBO_1.uri))
+                .thenReturn(Optional.of(DATASET_DBO_1))
+
+            val duplicateIRI = DuplicateIRI(
+                iriToRemove = DATASET_DBO_0.uri,
+                iriToRetain = DATASET_DBO_1.uri,
+                keepRemovedFdkId = false
+            )
+
+            assertThrows<ResponseStatusException> { datasetService.removeDuplicates(listOf(duplicateIRI)) }
+
+            whenever(repository.findById(DATASET_DBO_0.uri))
+                .thenReturn(Optional.of(DATASET_DBO_0))
+            whenever(repository.findById(DATASET_DBO_1.uri))
+                .thenReturn(Optional.of(DATASET_DBO_1.copy(removed = true)))
+
+            assertThrows<ResponseStatusException> { datasetService.removeDuplicates(listOf(duplicateIRI.copy(keepRemovedFdkId = true))) }
         }
 
     }
