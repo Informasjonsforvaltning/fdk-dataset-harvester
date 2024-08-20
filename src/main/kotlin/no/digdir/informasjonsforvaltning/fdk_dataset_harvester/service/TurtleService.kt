@@ -53,6 +53,14 @@ class TurtleService(private val turtleRepository: TurtleRepository) {
             ?.turtle
             ?.let { ungzip(it) }
 
+    fun deleteTurtleFiles(fdkId: String) {
+        turtleRepository.findAllById(
+            listOf(
+                datasetTurtleID(fdkId, true),
+                datasetTurtleID(fdkId, false)
+            )
+        ).run { turtleRepository.deleteAll(this) }
+    }
 }
 
 fun catalogTurtleID(fdkId: String, withFDKRecords: Boolean): String =

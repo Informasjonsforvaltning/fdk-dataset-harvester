@@ -6,6 +6,7 @@ import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.ApiTestCont
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.DATASET_DBO_0
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.DATASET_DBO_1
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.DATASET_ID_0
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.DATASET_ID_1
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.TestResponseReader
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.apiGet
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.utils.authorizedRequest
@@ -157,6 +158,56 @@ class DatasetsContract : ApiTestContext() {
             )
             assertEquals(HttpStatus.OK.value(), response["status"])
         }
+    }
+
+    @Nested
+    internal inner class PurgeById {
+
+        @Test
+        fun unauthorizedForNoToken() {
+            val response = authorizedRequest(port, "/datasets/removed/purge", null, HttpMethod.DELETE)
+            assertEquals(HttpStatus.UNAUTHORIZED.value(), response["status"])
+        }
+
+        @Test
+        fun forbiddenWithNonSysAdminRole() {
+            val response = authorizedRequest(
+                port,
+                "/datasets/removed/purge",
+                JwtToken(Access.ORG_WRITE).toString(),
+                HttpMethod.DELETE
+            )
+            assertEquals(HttpStatus.FORBIDDEN.value(), response["status"])
+        }
+
+        @Test
+        fun badRequestWhenNotAlreadyRemoved() {
+            val response = authorizedRequest(
+                port,
+                "/datasets/$DATASET_ID_1/purge",
+                JwtToken(Access.ROOT).toString(),
+                HttpMethod.DELETE
+            )
+            assertEquals(HttpStatus.BAD_REQUEST.value(), response["status"])
+        }
+
+        @Test
+        fun purgingStopsDeepLinking() {
+            val pre = apiGet(port, "/datasets/removed", "text/turtle")
+            assertEquals(HttpStatus.OK.value(), pre["status"])
+
+            val response = authorizedRequest(
+                port,
+                "/datasets/removed/purge",
+                JwtToken(Access.ROOT).toString(),
+                HttpMethod.DELETE
+            )
+            assertEquals(HttpStatus.NO_CONTENT.value(), response["status"])
+
+            val post = apiGet(port, "/datasets/removed", "text/turtle")
+            assertEquals(HttpStatus.NOT_FOUND.value(), post["status"])
+        }
+
     }
 
 }

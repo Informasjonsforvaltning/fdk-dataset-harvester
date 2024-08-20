@@ -51,6 +51,16 @@ open class DatasetsController(
         ResponseEntity(HttpStatus.NO_CONTENT)
     } else ResponseEntity(HttpStatus.FORBIDDEN)
 
+    @DeleteMapping("/{id}/purge")
+    fun purgeDatasetById(
+        @AuthenticationPrincipal jwt: Jwt,
+        @PathVariable id: String
+    ): ResponseEntity<Void> =
+        if (endpointPermissions.hasAdminPermission(jwt)) {
+            datasetService.purgeByFdkId(id)
+            ResponseEntity(HttpStatus.NO_CONTENT)
+        } else ResponseEntity(HttpStatus.FORBIDDEN)
+
     @PostMapping("/duplicates")
     fun removeDuplicates(
         @AuthenticationPrincipal jwt: Jwt,
