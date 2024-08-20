@@ -41,17 +41,17 @@ open class DatasetsController(
         }
     }
 
-    @DeleteMapping("/{id}")
+    @PostMapping("/{id}/remove")
     fun removeDatasetById(
         @AuthenticationPrincipal jwt: Jwt,
         @PathVariable id: String
     ): ResponseEntity<Void> =
     if (endpointPermissions.hasAdminPermission(jwt)) {
         datasetService.removeDataset(id)
-        ResponseEntity(HttpStatus.NO_CONTENT)
+        ResponseEntity(HttpStatus.OK)
     } else ResponseEntity(HttpStatus.FORBIDDEN)
 
-    @DeleteMapping("/{id}/purge")
+    @DeleteMapping("/{id}")
     fun purgeDatasetById(
         @AuthenticationPrincipal jwt: Jwt,
         @PathVariable id: String
