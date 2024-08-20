@@ -7,6 +7,7 @@ import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service.UNION_ID
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service.catalogTurtleID
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service.datasetTurtleID
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service.gzip
+import org.apache.jena.vocabulary.AS.partOf
 import org.bson.Document
 
 private val responseReader = TestResponseReader()
@@ -37,6 +38,15 @@ val DATASET_DBO_1 = DatasetMeta(
     uri = "https://testdirektoratet.no/model/dataset/1",
     fdkId = DATASET_ID_1,
     isPartOf = "http://localhost:5050/catalogs/6f0a37af-a9c1-38bc-b343-bd025b43b5e8",
+    issued = TEST_HARVEST_DATE.timeInMillis,
+    modified = TEST_HARVEST_DATE.timeInMillis
+)
+
+val REMOVED_DATASET_DBO = DatasetMeta(
+    uri = "https://testdirektoratet.no/model/dataset/removed",
+    fdkId = "removed",
+    isPartOf = "http://localhost:5050/catalogs/6f0a37af-a9c1-38bc-b343-bd025b43b5e8",
+    removed = true,
     issued = TEST_HARVEST_DATE.timeInMillis,
     modified = TEST_HARVEST_DATE.timeInMillis
 )
@@ -101,6 +111,16 @@ val DATASET_1_TURTLE_NO_RECORDS = TurtleDBO(
     turtle = gzip(responseReader.readFile("parsed_dataset_1.ttl"))
 )
 
+val REMOVED_DATASET_TURTLE = TurtleDBO(
+    id = datasetTurtleID("removed", true),
+    turtle = gzip(responseReader.readFile("dataset_1.ttl"))
+)
+
+val REMOVED_DATASET_TURTLE_NO_RECORDS = TurtleDBO(
+    id = datasetTurtleID("removed", false),
+    turtle = gzip(responseReader.readFile("parsed_dataset_1.ttl"))
+)
+
 fun turtleDBPopulation(): List<Document> =
     listOf(
         UNION_DATA,
@@ -114,7 +134,9 @@ fun turtleDBPopulation(): List<Document> =
         CATALOG_1_TURTLE,
         CATALOG_1_TURTLE_NO_RECORDS,
         DATASET_1_TURTLE,
-        DATASET_1_TURTLE_NO_RECORDS
+        DATASET_1_TURTLE_NO_RECORDS,
+        REMOVED_DATASET_TURTLE,
+        REMOVED_DATASET_TURTLE_NO_RECORDS
     )
         .map { it.mapDBO() }
 
@@ -123,7 +145,7 @@ fun catalogDBPopulation(): List<Document> =
         .map { it.mapDBO() }
 
 fun datasetDBPopulation(): List<Document> =
-    listOf(DATASET_DBO_0, DATASET_DBO_1)
+    listOf(DATASET_DBO_0, DATASET_DBO_1, REMOVED_DATASET_DBO)
         .map { it.mapDBO() }
 
 private fun CatalogMeta.mapDBO(): Document =
@@ -138,6 +160,7 @@ private fun DatasetMeta.mapDBO(): Document =
         .append("_id", uri)
         .append("fdkId", fdkId)
         .append("isPartOf", isPartOf)
+        .append("removed", removed)
         .append("issued", issued)
         .append("modified", modified)
 

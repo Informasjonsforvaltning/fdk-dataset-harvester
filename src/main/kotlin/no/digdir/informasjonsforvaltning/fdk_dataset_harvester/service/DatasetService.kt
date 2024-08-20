@@ -108,4 +108,13 @@ class DatasetService(
         }
     }
 
+    // Purges everything associated with a removed fdkID
+    fun purgeByFdkId(fdkId: String) {
+        datasetRepository.findAllByFdkId(fdkId)
+            .also { datasets -> if (datasets.any { !it.removed }) throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Unable to purge files, dataset with id $fdkId has not been removed") }
+            .run { datasetRepository.deleteAll(this) }
+
+        turtleService.deleteTurtleFiles(fdkId)
+    }
+
 }
