@@ -18,9 +18,9 @@ class UpdateController(
 ) {
 
     @PostMapping("/meta")
-    fun updateMetaData(@AuthenticationPrincipal jwt: Jwt): ResponseEntity<Void> =
+    fun updateMetaDataAndCatalogs(@AuthenticationPrincipal jwt: Jwt): ResponseEntity<Void> =
         if (endpointPermissions.hasAdminPermission(jwt)) {
-            updateService.updateMetaData()
+            updateService.updateMetaDataAndCatalogs()
             ResponseEntity(HttpStatus.OK)
         } else ResponseEntity(HttpStatus.FORBIDDEN)
 

@@ -60,6 +60,7 @@ class UpdateService(
                     catalogTriples.add(catalogMeta)
 
                     datasetRepository.findAllByIsPartOf(catalogURI)
+                        .filter { !it.removed }
                         .filter { it.modelContainsDataset(catalogNoRecords) }
                         .forEach { dataset ->
                             val datasetMeta = dataset.createMetaModel()
@@ -81,6 +82,37 @@ class UpdateService(
             }
 
         updateUnionModels()
+    }
+
+    fun updateMetaDataAndCatalogs() {
+        catalogRepository.findAll()
+            .forEach { catalog ->
+                val dbCatalog = turtleService.getCatalog(catalog.fdkId, withRecords = false)
+                    ?.let { safeParseRDF(it, Lang.TURTLE) }
+
+                if (dbCatalog != null) {
+                    val catalogURI = "${applicationProperties.catalogUri}/${catalog.fdkId}"
+                    val catalogModel = dbCatalog.getResource(catalog.uri)
+                        .extractCatalogModel()
+
+                    datasetRepository.findAllByIsPartOf(catalogURI)
+                        .filter { !it.removed }
+                        .filter { it.modelContainsDataset(dbCatalog) }
+                        .forEach { dataset ->
+                            turtleService.getDataset(dataset.fdkId, withRecords = false)
+                                ?.let { datasetNoRecords -> safeParseRDF(datasetNoRecords, Lang.TURTLE) }
+                                ?.let { datasetModel -> catalogModel.add(datasetModel) }
+                        }
+
+                    turtleService.saveAsCatalog(
+                        catalogModel,
+                        fdkId = catalog.fdkId,
+                        withRecords = false
+                    )
+                }
+            }
+
+        updateMetaData()
     }
 
     private fun CatalogMeta.createMetaModel(): Model {
