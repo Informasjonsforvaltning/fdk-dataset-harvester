@@ -6,5 +6,5 @@ resources:
   - fdk-dataset-harvester-service.yaml
 images:
   - name: fdk-dataset-harvester
-    newName: ghcr/informasjonsforvaltning/fdk-dataset-harvester
+    newName: ghcr.io/informasjonsforvaltning/fdk-dataset-harvester
     newTag: $(GIT_COMMIT_SHA)
