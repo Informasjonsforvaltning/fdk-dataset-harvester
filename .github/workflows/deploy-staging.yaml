@@ -10,7 +10,7 @@ jobs:
   build-fdk-dataset-harvester:
     name: Build when pull request is created
     if: github.event.pull_request.draft == false
-    uses: Informasjonsforvaltning/workflows/.github/workflows/build-push.yaml@feat/hos/github-packages
+    uses: Informasjonsforvaltning/workflows/.github/workflows/build-push.yaml@main
     with:
       app_name: fdk-dataset-harvester
       java_version: '17'
@@ -18,14 +18,13 @@ jobs:
       environment: staging
     secrets:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      GCP_SA_DIGDIR_FDK_GCR_KEY: ${{ secrets.GCP_SA_DIGDIR_FDK_GCR_KEY }}
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
   deploy:
     name: Deploy to staging environment
     if: ${{ github.actor != 'dependabot[bot]' && github.event.pull_request.draft == false }}
     needs: [ build-fdk-dataset-harvester ]
-    uses: Informasjonsforvaltning/workflows/.github/workflows/kustomize-deploy.yaml@feat/hos/github-packages
+    uses: Informasjonsforvaltning/workflows/.github/workflows/kustomize-deploy.yaml@main
     with:
       app_name: fdk-dataset-harvester
       environment: staging
