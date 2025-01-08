@@ -11,6 +11,7 @@ application:
   catalogUri: ${FDK_DATASET_HARVESTER_URI:https://datasets.staging.fellesdatakatalog.digdir.no}/catalogs
   harvestAdminRootUrl: ${HARVEST_ADMIN_ROOT_URL:http://new-harvest-admin:8080}
   harvestAdminApiKey: ${ADMIN_API_KEY}
+  cors.originPatterns: "${CORS_ORIGIN_PATTERNS}"
 spring:
   security.oauth2.resourceserver.jwt:
     jwk-set-uri: ${SSO_HOST:https://sso.staging.fellesdatakatalog.digdir.no}/auth/realms/fdk/protocol/openid-connect/certs
@@ -45,6 +46,7 @@ spring:
 application:
   harvestAdminRootUrl: https://admin-api.staging.fellesdatakatalog.digdir.no
   harvestAdminApiKey: test-key
+  cors.originPatterns: "*"
 
 ---
 spring:
@@ -62,3 +64,4 @@ application:
   datasetUri: http://localhost:5050/datasets
   catalogUri: http://localhost:5050/catalogs
   harvestAdminApiKey: test-key
+  cors.originPatterns: "*"
