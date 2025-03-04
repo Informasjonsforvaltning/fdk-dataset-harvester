@@ -16,6 +16,7 @@ import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service.UpdateSer
 import org.slf4j.LoggerFactory
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import java.util.Calendar
 import kotlin.time.measureTimedValue
@@ -36,6 +37,10 @@ class HarvesterActivity(
 
     @EventListener
     fun fullHarvestOnStartup(event: ApplicationReadyEvent) =
+        initiateHarvest(HarvestAdminParameters(null, null, null), false)
+
+    @Scheduled(cron = "0 0 * * * *")
+    fun scheduledHarvest() =
         initiateHarvest(HarvestAdminParameters(null, null, null), false)
 
     fun initiateHarvest(params: HarvestAdminParameters, forceUpdate: Boolean) {
