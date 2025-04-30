@@ -2,18 +2,6 @@ version: "3"
 
 services:
 
-  fdk-dataset-harvester:
-    build: .
-    image: eu.gcr.io/digdir-fdk-infra/fdk-dataset-harvester:test
-    environment:
-      - RABBIT_USERNAME=admin
-      - RABBIT_PASSWORD=admin
-      - MONGO_USERNAME=admin
-      - MONGO_PASSWORD=admin
-      - HARVEST_ADMIN_ROOT_URL=https://admin-api.staging.fellesdatakatalog.digdir.no
-    ports:
-      - "8081:8080"
-
   mongodb:
     image: mongo:latest
     environment:
