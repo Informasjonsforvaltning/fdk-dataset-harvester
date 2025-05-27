@@ -99,10 +99,6 @@ fun resetDB() {
     val client: MongoClient = MongoClients.create(connectionString)
     val mongoDatabase = client.getDatabase("datasetHarvester").withCodecRegistry(pojoCodecRegistry)
 
-    val miscCollection = mongoDatabase.getCollection("turtle")
-    miscCollection.deleteMany(org.bson.Document())
-    miscCollection.insertMany(turtleDBPopulation())
-
     val catalogCollection = mongoDatabase.getCollection("catalogMeta")
     catalogCollection.deleteMany(org.bson.Document())
     catalogCollection.insertMany(catalogDBPopulation())
@@ -110,6 +106,26 @@ fun resetDB() {
     val datasetCollection = mongoDatabase.getCollection("datasetMeta")
     datasetCollection.deleteMany(org.bson.Document())
     datasetCollection.insertMany(datasetDBPopulation())
+
+    val sourceTurtleCollection = mongoDatabase.getCollection("harvestSourceTurtle")
+    sourceTurtleCollection.deleteMany(org.bson.Document())
+    sourceTurtleCollection.insertMany(sourceTurtlePopulation())
+
+    val catalogTurtleCollection = mongoDatabase.getCollection("catalogTurtle")
+    catalogTurtleCollection.deleteMany(org.bson.Document())
+    catalogTurtleCollection.insertMany(catalogTurtlePopulation())
+
+    val fdkCatalogTurtleCollection = mongoDatabase.getCollection("fdkCatalogTurtle")
+    fdkCatalogTurtleCollection.deleteMany(org.bson.Document())
+    fdkCatalogTurtleCollection.insertMany(fdkCatalogTurtlePopulation())
+
+    val datasetTurtleCollection = mongoDatabase.getCollection("datasetTurtle")
+    datasetTurtleCollection.deleteMany(org.bson.Document())
+    datasetTurtleCollection.insertMany(datasetTurtlePopulation())
+
+    val fdkDatasetTurtleCollection = mongoDatabase.getCollection("fdkDatasetTurtle")
+    fdkDatasetTurtleCollection.deleteMany(org.bson.Document())
+    fdkDatasetTurtleCollection.insertMany(fdkDatasetTurtlePopulation())
 
     client.close()
 }
