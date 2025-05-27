@@ -1,8 +1,17 @@
 package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service
 
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.CatalogTurtle
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.DatasetTurtle
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.FDKCatalogTurtle
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.FDKDatasetTurtle
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.HarvestSourceTurtle
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.TurtleDBO
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.createRDFResponse
-import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.repository.TurtleRepository
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.repository.CatalogTurtleRepository
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.repository.DatasetTurtleRepository
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.repository.FDKCatalogTurtleRepository
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.repository.FDKDatasetTurtleRepository
+import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.repository.HarvestSourceTurtleRepository
 import org.apache.jena.rdf.model.Model
 import org.apache.jena.riot.Lang
 import org.springframework.data.repository.findByIdOrNull
@@ -13,77 +22,94 @@ import java.util.zip.GZIPInputStream
 import java.util.zip.GZIPOutputStream
 import kotlin.text.Charsets.UTF_8
 
-private const val NO_RECORDS_ID_PREFIX = "no-records-"
 const val UNION_ID = "union-graph"
-private const val CATALOG_ID_PREFIX = "catalog-"
-private const val DATASET_ID_PREFIX = "dataset-"
 
 @Service
-class TurtleService(private val turtleRepository: TurtleRepository) {
+class TurtleService(
+    private val catalogTurtleRepository: CatalogTurtleRepository,
+    private val datasetTurtleRepository: DatasetTurtleRepository,
+    private val fdkCatalogTurtleRepository: FDKCatalogTurtleRepository,
+    private val fdkDatasetTurtleRepository: FDKDatasetTurtleRepository,
+    private val harvestSourceTurtleRepository: HarvestSourceTurtleRepository
+) {
 
     fun saveAsCatalogUnion(model: Model, withRecords: Boolean): TurtleDBO =
-        turtleRepository.save(model.createCatalogTurtleDBO(UNION_ID, withRecords))
+        if (withRecords) fdkCatalogTurtleRepository.save(model.createFDKCatalogTurtleDBO(UNION_ID))
+        else catalogTurtleRepository.save(model.createCatalogTurtleDBO(UNION_ID))
 
     fun getCatalogUnion(withRecords: Boolean): String? =
-        turtleRepository.findByIdOrNull(catalogTurtleID(UNION_ID, withRecords))
+        if (withRecords) fdkCatalogTurtleRepository.findByIdOrNull(UNION_ID)
+            ?.turtle
+            ?.let { ungzip(it) }
+        else catalogTurtleRepository.findByIdOrNull(UNION_ID)
             ?.turtle
             ?.let { ungzip(it) }
 
     fun saveAsCatalog(model: Model, fdkId: String, withRecords: Boolean): TurtleDBO =
-        turtleRepository.save(model.createCatalogTurtleDBO(fdkId, withRecords))
+        if (withRecords) fdkCatalogTurtleRepository.save(model.createFDKCatalogTurtleDBO(fdkId))
+        else catalogTurtleRepository.save(model.createCatalogTurtleDBO(fdkId))
 
     fun getCatalog(fdkId: String, withRecords: Boolean): String? =
-        turtleRepository.findByIdOrNull(catalogTurtleID(fdkId, withRecords))
+        if (withRecords) fdkCatalogTurtleRepository.findByIdOrNull(fdkId)
+            ?.turtle
+            ?.let { ungzip(it) }
+        else catalogTurtleRepository.findByIdOrNull(fdkId)
             ?.turtle
             ?.let { ungzip(it) }
 
     fun saveAsDataset(model: Model, fdkId: String, withRecords: Boolean): TurtleDBO =
-        turtleRepository.save(model.createDatasetTurtleDBO(fdkId, withRecords))
+        if (withRecords) fdkDatasetTurtleRepository.save(model.createFDKDatasetTurtleDBO(fdkId))
+        else datasetTurtleRepository.save(model.createDatasetTurtleDBO(fdkId))
 
     fun getDataset(fdkId: String, withRecords: Boolean): String? =
-        turtleRepository.findByIdOrNull(datasetTurtleID(fdkId, withRecords))
+        if (withRecords) fdkDatasetTurtleRepository.findByIdOrNull(fdkId)
+            ?.turtle
+            ?.let { ungzip(it) }
+        else datasetTurtleRepository.findByIdOrNull(fdkId)
             ?.turtle
             ?.let { ungzip(it) }
 
     fun saveAsHarvestSource(model: Model, uri: String): TurtleDBO =
-        turtleRepository.save(model.createHarvestSourceTurtleDBO(uri))
+        harvestSourceTurtleRepository.save(model.createHarvestSourceTurtleDBO(uri))
 
     fun getHarvestSource(uri: String): String? =
-        turtleRepository.findByIdOrNull(uri)
+        harvestSourceTurtleRepository.findByIdOrNull(uri)
             ?.turtle
             ?.let { ungzip(it) }
 
     fun deleteTurtleFiles(fdkId: String) {
-        turtleRepository.findAllById(
-            listOf(
-                datasetTurtleID(fdkId, true),
-                datasetTurtleID(fdkId, false)
-            )
-        ).run { turtleRepository.deleteAll(this) }
+        datasetTurtleRepository.deleteById(fdkId)
+        fdkDatasetTurtleRepository.deleteById(fdkId)
     }
 }
 
-fun catalogTurtleID(fdkId: String, withFDKRecords: Boolean): String =
-    "$CATALOG_ID_PREFIX${if (withFDKRecords) "" else NO_RECORDS_ID_PREFIX}$fdkId"
-
-fun datasetTurtleID(fdkId: String, withFDKRecords: Boolean): String =
-    "$DATASET_ID_PREFIX${if (withFDKRecords) "" else NO_RECORDS_ID_PREFIX}$fdkId"
-
-private fun Model.createHarvestSourceTurtleDBO(uri: String): TurtleDBO =
-    TurtleDBO(
+private fun Model.createHarvestSourceTurtleDBO(uri: String): HarvestSourceTurtle =
+    HarvestSourceTurtle(
         id = uri,
         turtle = gzip(createRDFResponse(Lang.TURTLE))
     )
 
-private fun Model.createCatalogTurtleDBO(fdkId: String, withRecords: Boolean): TurtleDBO =
-    TurtleDBO(
-        id = catalogTurtleID(fdkId, withRecords),
+private fun Model.createCatalogTurtleDBO(fdkId: String): CatalogTurtle =
+    CatalogTurtle(
+        id = fdkId,
         turtle = gzip(createRDFResponse(Lang.TURTLE))
     )
 
-private fun Model.createDatasetTurtleDBO(fdkId: String, withRecords: Boolean): TurtleDBO =
-    TurtleDBO(
-        id = datasetTurtleID(fdkId, withRecords),
+private fun Model.createDatasetTurtleDBO(fdkId: String): DatasetTurtle =
+    DatasetTurtle(
+        id = fdkId,
+        turtle = gzip(createRDFResponse(Lang.TURTLE))
+    )
+
+private fun Model.createFDKCatalogTurtleDBO(fdkId: String): FDKCatalogTurtle =
+    FDKCatalogTurtle(
+        id = fdkId,
+        turtle = gzip(createRDFResponse(Lang.TURTLE))
+    )
+
+private fun Model.createFDKDatasetTurtleDBO(fdkId: String): FDKDatasetTurtle =
+    FDKDatasetTurtle(
+        id = fdkId,
         turtle = gzip(createRDFResponse(Lang.TURTLE))
     )
 

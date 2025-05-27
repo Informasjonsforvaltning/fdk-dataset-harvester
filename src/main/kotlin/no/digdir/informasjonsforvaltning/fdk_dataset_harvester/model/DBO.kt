@@ -4,7 +4,6 @@ import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.safeParseRDF
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service.ungzip
 import org.apache.jena.riot.Lang
 import org.springframework.data.annotation.Id
-import org.springframework.data.mongodb.core.index.Indexed
 import org.springframework.data.mongodb.core.mapping.Document
 
 @Document(collection = "datasetMeta")
@@ -12,7 +11,6 @@ data class DatasetMeta (
     @Id
     val uri: String,
 
-    @Indexed(unique = true)
     val fdkId: String,
 
     val isPartOf: String,
@@ -27,19 +25,45 @@ data class CatalogMeta (
     @Id
     val uri: String,
 
-    @Indexed(unique = true)
     val fdkId: String,
 
     val issued: Long,
     val modified: Long
 )
 
-@Document(collection = "turtle")
-data class TurtleDBO(
-    @Id
-    val id: String,
-    val turtle: String
-) {
+@Document(collection = "harvestSourceTurtle")
+data class HarvestSourceTurtle(
+    @Id override val id: String,
+    override val turtle: String
+) : TurtleDBO()
+
+@Document(collection = "catalogTurtle")
+data class CatalogTurtle(
+    @Id override val id: String,
+    override val turtle: String
+) : TurtleDBO()
+
+@Document(collection = "fdkCatalogTurtle")
+data class FDKCatalogTurtle(
+    @Id override val id: String,
+    override val turtle: String
+) : TurtleDBO()
+
+@Document(collection = "datasetTurtle")
+data class DatasetTurtle(
+    @Id override val id: String,
+    override val turtle: String
+) : TurtleDBO()
+
+@Document(collection = "fdkDatasetTurtle")
+data class FDKDatasetTurtle(
+    @Id override val id: String,
+    override val turtle: String
+) : TurtleDBO()
+
+abstract class TurtleDBO {
+    abstract val id: String
+    abstract val turtle: String
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (javaClass != other?.javaClass) return false
