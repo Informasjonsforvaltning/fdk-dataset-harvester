@@ -7,7 +7,6 @@ import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.HarvestRepo
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rabbit.RabbitMQPublisher
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.*
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.repository.DatasetRepository
-import org.apache.jena.rdf.model.ModelFactory
 import org.apache.jena.riot.Lang
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
@@ -20,14 +19,6 @@ class DatasetService(
     private val rabbitPublisher: RabbitMQPublisher,
     private val turtleService: TurtleService
 ) {
-
-    fun getAll(returnType: Lang, withRecords: Boolean): String =
-        turtleService.getCatalogUnion(withRecords)
-            ?.let {
-                if (returnType == Lang.TURTLE) it
-                else parseRDF(it, Lang.TURTLE).createRDFResponse(returnType)
-            }
-            ?: ModelFactory.createDefaultModel().createRDFResponse(returnType)
 
     fun getDataset(id: String, returnType: Lang, withRecords: Boolean): String? =
         turtleService.getDataset(id, withRecords)

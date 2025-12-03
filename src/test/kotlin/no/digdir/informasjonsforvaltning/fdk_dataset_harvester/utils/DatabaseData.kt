@@ -8,9 +8,7 @@ import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.FDKCatalogT
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.FDKDatasetTurtle
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.HarvestSourceTurtle
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.TurtleDBO
-import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service.UNION_ID
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.service.gzip
-import org.apache.jena.vocabulary.AS.partOf
 import org.bson.Document
 
 private val responseReader = TestResponseReader()
@@ -52,16 +50,6 @@ val REMOVED_DATASET_DBO = DatasetMeta(
     removed = true,
     issued = TEST_HARVEST_DATE.timeInMillis,
     modified = TEST_HARVEST_DATE.timeInMillis
-)
-
-val UNION_DATA = FDKCatalogTurtle(
-    id = UNION_ID,
-    turtle = gzip(responseReader.readFile("all_catalogs.ttl"))
-)
-
-val UNION_DATA_NO_RECORDS = CatalogTurtle(
-    id = UNION_ID,
-    turtle = gzip(responseReader.readFile("all_catalogs_no_records.ttl"))
 )
 
 val HARVEST_DBO_0 = HarvestSourceTurtle(
@@ -125,11 +113,11 @@ val REMOVED_DATASET_TURTLE_NO_RECORDS = DatasetTurtle(
 )
 
 fun catalogTurtlePopulation(): List<Document> =
-    listOf(UNION_DATA_NO_RECORDS, CATALOG_0_TURTLE_NO_RECORDS, CATALOG_1_TURTLE_NO_RECORDS)
+    listOf(CATALOG_0_TURTLE_NO_RECORDS, CATALOG_1_TURTLE_NO_RECORDS)
         .map { it.mapDBO() }
 
 fun fdkCatalogTurtlePopulation(): List<Document> =
-    listOf(UNION_DATA, CATALOG_0_TURTLE, CATALOG_1_TURTLE)
+    listOf(CATALOG_0_TURTLE, CATALOG_1_TURTLE)
         .map { it.mapDBO() }
 
 fun datasetTurtlePopulation(): List<Document> =
