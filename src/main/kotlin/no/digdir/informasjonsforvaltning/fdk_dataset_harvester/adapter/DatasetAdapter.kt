@@ -1,7 +1,6 @@
 package no.digdir.informasjonsforvaltning.fdk_dataset_harvester.adapter
 
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.harvester.HarvestException
-import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.model.HarvestDataSource
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
@@ -15,14 +14,14 @@ private const val TEN_MINUTES = 600000
 @Service
 class DatasetAdapter {
 
-    fun getDatasets(source: HarvestDataSource): String {
-        val connection = URI(source.url).toURL().openConnection() as HttpURLConnection
-        connection.setRequestProperty("Accept", source.acceptHeaderValue)
+    fun getDatasets(url: String, acceptHeader: String): String {
+        val connection = URI(url).toURL().openConnection() as HttpURLConnection
+        connection.setRequestProperty("Accept", acceptHeader)
         connection.connectTimeout = TEN_MINUTES
         connection.readTimeout = TEN_MINUTES
 
         if (connection.responseCode != HttpStatus.OK.value()) {
-            val exception = HarvestException("Harvest failed for ${source.url}, status was ${connection.responseCode}")
+            val exception = HarvestException("Harvest failed for ${url}, status was ${connection.responseCode}")
             throw exception
         } else {
             return connection

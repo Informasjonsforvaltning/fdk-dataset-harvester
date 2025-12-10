@@ -25,20 +25,22 @@ class DatasetHarvester(
     private val applicationProperties: ApplicationProperties
 ) {
 
-    fun harvestDatasetCatalog(source: HarvestDataSource, harvestDate: Calendar, forceUpdate: Boolean): HarvestReport? =
-        if (source.id != null && source.url != null) {
+    fun harvestDatasetCatalog(trigger: HarvestTrigger, harvestDate: Calendar): HarvestReport? =
+        if (trigger.runId != null && trigger.dataSourceId != null && trigger.dataSourceUrl != null) {
             try {
-                LOGGER.debug("Starting harvest of ${source.url}")
+                LOGGER.debug("Starting harvest of ${trigger.dataSourceUrl}")
 
-                when (val jenaWriterType = jenaTypeFromAcceptHeader(source.acceptHeaderValue)) {
+                when (val jenaWriterType = jenaTypeFromAcceptHeader(trigger.acceptHeader)) {
                     null -> {
                         LOGGER.error(
-                            "Not able to harvest from ${source.url}, no accept header supplied",
-                            HarvestException(source.url)
+                            "Not able to harvest from ${trigger.dataSourceUrl}, no accept header supplied",
+                            HarvestException(trigger.dataSourceUrl)
                         )
                         HarvestReport(
-                            id = source.id,
-                            url = source.url,
+                            runId = trigger.runId,
+                            dataSourceId = trigger.dataSourceId,
+                            dataSourceUrl = trigger.dataSourceUrl,
+                            dataType = "dataset",
                             harvestError = true,
                             errorMessage = "Not able to harvest, no accept header supplied",
                             startTime = harvestDate.formatWithOsloTimeZone(),
@@ -47,12 +49,14 @@ class DatasetHarvester(
                     }
                     Lang.RDFNULL -> {
                         LOGGER.error(
-                            "Not able to harvest from ${source.url}, header ${source.acceptHeaderValue} is not acceptable",
-                            HarvestException(source.url)
+                            "Not able to harvest from ${trigger.dataSourceUrl}, header ${trigger.acceptHeader} is not acceptable",
+                            HarvestException(trigger.dataSourceUrl)
                         )
                         HarvestReport(
-                            id = source.id,
-                            url = source.url,
+                            runId = trigger.runId,
+                            dataSourceId = trigger.dataSourceId,
+                            dataSourceUrl = trigger.dataSourceUrl,
+                            dataType = "dataset",
                             harvestError = true,
                             errorMessage = "Not able to harvest, no accept header supplied",
                             startTime = harvestDate.formatWithOsloTimeZone(),
@@ -60,15 +64,16 @@ class DatasetHarvester(
                         )
                     }
                     else -> updateIfChanged(
-                        parseRDF(adapter.getDatasets(source), jenaWriterType),
-                        source.id, source.url, harvestDate, forceUpdate
+                        parseRDF(adapter.getDatasets(trigger.dataSourceUrl, trigger.acceptHeader!!), jenaWriterType),
+                        trigger.runId, trigger.dataSourceId, trigger.dataSourceUrl, harvestDate, trigger.forceUpdate
                     )
                 }
             } catch (ex: Exception) {
-                LOGGER.error("Harvest of ${source.url} failed", ex)
+                LOGGER.error("Harvest of ${trigger.dataSourceUrl} failed", ex)
                 HarvestReport(
-                    id = source.id,
-                    url = source.url,
+                    runId = trigger.runId,
+                    dataSourceId = trigger.dataSourceId,
+                    dataSourceUrl = trigger.dataSourceUrl,
                     harvestError = true,
                     errorMessage = ex.message,
                     startTime = harvestDate.formatWithOsloTimeZone(),
@@ -82,42 +87,45 @@ class DatasetHarvester(
 
     private fun updateIfChanged(
         harvested: Model,
-        sourceId: String,
-        sourceURL: String,
+        runId: String,
+        dataSourceId: String,
+        dataSourceUrl: String,
         harvestDate: Calendar,
         forceUpdate: Boolean
     ): HarvestReport {
-        val dbData = turtleService.getHarvestSource(sourceURL)
+        val dbData = turtleService.getHarvestSource(dataSourceUrl)
             ?.let { safeParseRDF(it, Lang.TURTLE) }
 
         return if (!forceUpdate && dbData != null && harvested.isIsomorphicWith(dbData)) {
-            LOGGER.info("No changes from last harvest of $sourceURL")
+            LOGGER.info("No changes from last harvest of $dataSourceUrl")
             HarvestReport(
-                id = sourceId,
-                url = sourceURL,
+                runId = runId,
+                dataSourceId = dataSourceId,
+                dataSourceUrl = dataSourceUrl,
                 harvestError = false,
                 startTime = harvestDate.formatWithOsloTimeZone(),
                 endTime = formatNowWithOsloTimeZone()
             )
         } else {
-            LOGGER.debug("Saving data from $sourceURL, and updating FDK meta data")
-            turtleService.saveAsHarvestSource(harvested, sourceURL)
+            LOGGER.debug("Saving data from $dataSourceUrl, and updating FDK meta data")
+            turtleService.saveAsHarvestSource(harvested, dataSourceUrl)
 
-            updateDB(harvested, harvestDate, sourceId, sourceURL, forceUpdate)
+            updateDB(harvested, harvestDate, runId, dataSourceId, dataSourceUrl, forceUpdate)
         }
     }
 
     private fun updateDB(
         harvested: Model,
         harvestDate: Calendar,
-        sourceId: String,
-        sourceURL: String,
+        runId: String,
+        dataSourceId: String,
+        dataSourceUrl: String,
         forceUpdate: Boolean
     ): HarvestReport {
         val updatedCatalogs = mutableListOf<CatalogMeta>()
         val updatedDatasets = mutableListOf<DatasetMeta>()
         val removedDatasets = mutableListOf<DatasetMeta>()
-        extractCatalogs(harvested, sourceURL)
+        extractCatalogs(harvested, dataSourceUrl)
             .map { Pair(it, catalogRepository.findByIdOrNull(it.resource.uri)) }
             .filter { forceUpdate || it.first.catalogHasChanges(it.second?.fdkId) }
             .forEach {
@@ -152,10 +160,11 @@ class DatasetHarvester(
 
         removedDatasets.map { it.copy(removed = true) }.run { datasetRepository.saveAll(this) }
 
-        LOGGER.debug("Harvest of $sourceURL completed")
+        LOGGER.debug("Harvest of $dataSourceUrl completed")
         return HarvestReport(
-            id = sourceId,
-            url = sourceURL,
+            runId = runId,
+            dataSourceId = dataSourceId,
+            dataSourceUrl = dataSourceUrl,
             harvestError = false,
             startTime = harvestDate.formatWithOsloTimeZone(),
             endTime = formatNowWithOsloTimeZone(),
