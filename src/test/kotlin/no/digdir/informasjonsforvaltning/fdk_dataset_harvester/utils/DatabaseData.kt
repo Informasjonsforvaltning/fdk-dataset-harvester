@@ -53,12 +53,12 @@ val REMOVED_DATASET_DBO = DatasetMeta(
 )
 
 val HARVEST_DBO_0 = HarvestSourceTurtle(
-    id = TEST_HARVEST_SOURCE_0.url!!,
+    id = TEST_HARVEST_SOURCE_0.dataSourceUrl!!,
     turtle = gzip(responseReader.readFile("harvest_response_0.ttl"))
 )
 
 val HARVEST_DBO_1 = HarvestSourceTurtle(
-    id = TEST_HARVEST_SOURCE_1.url!!,
+    id = TEST_HARVEST_SOURCE_1.dataSourceUrl!!,
     turtle = gzip(responseReader.readFile("harvest_response_1.ttl"))
 )
 
