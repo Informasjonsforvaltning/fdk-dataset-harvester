@@ -8,10 +8,13 @@ import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rabbit.RabbitMQPu
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.rdf.*
 import no.digdir.informasjonsforvaltning.fdk_dataset_harvester.repository.DatasetRepository
 import org.apache.jena.riot.Lang
+import org.slf4j.LoggerFactory
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.web.server.ResponseStatusException
+
+private val LOGGER = LoggerFactory.getLogger(DatasetService::class.java)
 
 @Service
 class DatasetService(
@@ -45,14 +48,14 @@ class DatasetService(
             datasetRepository.saveAll(meta.map { it.copy(removed = true) })
 
             val uri = meta.first().uri
-            rabbitPublisher.send(listOf(
-                HarvestReport(
-                    harvestError = false,
-                    startTime = start,
-                    endTime = formatNowWithOsloTimeZone(),
-                    removedResources = listOf(FdkIdAndUri(fdkId = id, uri = uri))
-                )
-            ))
+            val report = HarvestReport(
+                harvestError = false,
+                startTime = start,
+                endTime = formatNowWithOsloTimeZone(),
+                removedResources = listOf(FdkIdAndUri(fdkId = id, uri = uri))
+            )
+            LOGGER.info("Sending manual delete harvest report: datasetId=$id, uri=$uri, startTime=${report.startTime}, endTime=${report.endTime}")
+            rabbitPublisher.send(listOf(report))
         }
     }
 
@@ -84,14 +87,16 @@ class DatasetService(
         }.run { datasetRepository.saveAll(this) }
 
         if (reportAsRemoved.isNotEmpty()) {
-            rabbitPublisher.send(listOf(
-                HarvestReport(
-                    harvestError = false,
-                    startTime = start,
-                    endTime = formatNowWithOsloTimeZone(),
-                    removedResources = reportAsRemoved
-                )
-            ))
+            val report = HarvestReport(
+                harvestError = false,
+                startTime = start,
+                endTime = formatNowWithOsloTimeZone(),
+                removedResources = reportAsRemoved
+            )
+            LOGGER.info("Sending duplicate removal harvest report: removedResources=${reportAsRemoved.size}, " +
+                    "startTime=${report.startTime}, endTime=${report.endTime}, " +
+                    "resources=${reportAsRemoved.take(5).joinToString(", ") { "${it.fdkId} (${it.uri})" }}${if (reportAsRemoved.size > 5) " ... and ${reportAsRemoved.size - 5} more" else ""}")
+            rabbitPublisher.send(listOf(report))
         }
     }
 

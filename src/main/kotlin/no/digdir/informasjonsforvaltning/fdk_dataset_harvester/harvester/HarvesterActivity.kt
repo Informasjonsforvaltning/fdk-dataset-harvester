@@ -67,6 +67,7 @@ class HarvesterActivity(
                     }
                     
                     report?.let { 
+                        logHarvestReport(it, timeElapsed)
                         updateService.updateMetaData()
                         sendRabbitMessages(listOf(it))
                         LOGGER.debug("completed harvest of datasource ${trigger.dataSourceId}, forced update: ${trigger.forceUpdate}")
@@ -78,8 +79,33 @@ class HarvesterActivity(
         }
     }
 
+    private fun logHarvestReport(report: HarvestReport, timeElapsed: kotlin.time.Duration) {
+        if (report.harvestError) {
+            LOGGER.warn("Harvest report indicates error: runId=${report.runId}, dataSourceId=${report.dataSourceId}, dataSourceUrl=${report.dataSourceUrl}, errorMessage=${report.errorMessage}")
+        } else {
+            LOGGER.info("Harvest report summary: runId=${report.runId}, dataSourceId=${report.dataSourceId}, dataSourceUrl=${report.dataSourceUrl}, " +
+                    "startTime=${report.startTime}, endTime=${report.endTime}, duration=${timeElapsed.inWholeSeconds}s, " +
+                    "changedCatalogs=${report.changedCatalogs.size}, changedResources=${report.changedResources.size}, removedResources=${report.removedResources.size}")
+            
+            if (report.changedCatalogs.isNotEmpty()) {
+                LOGGER.debug("Changed catalogs: ${report.changedCatalogs.joinToString(", ") { "${it.fdkId} (${it.uri})" }}")
+            }
+            if (report.changedResources.isNotEmpty()) {
+                LOGGER.debug("Changed resources: ${report.changedResources.take(10).joinToString(", ") { "${it.fdkId} (${it.uri})" }}${if (report.changedResources.size > 10) " ... and ${report.changedResources.size - 10} more" else ""}")
+            }
+            if (report.removedResources.isNotEmpty()) {
+                LOGGER.debug("Removed resources: ${report.removedResources.take(10).joinToString(", ") { "${it.fdkId} (${it.uri})" }}${if (report.removedResources.size > 10) " ... and ${report.removedResources.size - 10} more" else ""}")
+            }
+        }
+    }
+
     private fun sendRabbitMessages(reports: List<HarvestReport>) {
+        LOGGER.debug("Sending ${reports.size} harvest report(s) to RabbitMQ")
+        reports.forEachIndexed { index, report ->
+            LOGGER.debug("Sending harvest report ${index + 1}/${reports.size}: runId=${report.runId}, dataSourceId=${report.dataSourceId}, " +
+                    "changedCatalogs=${report.changedCatalogs.size}, changedResources=${report.changedResources.size}, removedResources=${report.removedResources.size}")
+        }
         publisher.send(reports)
-        LOGGER.debug("Successfully sent harvest completed message")
+        LOGGER.info("Successfully sent ${reports.size} harvest report(s) to RabbitMQ")
     }
 }
