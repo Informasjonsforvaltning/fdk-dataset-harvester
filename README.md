@@ -1,3 +1,12 @@
+⚠️ **Archived / Deprecated**
+
+> This repository is no longer maintained.
+> Its functionality has been replaced by:
+
+➡️ https://github.com/Informasjonsforvaltning/fdk-harvester
+
+---
+
 # FDK Dataset Harvester
 
 This application provides an API for datasets harvested from different sources.
